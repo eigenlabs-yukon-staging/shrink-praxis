@@ -1,0 +1,642 @@
+{
+ "format": "praxis-model/1",
+ "paper": "Praxis: Practical Witness Encryption for NP (Tse, Vanjani, Vesely), Cryptology ePrint Archive 2026/2971, arXiv 2611.28552v1",
+ "constants": [
+  {
+   "id": "q",
+   "value": "21888242871839275222246405745257275088548364400416034343698204186575808495617",
+   "text": "order of BN254's groups G1, G2, GT (Table 4)"
+  },
+  {
+   "id": "N",
+   "value": "391693",
+   "text": "Boolean unknowns of the statement: the Groth16 verifier on BN254 as a Boolean quadratic system (Sec. 6.1)"
+  },
+  {
+   "id": "nc_raw",
+   "value": "1692",
+   "text": "constraints of that system before padding (Sec. 6.1)"
+  },
+  {
+   "id": "Fmax",
+   "value": "2047",
+   "text": "products per constraint, at most (Table 4)"
+  },
+  {
+   "id": "lam",
+   "value": "100",
+   "text": "security level in bits"
+  },
+  {
+   "id": "l_lab",
+   "value": "254",
+   "text": "length of the labels of the generic model (Table 4)"
+  },
+  {
+   "id": "bits_G1",
+   "value": "255",
+   "text": "bits of one compressed element of G1 (Sec. 6.3)"
+  },
+  {
+   "id": "bits_G2",
+   "value": "512",
+   "text": "bits of one compressed element of G2 (Sec. 6.3)"
+  },
+  {
+   "id": "overhead_bits",
+   "value": "3280",
+   "text": "the element of GT, the seed and the masked message: 410 bytes (Sec. 6.3)"
+  },
+  {
+   "id": "inv_mults",
+   "value": "362",
+   "text": "multiplications of one inversion in the base field: the exponentiation by p - 2, 253 squarings and 109 multiplications (Sec. 6.3)"
+  },
+  {
+   "id": "batch",
+   "value": "2048",
+   "text": "additions that share one inversion (Sec. 6.3)"
+  },
+  {
+   "id": "enc_adds1",
+   "value": "11",
+   "text": "affine additions of one fixed-base scalar multiplication in G1, at most (Sec. 6.3)"
+  },
+  {
+   "id": "enc_adds2",
+   "value": "10",
+   "text": "affine additions of one fixed-base scalar multiplication in G2, at most (Sec. 6.3)"
+  },
+  {
+   "id": "enc_fq",
+   "value": "1073741824",
+   "text": "encryption's work in F_q that does not depend on the parameters: a multiplication for each of the system's about 2^30.0 nonzero coefficients (Sec. 6.3)"
+  },
+  {
+   "id": "msm1",
+   "value": "200",
+   "text": "multiplications per point of Pippenger's multi-scalar multiplications in G1 (Sec. 6.3)"
+  },
+  {
+   "id": "msm2",
+   "value": "950",
+   "text": "multiplications per point of the multi-scalar multiplications in G2; set so that all of them total the paper's 2^31.3"
+  },
+  {
+   "id": "pair_mults",
+   "value": "6400",
+   "text": "multiplications per pairing, final exponentiations shared; the paper's 284 pairings take about 2^20.8 (Sec. 6.3)"
+  },
+  {
+   "id": "dec_fq",
+   "value": "632000000",
+   "text": "decryption's work in F_q apart from the forms; with the forms it is the paper's about 2^29.3 at its parameters (Sec. 6.3)"
+  },
+  {
+   "id": "step_mults",
+   "value": "6",
+   "text": "multiplications per candidate of the search (Sec. 5.2, Sec. 6.3)"
+  },
+  {
+   "id": "msis_floor",
+   "value": "103533/1000",
+   "text": "log2 cost of Praxis's own Module-SIS instance under the pinned estimator, rounded down to 1/1000"
+  }
+ ],
+ "parameters": [
+  {
+   "id": "nu",
+   "type": "int",
+   "text": "coset size of the QAP"
+  },
+  {
+   "id": "nc",
+   "type": "int",
+   "text": "constraints after padding with 0 = 0"
+  },
+  {
+   "id": "J",
+   "type": "int",
+   "text": "chunks of the quotient powers"
+  },
+  {
+   "id": "Delta",
+   "type": "int",
+   "text": "length of a chunk of quotient powers"
+  },
+  {
+   "id": "Jp",
+   "type": "int",
+   "text": "chunks of the remainder powers (J' in the paper)"
+  },
+  {
+   "id": "dR",
+   "type": "int",
+   "text": "degree of the ring R_q"
+  },
+  {
+   "id": "k",
+   "type": "int",
+   "text": "rows of the Module-SIS matrix"
+  },
+  {
+   "id": "K1",
+   "type": "int",
+   "text": "left legs of the grid of shared factors"
+  },
+  {
+   "id": "K2",
+   "type": "int",
+   "text": "right legs of each kind"
+  },
+  {
+   "id": "g",
+   "type": "int",
+   "text": "range of each secret integer"
+  },
+  {
+   "id": "theta",
+   "type": "rat",
+   "text": "threshold above which a stack is heavy"
+  },
+  {
+   "id": "beta",
+   "type": "int",
+   "text": "norm bound of Module-SIS"
+  },
+  {
+   "id": "b",
+   "type": "int",
+   "text": "inverse theorem: the integer b of (I1)"
+  },
+  {
+   "id": "eps_tr",
+   "type": "rat",
+   "text": "inverse theorem: density one trimming may lose"
+  },
+  {
+   "id": "R_tr",
+   "type": "rat",
+   "text": "inverse theorem: radius of the trimming ellipsoid"
+  },
+  {
+   "id": "Lambda1",
+   "type": "rat",
+   "text": "inverse theorem: geometric factor, rank 1"
+  },
+  {
+   "id": "Lambda2",
+   "type": "rat",
+   "text": "inverse theorem: geometric factor, rank 2"
+  },
+  {
+   "id": "Lambda3",
+   "type": "rat",
+   "text": "inverse theorem: geometric factor, rank 3"
+  },
+  {
+   "id": "Gamma1",
+   "type": "rat",
+   "text": "inverse theorem: density bound, rank 1"
+  },
+  {
+   "id": "Gamma2",
+   "type": "rat",
+   "text": "inverse theorem: density bound, rank 2"
+  },
+  {
+   "id": "Gamma3",
+   "type": "rat",
+   "text": "inverse theorem: density bound, rank 3"
+  },
+  {
+   "id": "A_inv",
+   "type": "rat",
+   "text": "inverse theorem: loss factor of a trimming"
+  },
+  {
+   "id": "P_1",
+   "type": "rat",
+   "text": "inverse theorem: per-step growth, rank 1 (P_1 in Lemma B.7)"
+  },
+  {
+   "id": "P_2",
+   "type": "rat",
+   "text": "inverse theorem: per-step growth, rank 2 (P_2 in Lemma B.7)"
+  }
+ ],
+ "definitions": [
+  {
+   "id": "D",
+   "expr": "N + 2 + nu*nc",
+   "text": "evaluation points of the QAP (Sec. 4.4)",
+   "protected": false
+  },
+  {
+   "id": "ell",
+   "expr": "ceil(N/dR)",
+   "text": "columns of the Module-SIS matrix (Sec. 5.1)",
+   "protected": false
+  },
+  {
+   "id": "n",
+   "expr": "(k+1)*dR",
+   "text": "number of forms (Sec. 5.1)",
+   "protected": false
+  },
+  {
+   "id": "Deltap",
+   "expr": "nu*nc/Jp",
+   "text": "length of a chunk of remainder powers (Sec. 5.2)",
+   "protected": false
+  },
+  {
+   "id": "Bsearch",
+   "expr": "(N+1)*(g+1)",
+   "text": "search bound B (Sec. 5.1)",
+   "protected": false
+  },
+  {
+   "id": "n1",
+   "expr": "(2*K1+1)*(N+1) + Delta + (nu-1)*nc/Jp",
+   "text": "elements of G1 in a ciphertext (Proposition 5.7(a))",
+   "protected": false
+  },
+  {
+   "id": "n2",
+   "expr": "6*K2*(N+1) + 3*K2 + (3*n/2)*(J+Jp) + 13*n - 8",
+   "text": "half the elements of G2 in a ciphertext (Proposition 5.7(a))",
+   "protected": false
+  },
+  {
+   "id": "L1",
+   "expr": "n1 + 2*K1 + 1",
+   "text": "labels in G1 given to the adversary; reproduces the authors' count 151,468,814 and is at least n1 + 1",
+   "protected": false
+  },
+  {
+   "id": "L2",
+   "expr": "2*n2 + 12*K2 + 1",
+   "text": "labels in G2 given to the adversary; reproduces the authors' count 56,828,073 and is at least 2 n2 + 1",
+   "protected": false
+  },
+  {
+   "id": "LT",
+   "expr": "2",
+   "text": "labels in GT (Definition B.1)",
+   "protected": false
+  },
+  {
+   "id": "L",
+   "expr": "L1 + L2 + LT",
+   "text": "all labels given to the adversary (Definition B.1)",
+   "protected": false
+  },
+  {
+   "id": "eps_f",
+   "expr": "(3*D + 2*n + 2*K1 + 67)/(q - D)",
+   "text": "bound on a coincidence in F_q (Definition B.1)",
+   "protected": false
+  },
+  {
+   "id": "Nfree",
+   "expr": "2**l_lab - L - 3*2**(lam+1) - 1",
+   "text": "labels never given out (Definition B.1)",
+   "protected": false
+  },
+  {
+   "id": "mu_tr",
+   "expr": "theta - 100*eps_tr",
+   "text": "density that survives the trimmings (Lemma B.7)",
+   "protected": false
+  },
+  {
+   "id": "xi_tr",
+   "expr": "(1 + 2/g)**254",
+   "text": "(Lemma B.7)",
+   "protected": false
+  },
+  {
+   "id": "H3",
+   "expr": "xi_tr/(g**3*mu_tr - xi_tr/g)",
+   "text": "(Lemma B.7)",
+   "protected": false
+  },
+  {
+   "id": "H1",
+   "expr": "Gamma1/(g*mu_tr)",
+   "text": "(Lemma B.7)",
+   "protected": false
+  },
+  {
+   "id": "H2",
+   "expr": "Gamma2/(g**2*mu_tr)",
+   "text": "(Lemma B.7)",
+   "protected": false
+  },
+  {
+   "id": "T_tr",
+   "expr": "R_tr*g*sqrt(N/3)",
+   "text": "(Lemma B.7)",
+   "protected": false
+  },
+  {
+   "id": "msis_rank",
+   "expr": "k*dR",
+   "text": "rank of the SIS instance the security proof reduces to: MSIS_{k,ell,beta} over R_q, unrolled (Definition 3.3, Lemma B.8(c))",
+   "protected": false
+  },
+  {
+   "id": "msis_cols",
+   "expr": "ell*dR",
+   "text": "columns of that instance",
+   "protected": false
+  },
+  {
+   "id": "msis_bound",
+   "expr": "beta",
+   "text": "its norm bound",
+   "protected": false
+  },
+  {
+   "id": "msis_norm",
+   "expr": "0",
+   "text": "its norm: 0 for the infinity norm, 2 for the Euclidean norm",
+   "protected": false
+  },
+  {
+   "id": "matrix_coeffs",
+   "expr": "k*(ell+1)*dR",
+   "text": "coefficients in F_q of the matrix M, 27,818,368 at the paper's parameters (Sec. 5.2); computing the forms costs encryption three multiplications for each (z at three points) and decryption one (Proposition 5.7)",
+   "protected": true
+  },
+  {
+   "id": "dec_sum_g1",
+   "expr": "(2*K1+1)*(N+1)/2",
+   "text": "additions in G1 of decryption's sums, for a witness with floor(N/2) ones: (N+1)/2 entries in each of 2 K1 + 1 arrays (Sec. 6.3)",
+   "protected": false
+  },
+  {
+   "id": "dec_sum_g2",
+   "expr": "12*K2*(N+1)/2",
+   "text": "additions in G2 of decryption's sums: (N+1)/2 entries in each of 12 K2 arrays (Sec. 6.3)",
+   "protected": false
+  },
+  {
+   "id": "dec_msm_g1",
+   "expr": "3*n + 2*J*Delta + (nu-1)*nc",
+   "text": "total length of decryption's multi-scalar multiplications in G1: 2J of length Delta, J' over the allowed remainder powers, and 3n more (Proposition 5.7(c), Sec. 6.3)",
+   "protected": false
+  },
+  {
+   "id": "dec_msm_g2",
+   "expr": "3*n*(J+Jp) + 26*n - 16",
+   "text": "total length of decryption's multi-scalar multiplications in G2 (Proposition 5.7(c))",
+   "protected": false
+  },
+  {
+   "id": "dec_pairings",
+   "expr": "18*K2 + 4*J + 2*Jp + 2",
+   "text": "pairings of decryption (Proposition 5.7(c))",
+   "protected": false
+  },
+  {
+   "id": "search_spread",
+   "expr": "g*sqrt((N+4)/48) + 3/2",
+   "text": "bound on the root mean square of the integer the search finds (Lemma 5.5)",
+   "protected": false
+  },
+  {
+   "id": "search_steps",
+   "expr": "(37/20)*sqrt(search_spread)",
+   "text": "expected baby and giant steps of the search: 37/20 times the square root of the spread, the paper's about 2^29.4 at its parameters (Proposition 5.7(d), Sec. 6.3)",
+   "protected": true
+  },
+  {
+   "id": "add1",
+   "expr": "6 + inv_mults/batch",
+   "text": "multiplications of one affine addition in G1, with its share of the batched inversion (Sec. 6.3)",
+   "protected": true
+  },
+  {
+   "id": "add2",
+   "expr": "15 + inv_mults/batch",
+   "text": "multiplications of one affine addition in G2, with its share of the batched inversion (Sec. 6.3)",
+   "protected": true
+  },
+  {
+   "id": "size_bits",
+   "expr": "bits_G1*n1 + bits_G2*2*n2 + overhead_bits",
+   "text": "ciphertext size in bits (Proposition 5.7(a), Sec. 6.3)",
+   "protected": true
+  },
+  {
+   "id": "enc_mults",
+   "expr": "enc_adds1*add1*n1 + enc_adds2*add2*2*n2 + enc_fq + 3*matrix_coeffs",
+   "text": "field multiplications of encryption: one fixed-base scalar multiplication for each element of G1 and G2, and the work in F_q (Proposition 5.7(b), Sec. 6.3)",
+   "protected": true
+  },
+  {
+   "id": "dec_mults",
+   "expr": "add1*dec_sum_g1 + add2*dec_sum_g2 + msm1*dec_msm_g1 + msm2*dec_msm_g2 + pair_mults*dec_pairings + dec_fq + matrix_coeffs + step_mults*search_steps",
+   "text": "expected field multiplications of decryption with a witness of floor(N/2) ones: sums, multi-scalar multiplications, pairings, work in F_q, and the search (Sec. 6.3)",
+   "protected": true
+  },
+  {
+   "id": "score_mib",
+   "expr": "ceil(size_bits/8/2**20)",
+   "text": "OBJECTIVE 1, SIZE: ciphertext size in MiB, rounded up",
+   "protected": true
+  },
+  {
+   "id": "score_time",
+   "expr": "ceil(up((enc_mults + dec_mults)/10**6))",
+   "text": "OBJECTIVE 2, TIME: one encryption plus one expected decryption, in millions of field multiplications, rounded up",
+   "protected": true
+  },
+  {
+   "id": "score_enc",
+   "expr": "ceil(up(enc_mults/10**6))",
+   "text": "reported beside the objectives: encryption alone, in millions of field multiplications",
+   "protected": true
+  },
+  {
+   "id": "score_dec",
+   "expr": "ceil(up(dec_mults/10**6))",
+   "text": "reported beside the objectives: expected decryption alone, in millions of field multiplications",
+   "protected": true
+  }
+ ],
+ "functions": [
+  {
+   "id": "Ncmp",
+   "args": [
+    "u"
+   ],
+   "expr": "u*L + u*(u+1)/2",
+   "text": "comparisons charged in u operations (Definition B.1)"
+  },
+  {
+   "id": "E",
+   "args": [
+    "u"
+   ],
+   "expr": "(L1*(L1-1)/2 + L2*(L2-1)/2 + LT*(LT-1)/2 + L)*eps_f + Ncmp(u)*(theta + eps_f) + ((L+3*u)*(L+3*u-1)/2 + L + 3*u)*eps_f + (8*u+8)*eps_f + (2*L + 4*u + 2**(lam+2))/Nfree + 4*u/2**126 + 1/2**128",
+   "text": "the bound E of Definition B.1"
+  }
+ ],
+ "rules": [
+  {
+   "id": "C1",
+   "expr": "nu > Fmax and (q - 1) % nu == 0",
+   "text": "the coset size divides q - 1 and exceeds F_max",
+   "source": "Sec. 4.4",
+   "blob": "blob:qap",
+   "protected": false
+  },
+  {
+   "id": "C2",
+   "expr": "nc >= nc_raw and J >= 1 and Jp >= 1 and nc % Jp == 0",
+   "text": "padding only adds constraints; J' divides the number of constraints",
+   "source": "Sec. 5.2, chunked powers",
+   "blob": "blob:enc",
+   "protected": false
+  },
+  {
+   "id": "C3",
+   "expr": "D < q and D <= 2**28",
+   "text": "the evaluation points fit in the subgroup of order 2^ceil(log2 D), which must divide q - 1 (q - 1 is divisible by 2^28 and not by 2^29)",
+   "source": "Sec. 4.4, Proposition 5.7",
+   "blob": "blob:qap",
+   "protected": false
+  },
+  {
+   "id": "C4",
+   "expr": "g >= 1 and 2*Bsearch + 1 < q",
+   "text": "the search bound B = (N+1)(g+1) satisfies 2B + 1 < q",
+   "source": "Sec. 5.1, Parameters",
+   "blob": "blob:sampler-search",
+   "protected": false
+  },
+  {
+   "id": "C5",
+   "expr": "k >= 1 and is_pow2(dR) and (q - 1) % (2*dR) == 0",
+   "text": "d_R is a power of two with q = 1 mod 2 d_R",
+   "source": "Sec. 3.3",
+   "blob": "blob:msis",
+   "protected": false
+  },
+  {
+   "id": "C6",
+   "expr": "n % 2 == 0 and (q - 1) % n == 0",
+   "text": "the number of forms n = (k+1) d_R is even and divides q - 1",
+   "source": "Sec. 5.1, Forms and weights",
+   "blob": "blob:forms-weights",
+   "protected": false
+  },
+  {
+   "id": "C7",
+   "expr": "K1 >= 1 and K2 >= 1 and 2*K1*K2 == n",
+   "text": "the grid has K1 K2 = n/2 legs, so 3n/2 cells",
+   "source": "Sec. 5.1, Table 4",
+   "blob": "blob:copies-ties",
+   "protected": false
+  },
+  {
+   "id": "P1",
+   "expr": "D <= J*Delta and J*Delta <= D + n and n <= D",
+   "text": "D <= J Delta <= D + n and n <= D",
+   "source": "Sec. 5.4 (P1)",
+   "blob": "blob:admissibility",
+   "protected": false
+  },
+  {
+   "id": "P2",
+   "expr": "3*(L + 3*2**(lam+1) + 1) <= q",
+   "text": "3(L + 3 2^(lam+1) + 1) <= q",
+   "source": "Sec. 5.4 (P2)",
+   "blob": "blob:admissibility",
+   "protected": false
+  },
+  {
+   "id": "I1",
+   "expr": "b >= 7 and 2**b <= g and g < 2**254",
+   "text": "b >= 7 and 2^b <= g < 2^254",
+   "source": "Lemma B.7 (I1)",
+   "blob": "blob:inverse-conditions",
+   "protected": false
+  },
+  {
+   "id": "I2",
+   "expr": "R_tr >= 20 and 1000*exp(-99*R_tr**2/200) <= eps_tr and eps_tr < mu_tr and g**3*mu_tr > xi_tr/g",
+   "text": "R_tr >= 20, 1000 e^(-99 R_tr^2/200) <= eps_tr < mu_tr, and g^3 mu_tr > xi_tr/g",
+   "source": "Lemma B.7 (I2)",
+   "blob": "blob:inverse-conditions",
+   "protected": false
+  },
+  {
+   "id": "I3",
+   "expr": "Lambda1 >= 2*sqrt(3)*R_tr*sqrt(N) and Lambda2 >= 27*sqrt(2)*pi*R_tr**2*N and Lambda3 >= 144*sqrt(2)*pi*R_tr**3*N*sqrt(N)",
+   "text": "Lambda1 >= 2 sqrt(3) R_tr sqrt(N), Lambda2 >= 27 sqrt(2) pi R_tr^2 N, Lambda3 >= 144 sqrt(2) pi R_tr^3 N^(3/2)",
+   "source": "Lemma B.7 (I3)",
+   "blob": "blob:inverse-conditions",
+   "protected": false
+  },
+  {
+   "id": "I4",
+   "expr": "Gamma3 >= xi_tr*(1 + H3/g) and A_inv >= mu_tr/(mu_tr - eps_tr) and P_2**(b-1) >= (g**(-3) + eps_tr)/mu_tr and P_1**(b-1) >= (g**(-2) + 2*eps_tr)/mu_tr and Gamma2**(b-1) >= g**(-2)/mu_tr and Gamma1**(b-1) >= g**(-1)/mu_tr and Gamma2 >= A_inv*Lambda1*Gamma3*P_2 and Gamma1 >= A_inv*max(Lambda1*Gamma2, Lambda2*Gamma3)*P_1",
+   "text": "the eight inequalities of (I4)",
+   "source": "Lemma B.7 (I4)",
+   "blob": "blob:inverse-conditions",
+   "protected": false
+  },
+  {
+   "id": "I5",
+   "expr": "Lambda1*Gamma1 < mu_tr*q and Lambda2*Gamma2 < mu_tr*q and Lambda3*Gamma3 < mu_tr*q and g**(-4) < mu_tr and H1*T_tr < q and 4*H2*T_tr**2 < q and 54*H3*T_tr**3 < q",
+   "text": "Lambda_d Gamma_d < mu_tr q for d = 1, 2, 3; g^-4 < mu_tr; H1 T_tr < q, 4 H2 T_tr^2 < q, 54 H3 T_tr^3 < q",
+   "source": "Lemma B.7 (I5)",
+   "blob": "blob:inverse-conditions",
+   "protected": false
+  },
+  {
+   "id": "I6",
+   "expr": "2*beta < q and H1 <= beta and 2*H2*q <= beta**2 and 6*floor(H3)*q**2 <= beta**3",
+   "text": "2 beta < q, H1 <= beta, 2 H2 q <= beta^2, 6 floor(H3) q^2 <= beta^3",
+   "source": "Lemma B.7 (I6)",
+   "blob": "blob:inverse-conditions",
+   "protected": false
+  },
+  {
+   "id": "P4",
+   "expr": "24*beta**4 < q**3",
+   "text": "24 beta^4 < q^3",
+   "source": "Sec. 5.4 (P4)",
+   "blob": "blob:admissibility",
+   "protected": false
+  },
+  {
+   "id": "P5",
+   "expr": "E(2) <= 1/2**lam and E(2**(lam+1)) - E(2) <= 1 - 1/2**lam",
+   "text": "E(2) <= 2^-lam and E(2^(lam+1)) - E(2) <= 1 - 2^-lam",
+   "source": "Sec. 5.4 (P5)",
+   "blob": "blob:admissibility",
+   "protected": false
+  },
+  {
+   "id": "M1",
+   "expr": "msis_log2(msis_rank, msis_cols, msis_bound, msis_norm) >= msis_floor",
+   "text": "the Module-SIS instance is at least as hard as Praxis's own, by the pinned lattice estimator",
+   "source": "Sec. 6.2, MSIS",
+   "blob": "blob:msis",
+   "protected": true
+  }
+ ],
+ "scores": {
+  "ciphertext_mib": "score_mib",
+  "time_mmul": "score_time"
+ },
+ "info": {
+  "enc_mmul": "score_enc",
+  "dec_mmul": "score_dec"
+ }
+}

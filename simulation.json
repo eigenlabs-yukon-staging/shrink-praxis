@@ -1,0 +1,46 @@
+{
+ "initial_results": [
+  {
+   "passed": true,
+   "ciphertext_mib": 8073,
+   "time_mmul": 28669,
+   "enc_mmul": 20074,
+   "dec_mmul": 8595,
+   "time_log2": "34.74",
+   "enc_log2": "34.22",
+   "dec_log2": "33.00",
+   "ciphertext_bits": "67720351811",
+   "gib": "7.8837",
+   "tier": "parameters",
+   "amended": [],
+   "dropped": [],
+   "failed": [],
+   "first_failed": "",
+   "rules_checked": 18,
+   "msis_log2": "103.533",
+   "msis_block": 242,
+   "g1_elements": "151468429",
+   "g2_elements": "56827928",
+   "params_sha256": "417acfd9c5686ab9cc8c7233a57ed008461117446c767b9cb9fbe97d49eb7909",
+   "model_sha256": "5096220b284278e0c1316588f0bba72e85ea86477f1af3ad0a96faea49fb09f8",
+   "errors": [],
+   "message": "every rule of the paper's model holds for these parameters"
+  }
+ ],
+ "initial_decision": {
+  "kind": "judgment",
+  "requests": [],
+  "judgment": {
+   "valid": true,
+   "scores": null,
+   "reason": "The starting submission is the paper's own parameter set. The praxis_gate result for the declared input passed, its params_sha256 is the sha256 of params.json, its tier is \"parameters\" and it amends and drops nothing, so nothing is left to judge. The verifier derives (8073, 28669): the paper's 7.88 GiB, and about 2^34.2 to encrypt plus 2^33.0 to decrypt.",
+   "evidence_refs": [
+    "source:params.json",
+    "run:initial:0"
+   ],
+   "review_standard": "shrink-praxis-review-v1"
+  }
+ },
+ "followup_results": [],
+ "final_decision": null
+}

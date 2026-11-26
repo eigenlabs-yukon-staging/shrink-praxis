@@ -1,0 +1,69 @@
+{
+  "schemaVersion": 2,
+  "name": "shrink-praxis",
+  "tracks": [
+    {
+      "name": "frontier",
+      "description": "Come up with a better witness encryption scheme than Praxis (ePrint 2026/2971) at 100-bit security. Two objectives, a Pareto frontier, lower is better: size, the ciphertext size in MiB, and time, one encryption plus one expected decryption in millions of field multiplications. A submission is a parameter set: code checks with exact arithmetic every condition under which the paper proves the scheme secure, and computes both objectives. A submission may also change the scheme or those conditions, with a full proof that the LLM verifier judges and a person checks before promotion. The paper's parameters score (8073 MiB, 28669 million multiplications): 7.88 GiB, about 2^34.2 to encrypt and 2^33.0 to decrypt.",
+      "category": "cryptography",
+      "mode": "pareto",
+      "promotionMode": "manual",
+      "direction": "-",
+      "objectives": [
+        {
+          "name": "ciphertext_mib",
+          "direction": "-"
+        },
+        {
+          "name": "time_mmul",
+          "direction": "-"
+        }
+      ],
+      "paretoPolicies": {
+        "scoring": {
+          "version": "praxis-size-v1"
+        },
+        "validity": {
+          "version": "amendments-strict-v1"
+        }
+      },
+      "editablePaths": [
+        "submission"
+      ],
+      "submissionAdmission": {
+        "version": 1,
+        "submissionReferencesEnabled": false
+      },
+      "setupCommand": [
+        "llm-verifier",
+        "intake",
+        "--root",
+        ".",
+        "--out",
+        ".yukon/work/intake.json"
+      ],
+      "benchmarkCommand": [
+        "llm-verifier",
+        "finalize",
+        "--intake",
+        ".yukon/work/intake.json",
+        "--initial",
+        ".yukon/work/initial.json",
+        "--initial-review",
+        ".yukon/work/review.json",
+        "--score",
+        ".yukon/score.json",
+        "--dossier",
+        ".yukon/dossier.json"
+      ],
+      "scorePath": ".yukon/score.json",
+      "maxSubmissionBytes": 786432,
+      "runner": {
+        "provider": "github-actions",
+        "workflow": "benchmark.yml",
+        "scoreArtifactName": "benchmark-score",
+        "maxConcurrentWorkflows": 2
+      }
+    }
+  ]
+}

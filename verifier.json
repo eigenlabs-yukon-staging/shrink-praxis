@@ -1,0 +1,269 @@
+{
+  "version": 1,
+  "id": "shrink-praxis",
+  "rules_path": "rules.md",
+  "rules_files": [
+    "model.md",
+    "paper-contract.md"
+  ],
+  "review_standard": "shrink-praxis-review-v1",
+  "objectives": [
+    {
+      "name": "ciphertext_mib",
+      "direction": "-",
+      "unit": "MiB",
+      "semantics": "The ciphertext size of Praxis for the reference statement at 100-bit security, in MiB, rounded up, exactly as reported in the field ciphertext_mib of a passing praxis_gate result for the submission's declared input. The gate computes it from params.json with the protected model: 255 bits for each of the n1 elements of G1, 512 bits for each of the 2 n2 elements of G2, and 3280 bits for the rest, with n1 and n2 the counts of Proposition 5.7(a) of the paper unless an accepted amendment replaces them. Lower is better. The number is never taken from prose, from the reviewer or from a file the gate did not check.",
+      "score_source": {
+        "check": "praxis_gate",
+        "field": "ciphertext_mib"
+      },
+      "score_minimum": {
+        "numerator": "1",
+        "denominator": "1"
+      }
+    },
+    {
+      "name": "time_mmul",
+      "direction": "-",
+      "unit": "M mul",
+      "semantics": "The time of Praxis for the reference statement at 100-bit security: one encryption plus one expected decryption with a witness of floor(N/2) ones, in millions of multiplications in BN254's base field, rounded up, exactly as reported in the field time_mmul of the same passing praxis_gate result. Encryption is one fixed-base scalar multiplication for each element of the ciphertext plus the work in F_q; decryption is sums, multi-scalar multiplications, pairings, work in F_q and the search; counts are those of Proposition 5.7 and unit costs those of Section 6.3 of the paper, as rules.md defines them. Lower is better. The number is never taken from prose or from the reviewer.",
+      "score_source": {
+        "check": "praxis_gate",
+        "field": "time_mmul"
+      },
+      "score_minimum": {
+        "numerator": "1",
+        "denominator": "1"
+      }
+    }
+  ],
+  "allow_unscored": false,
+  "policies": {
+    "scoring": {
+      "version": "praxis-size-v1"
+    },
+    "validity": {
+      "version": "amendments-strict-v1"
+    }
+  },
+  "supported_policies": {
+    "scoring": [
+      {
+        "selector": {
+          "version": "praxis-size-v1"
+        },
+        "instructions": "Do not choose numbers and return scores null. The verifier derives the two objectives from the passing praxis_gate result for the submission's declared input: ciphertext_mib and time_mmul, which the protected model computes from params.json as rules.md defines them. A lower value is never a reason to accept and a higher one is never a reason to reject."
+      }
+    ],
+    "validity": [
+      {
+        "selector": {
+          "version": "amendments-strict-v1"
+        },
+        "instructions": "Apply rules.md, model.md and paper-contract.md to the complete submission. Return valid only if (1), (2) and (3) all hold. (1) Binding. The praxis_gate run for the submission's declared input completed with passed true, and its params_sha256 is, character for character, the sha256 recorded in the evidence for the file params.json. If the two differ, the text that was scored is not the file you are reading: reject and say so. Do not recompute or second-guess the two objectives, any rule, or the Module-SIS estimate: code evaluates them exactly, and rules.md fixes what counts. Do not judge whether the parameters are wise, whether Module-SIS is hard, or whether the paper is correct. (2) If the gate's tier is \"parameters\" (nothing amended, nothing dropped), there is no obligation and the submission is valid when (1) holds: every condition under which the paper proves its theorems holds for these parameters, and nothing else is judged. Say in reason that the tier is \"parameters\". (3) If the gate's tier is \"amended\": the file proof.md must be present. Rebuild the obligations from the gate's amended and dropped lists: one O-amend per id in those lists, O-construction if n1, n2, dec_sum_g1, dec_sum_g2, dec_msm_g1, dec_msm_g2, dec_pairings or search_spread is among them, and O-targets. Judge each on its own, as rules.md defines it. O-amend: proof.md has a section headed 'Amendment <id>'. It states the entry as amended, and that statement is the same condition or quantity as the expression for that id in params.json, read in the expression language of model.md, constant for constant; a mismatch means code checked something other than what is proved: reject. For every result that paper-contract.md lists as background-dependent on the block of that entry (its Background to list), the section either states the result under the amended entry and proves it in full, or shows that neither its statement nor its proof uses what changed. O-construction: the changed construction is specified completely, correctness with error 2/q is proved, the element counts are proved to be the amended n1 and n2, and decryption is proved to perform at most the amended numbers of additions, multi-scalar multiplication points and pairings, with a search result of root mean square at most the amended spread. O-targets: the final section derives Theorem 5.6 and Theorem 5.9 as the paper states them, for every parameter set that satisfies the amended model, with the same models, the same adversary class and the bound (Q+1)/2^lambda + s_b, where s_b is the advantage of an explicit reduction against the SIS instance that the amended msis_rank, msis_cols, msis_bound and msis_norm describe. FULL PROOFS ONLY. Accept a proof only when every step is written out and you have checked each one. Reject an idea, a plan, a sketch, an outline, a restatement of the claim, a proof that points to the paper's proof of the result it changes, to the reader or to a computation that is not shown, and any step called clear, standard, routine or similar in place of doing it. A proof may use results of the paper that do not depend on an amended entry, as paper-contract.md states them, the background blocks, standard mathematics, and theorems from the literature given with citation, locator and quoted statement. You cannot open sources: accept a cited theorem only when you recognise the source and are confident it states the quoted result, and the use asserts no more than the quote; otherwise reject and name the citation a person must open. A citation of the paper itself or of its Lean development for an amended claim is refused. Nothing listed under 'What does not count' in rules.md may apply: in particular the security argument may rest only on the bilinear generic group model, random oracles and the hardness of the costed SIS instance, with the paper's adversary class and bound. The standard is strict: reject the whole submission on any gap, any step you cannot confirm from the submitted text, and any weakened constant, bound or hypothesis. Do not repair an argument, do not accept one because the claim is plausible, and do not accept part of a submission. In reason, give each obligation id with accepted or rejected and, for a rejection, the first gap. You are a model reading a proof, not a proof check: say so, and do not describe the result as verified or certified."
+      }
+    ]
+  },
+  "provider": {
+    "model": "gpt-6-astra",
+    "reasoning_effort": "high",
+    "max_completion_tokens": 32768,
+    "timeout_seconds": 1200,
+    "background": true,
+    "max_attempts": 1
+  },
+  "limits": {
+    "max_followups": 0,
+    "max_files": 4,
+    "max_file_bytes": 262144,
+    "max_submission_bytes": 786432,
+    "max_initial_runs": 1,
+    "run_seconds": 60,
+    "initial_seconds": 60,
+    "total_seconds": 60,
+    "max_prompt_bytes": 4194304,
+    "total_review_seconds": 2400
+  },
+  "checkers": [
+    {
+      "id": "praxis_gate",
+      "description": "Rebuilds the declared params.json (its text, in parts), applies its amendments to the protected model of Praxis, and evaluates every rule in force with exact arithmetic, costing the Module-SIS instance with the pinned estimator. Passes only when the text is one strict JSON object and every rule holds; then reports the two objectives (ciphertext_mib, time_mmul), the tier (parameters or amended), the amended and dropped entries, and params_sha256, the SHA-256 of the text it checked. It never sees submitted files and judges no mathematics: on tier amended a pass says the amended rules hold for these parameters, not that the amendments are theorems.",
+      "source": "checkers/praxis_gate.py",
+      "files": [
+        "checkers/praxis_gate.py",
+        "checkers/praxis_model.py",
+        "checkers/msis_estimate.py",
+        "checkers/model.json"
+      ],
+      "input_schema": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "params"
+        ],
+        "properties": {
+          "params": {
+            "type": "array",
+            "minItems": 1,
+            "maxItems": 8,
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 4096
+            }
+          }
+        }
+      },
+      "output_schema": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "amended",
+          "ciphertext_bits",
+          "ciphertext_mib",
+          "dec_log2",
+          "dec_mmul",
+          "dropped",
+          "enc_log2",
+          "enc_mmul",
+          "errors",
+          "failed",
+          "first_failed",
+          "g1_elements",
+          "g2_elements",
+          "gib",
+          "message",
+          "model_sha256",
+          "msis_block",
+          "msis_log2",
+          "params_sha256",
+          "passed",
+          "rules_checked",
+          "tier",
+          "time_log2",
+          "time_mmul"
+        ],
+        "properties": {
+          "passed": {
+            "type": "boolean"
+          },
+          "ciphertext_mib": {
+            "type": "integer",
+            "minimum": -1,
+            "maximum": 1000000000000
+          },
+          "time_mmul": {
+            "type": "integer",
+            "minimum": -1,
+            "maximum": 1000000000000000000
+          },
+          "time_log2": {
+            "type": "string",
+            "maxLength": 16
+          },
+          "enc_mmul": {
+            "type": "integer",
+            "minimum": -1,
+            "maximum": 1000000000000000000
+          },
+          "dec_mmul": {
+            "type": "integer",
+            "minimum": -1,
+            "maximum": 1000000000000000000
+          },
+          "enc_log2": {
+            "type": "string",
+            "maxLength": 16
+          },
+          "dec_log2": {
+            "type": "string",
+            "maxLength": 16
+          },
+          "ciphertext_bits": {
+            "type": "string",
+            "maxLength": 64
+          },
+          "gib": {
+            "type": "string",
+            "maxLength": 32
+          },
+          "tier": {
+            "type": "string",
+            "maxLength": 16
+          },
+          "amended": {
+            "type": "array",
+            "maxItems": 24,
+            "items": {
+              "type": "string",
+              "maxLength": 32
+            }
+          },
+          "dropped": {
+            "type": "array",
+            "maxItems": 24,
+            "items": {
+              "type": "string",
+              "maxLength": 32
+            }
+          },
+          "failed": {
+            "type": "array",
+            "maxItems": 24,
+            "items": {
+              "type": "string",
+              "maxLength": 32
+            }
+          },
+          "first_failed": {
+            "type": "string",
+            "maxLength": 32
+          },
+          "rules_checked": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 1000
+          },
+          "msis_log2": {
+            "type": "string",
+            "maxLength": 32
+          },
+          "msis_block": {
+            "type": "integer",
+            "minimum": -1,
+            "maximum": 1000000
+          },
+          "g1_elements": {
+            "type": "string",
+            "maxLength": 64
+          },
+          "g2_elements": {
+            "type": "string",
+            "maxLength": 64
+          },
+          "params_sha256": {
+            "type": "string",
+            "maxLength": 64
+          },
+          "model_sha256": {
+            "type": "string",
+            "maxLength": 64
+          },
+          "errors": {
+            "type": "array",
+            "maxItems": 12,
+            "items": {
+              "type": "string",
+              "maxLength": 300
+            }
+          },
+          "message": {
+            "type": "string",
+            "maxLength": 300
+          }
+        }
+      },
+      "required_for_score": true
+    }
+  ]
+}
