@@ -1,5 +1,5 @@
-# Starting submission: Praxis as published
+# Praxis with polynomial weights and rank-two heavy extraction
 
-These are the parameters of Table 4 of the paper, with the constants of the inverse theorem (Lemma B.7) that the authors published with their Lean proofs. The three constants $\Gamma_1$, $\Gamma_2$, $\Gamma_3$ are the authors' exact values rounded up to 80 digits, which keeps every condition true and the file short. Nothing is amended, so there is nothing to judge: every rule of the model holds, and the model gives a size of 8,073 MiB (the paper's 7.88 GiB) and a time of 28,669 million multiplications: 20,074 million to encrypt (about 2^34.2) and 8,595 million to decrypt on average (about 2^33.0).
+The construction uses the linear form coefficients in one grid. The exact polynomial tie is analyzed through scaling twists in the rational function field. This permits an odd form count and smaller padding while keeping the costed Module-SIS distribution and the rank-two inverse proof.
 
-To submit an improvement, replace `params.json`, run `python3 tools/pack.py` to rewrite `submission.json`, and rewrite this file to say what you changed and why.
+The gate passes all 18 checks at 5,601 MiB and 1,035,283 million field multiplications. The point uses 3,393 forms, ring degree 64 and 53 matrix rows. The pinned estimator reports log2 cost 103.855 at block size 244.
