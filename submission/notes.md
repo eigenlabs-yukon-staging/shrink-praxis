@@ -1,5 +1,5 @@
-# Starting submission: Praxis as published
+# Praxis at four forms with a rank-gap extraction bound
 
-These are the parameters of Table 4 of the paper, with the constants of the inverse theorem (Lemma B.7) that the authors published with their Lean proofs. The three constants $\Gamma_1$, $\Gamma_2$, $\Gamma_3$ are the authors' exact values rounded up to 80 digits, which keeps every condition true and the file short. Nothing is amended, so there is nothing to judge: every rule of the model holds, and the model gives a size of 8,073 MiB (the paper's 7.88 GiB) and a time of 28,669 million multiplications: 20,074 million to encrypt (about 2^34.2) and 8,595 million to decrypt on average (about 2^33.0).
+The parameter set uses ring degree 2, one ring row, four forms and a 2 × 1 grid. The proof treats rank-one identities by direct witness recovery and bounds higher-rank identity events by the centered sampler's rank bound. It retains the original form encoding, algorithms, oracle models, and costed SIS norm and hardness floor.
 
-To submit an improvement, replace `params.json`, run `python3 tools/pack.py` to rewrite `submission.json`, and rewrite this file to say what you changed and why.
+The amended gate passes all 18 rules at 348 MiB and 99,883,315,621 million base-field multiplications. The modeled search is much longer than the paper's reference. The pinned estimator reports log2 cost 150.479 at block size 451.
