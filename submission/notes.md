@@ -1,5 +1,5 @@
-# Starting submission: Praxis as published
+# Praxis with independent extension padding and a tighter generic ledger
 
-These are the parameters of Table 4 of the paper, with the constants of the inverse theorem (Lemma B.7) that the authors published with their Lean proofs. The three constants $\Gamma_1$, $\Gamma_2$, $\Gamma_3$ are the authors' exact values rounded up to 80 digits, which keeps every condition true and the file short. Nothing is amended, so there is nothing to judge: every rule of the model holds, and the model gives a size of 8,073 MiB (the paper's 7.88 GiB) and a time of 28,669 million multiplications: 20,074 million to encrypt (about 2^34.2) and 8,595 million to decrypt on average (about 2^33.0).
+The candidate has 4,524 forms with degree-32 Module-SIS rings, 141 rows, 12 leading form slots, and a 174 × 13 grid. It uses 10 quotient chunks and 11 remainder chunks. A sharper count of the comparisons that can charge the heavy-stack threshold permits a shorter centered search in the existing extraction bound.
 
-To submit an improvement, replace `params.json`, run `python3 tools/pack.py` to rewrite `submission.json`, and rewrite this file to say what you changed and why.
+All 18 amended gate rules pass. The modeled score is 7,931 MiB and 27,640 million base-field multiplications with the original norm and cost model. The proof gives the independent form encoding and the generic comparison count used in the amended model.
