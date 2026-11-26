@@ -1,5 +1,5 @@
-# Starting submission: Praxis as published
+# Praxis at 416 forms under a dense rank-one inverse condition
 
-These are the parameters of Table 4 of the paper, with the constants of the inverse theorem (Lemma B.7) that the authors published with their Lean proofs. The three constants $\Gamma_1$, $\Gamma_2$, $\Gamma_3$ are the authors' exact values rounded up to 80 digits, which keeps every condition true and the file short. Nothing is amended, so there is nothing to judge: every rule of the model holds, and the model gives a size of 8,073 MiB (the paper's 7.88 GiB) and a time of 28,669 million multiplications: 20,074 million to encrypt (about 2^34.2) and 8,595 million to decrypt on average (about 2^33.0).
+The candidate uses ring degree 1 and 415 Module-SIS rows, with a 52 × 4 grid. It uses the original ciphertext layout and decreases the inverse-theorem norm in a density regime where only rank one is possible. The comparison bound is also tightened.
 
-To submit an improvement, replace `params.json`, run `python3 tools/pack.py` to rewrite `submission.json`, and rewrite this file to say what you changed and why.
+The protected numerical gate passes all 18 amended rules at 2,411 MiB and 940,561,723,480,878,126 million base-field multiplications. This is a ciphertext-size extreme with a very long expected search. The pinned estimator reports log2 cost 103.756 at block size 249.
