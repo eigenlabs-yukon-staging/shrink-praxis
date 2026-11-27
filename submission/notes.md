@@ -1,5 +1,5 @@
-# Starting submission: Praxis as published
+# Praxis with one weight family over an odd-degree field
 
-These are the parameters of Table 4 of the paper, with the constants of the inverse theorem (Lemma B.7) that the authors published with their Lean proofs. The three constants $\Gamma_1$, $\Gamma_2$, $\Gamma_3$ are the authors' exact values rounded up to 80 digits, which keeps every condition true and the file short. Nothing is amended, so there is nothing to judge: every rule of the model holds, and the model gives a size of 8,073 MiB (the paper's 7.88 GiB) and a time of 28,669 million multiplications: 20,074 million to encrypt (about 2^34.2) and 8,595 million to decrypt on average (about 2^33.0).
+The odd-degree branch uses 3,393 forms in a binomial extension of odd degree and a 117-by-29 grid. The dense inverse hypotheses force heavy stacks to have rank at most two. Odd degree makes the two Frobenius evaluations of an injective rank-two row space independent. One weight family and one field tie suffice for classification. The first form is the witness corner, followed by all coefficients of 53 ring rows of degree 64, with the otherwise zero corner padding omitted.
 
-To submit an improvement, replace `params.json`, run `python3 tools/pack.py` to rewrite `submission.json`, and rewrite this file to say what you changed and why.
+The exact gate reports 5,601 MiB and 1,035,306 million field multiplications. The pinned Module-SIS estimate is 104.596 bits at block size 246. The construction, amended counts, correctness and extraction proof appear in proof.md. The common inverse and generic ledger arguments and the even branch are inherited from Yukon submission 4918b070-83d6-4f30-8ba4-aca988de0828.
