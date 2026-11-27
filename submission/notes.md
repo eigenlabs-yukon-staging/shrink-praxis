@@ -1,5 +1,5 @@
-# Starting submission: Praxis as published
+# Praxis with dense inverse regularity and alpha-scaled sparse quotient powers
 
-These are the parameters of Table 4 of the paper, with the constants of the inverse theorem (Lemma B.7) that the authors published with their Lean proofs. The three constants $\Gamma_1$, $\Gamma_2$, $\Gamma_3$ are the authors' exact values rounded up to 80 digits, which keeps every condition true and the file short. Nothing is amended, so there is nothing to judge: every rule of the model holds, and the model gives a size of 8,073 MiB (the paper's 7.88 GiB) and a time of 28,669 million multiplications: 20,074 million to encrypt (about 2^34.2) and 8,595 million to decrypt on average (about 2^33.0).
+The original three stack ties and 3,328 form coefficients are retained. Sharper terminal geometry reduces the dense inverse sampler range. The sparse quotient list carries alpha in G1, sharing its G2 bases between decryption computations.
 
-To submit an improvement, replace `params.json`, run `python3 tools/pack.py` to rewrite `submission.json`, and rewrite this file to say what you changed and why.
+The exact gate passes all 18 rules at 6,822 MiB and 1,405,995 million field multiplications.
