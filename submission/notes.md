@@ -1,5 +1,5 @@
-# Starting submission: Praxis as published
+# Praxis with a degree-five base and scalar relative modulus
 
-These are the parameters of Table 4 of the paper, with the constants of the inverse theorem (Lemma B.7) that the authors published with their Lean proofs. The three constants $\Gamma_1$, $\Gamma_2$, $\Gamma_3$ are the authors' exact values rounded up to 80 digits, which keeps every condition true and the file short. Nothing is amended, so there is nothing to judge: every rule of the model holds, and the model gives a size of 8,073 MiB (the paper's 7.88 GiB) and a time of 28,669 million multiplications: 20,074 million to encrypt (about 2^34.2) and 8,595 million to decrypt on average (about 2^33.0).
+The field has a degree-five auxiliary extension and relative degree 648. The relative binomial constant lies in the BN254 scalar field. Both Frobenius-transformed right legs and the relative reduction therefore have scalar coefficients in the base variable. This narrows the mask rectangles while retaining both weight families, all three field ties and the full rank-three classification.
 
-To submit an improvement, replace `params.json`, run `python3 tools/pack.py` to rewrite `submission.json`, and rewrite this file to say what you changed and why.
+The exact gate reports 6,707 MiB and 2,841,126 million field multiplications. The rank is 3,239, with a finite pinned estimate of 103.547 at block size 243. The proof preserves the mixed-base branch and is derived from Yukon submission 4918b070-83d6-4f30-8ba4-aca988de0828.
