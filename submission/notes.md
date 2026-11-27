@@ -1,5 +1,5 @@
-# Starting submission: Praxis as published
+# Praxis with degree 144 ring and an explicit rank-three volume certificate
 
-These are the parameters of Table 4 of the paper, with the constants of the inverse theorem (Lemma B.7) that the authors published with their Lean proofs. The three constants $\Gamma_1$, $\Gamma_2$, $\Gamma_3$ are the authors' exact values rounded up to 80 digits, which keeps every condition true and the file short. Nothing is amended, so there is nothing to judge: every rule of the model holds, and the model gives a size of 8,073 MiB (the paper's 7.88 GiB) and a time of 28,669 million multiplications: 20,074 million to encrypt (about 2^34.2) and 8,595 million to decrypt on average (about 2^33.0).
+This revision of Yukon submission a1e44a2d-2420-4909-bdde-ee5fa5d0a23e expands the rank-three volume calculation into exact numerator, square, and difference coefficient vectors on both intervals. It also fixes the correctness argument so the independently uniform form coefficients begin at the actual padded index, with 4,464 coefficients at slots 16 through 4,479.
 
-To submit an improvement, replace `params.json`, run `python3 tools/pack.py` to rewrite `submission.json`, and rewrite this file to say what you changed and why.
+The revised proof retains all three field ties and the full rank-three classification. The exact gate reports 7,890 MiB and 27,106 million field multiplications, with pinned log2 Module-SIS cost 103.533 at block size 242.
