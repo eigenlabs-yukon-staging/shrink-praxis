@@ -1,5 +1,5 @@
-# Starting submission: Praxis as published
+# Praxis at 3,248 forms over a quadratic base
 
-These are the parameters of Table 4 of the paper, with the constants of the inverse theorem (Lemma B.7) that the authors published with their Lean proofs. The three constants $\Gamma_1$, $\Gamma_2$, $\Gamma_3$ are the authors' exact values rounded up to 80 digits, which keeps every condition true and the file short. Nothing is amended, so there is nothing to judge: every rule of the model holds, and the model gives a size of 8,073 MiB (the paper's 7.88 GiB) and a time of 28,669 million multiplications: 20,074 million to encrypt (about 2^34.2) and 8,595 million to decrypt on average (about 2^33.0).
+The field uses a binomial over the quadratic base, with the original form coefficients and all three field ties. The padded factor grid enforces zero inactive matrices in kernel-free tied stacks. The proof counts bivariate cancellation slots by grade and uses the discrete rank-two height bound.
 
-To submit an improvement, replace `params.json`, run `python3 tools/pack.py` to rewrite `submission.json`, and rewrite this file to say what you changed and why.
+The exact gate passes all 18 rules at 6,747 MiB and 2,653,081 million field multiplications. The pinned Module-SIS estimate is log2 cost 103.548 at block size 243.
