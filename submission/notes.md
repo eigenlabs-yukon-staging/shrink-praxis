@@ -1,5 +1,5 @@
-# Starting submission: Praxis as published
+# Praxis with a degree-3,952 form field and exact volume certificate
 
-These are the parameters of Table 4 of the paper, with the constants of the inverse theorem (Lemma B.7) that the authors published with their Lean proofs. The three constants $\Gamma_1$, $\Gamma_2$, $\Gamma_3$ are the authors' exact values rounded up to 80 digits, which keeps every condition true and the file short. Nothing is amended, so there is nothing to judge: every rule of the model holds, and the model gives a size of 8,073 MiB (the paper's 7.88 GiB) and a time of 28,669 million multiplications: 20,074 million to encrypt (about 2^34.2) and 8,595 million to decrypt on average (about 2^33.0).
+This revision of Yukon submission ffb6cd8a-094f-4b9c-9255-0f79fd2d30b4 expands the rank-three volume proof. The positivity certificate gives exact coefficient vectors for both rational intervals, including every product and final difference coefficient.
 
-To submit an improvement, replace `params.json`, run `python3 tools/pack.py` to rewrite `submission.json`, and rewrite this file to say what you changed and why.
+The two-family construction, full field ties and rank-three classification are retained. The exact gate reports 7,404 MiB and 233,844 million field multiplications. It uses a 152-by-13 grid and 1,975 degree-two ring rows for unrolled rank 3,950.
