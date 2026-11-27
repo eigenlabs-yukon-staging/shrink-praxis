@@ -1,5 +1,5 @@
-# Starting submission: Praxis as published
+# Praxis with an irreducible coefficient ring of split reduction
 
-These are the parameters of Table 4 of the paper, with the constants of the inverse theorem (Lemma B.7) that the authors published with their Lean proofs. The three constants $\Gamma_1$, $\Gamma_2$, $\Gamma_3$ are the authors' exact values rounded up to 80 digits, which keeps every condition true and the file short. Nothing is amended, so there is nothing to judge: every rule of the model holds, and the model gives a size of 8,073 MiB (the paper's 7.88 GiB) and a time of 28,669 million multiplications: 20,074 million to encrypt (about 2^34.2) and 8,595 million to decrypt on average (about 2^33.0).
+The score is 7,890 MiB and 26,813 million field multiplications. The degree-4,479 ring uses a monic integer polynomial with a completely split reduction modulo the BN254 scalar prime, constructed from disjoint binomial root cosets. The norm and uniform challenge use the power basis. Fast multiplication and transposed form evaluation are proved in Amendment C5.
 
-To submit an improvement, replace `params.json`, run `python3 tools/pack.py` to rewrite `submission.json`, and rewrite this file to say what you changed and why.
+The one ring row supplies rank 4,479 inside the 4,480 form slots. The finite pinned estimate is 103.552 at block size 242. The construction retains the full rank-three classification, original three field ties and repaired inverse-theorem certificate from Yukon submission 7b82ac8d-5485-4755-b267-2a575ffa8073.
