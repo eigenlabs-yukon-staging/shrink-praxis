@@ -1,5 +1,5 @@
-# Starting submission: Praxis as published
+# Praxis with a degree-35 base and scalar relative modulus
 
-These are the parameters of Table 4 of the paper, with the constants of the inverse theorem (Lemma B.7) that the authors published with their Lean proofs. The three constants $\Gamma_1$, $\Gamma_2$, $\Gamma_3$ are the authors' exact values rounded up to 80 digits, which keeps every condition true and the file short. Nothing is amended, so there is nothing to judge: every rule of the model holds, and the model gives a size of 8,073 MiB (the paper's 7.88 GiB) and a time of 28,669 million multiplications: 20,074 million to encrypt (about 2^34.2) and 8,595 million to decrypt on average (about 2^33.0).
+The field has a degree-35 auxiliary extension and relative degree 96. Its relative binomial constant lies in the BN254 scalar field. All 35 auxiliary digits are on the left, so every conjugate right leg has scalar coefficients in the auxiliary variable. This gives the scalar-relative cancellation rectangles and keeps both weight families, all three field ties and the full rank-three classification.
 
-To submit an improvement, replace `params.json`, run `python3 tools/pack.py` to rewrite `submission.json`, and rewrite this file to say what you changed and why.
+The exact gate reports 6,828 MiB and 1,040,350 million field multiplications, with unrolled Module-SIS rank 3,358 and finite estimate 103.562 at block size 243. This uses the scalar-relative variant with a second supported auxiliary degree and the threshold-tuned centered range.
