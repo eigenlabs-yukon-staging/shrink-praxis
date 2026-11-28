@@ -1,30 +1,171 @@
 {
  "format": "praxis-params/1",
- "title": "Baseline: Praxis as published (Table 4 and the authors' inverse-theorem constants)",
+ "title": "Praxis with Euclidean coefficient norm and range-dependent covolume",
  "params": {
   "nu": "2048",
-  "nc": "1694",
-  "J": "11",
-  "Delta": "351001",
-  "Jp": "11",
-  "dR": "64",
+  "nc": "1692",
+  "J": "6",
+  "Delta": "1220608",
+  "Jp": "1",
+  "dR": "61",
   "k": "71",
-  "K1": "192",
-  "K2": "12",
-  "g": "1736375024658487",
-  "theta": "1048575/3369993333393829974333376885877453834204643052817571560137951281152",
-  "beta": "243263909612554812554484966287587365620785086315305388991",
-  "b": "50",
-  "eps_tr": "1/2037035976334486086268445688409378161051468393665936250636140449354381299763336706183397376",
-  "R_tr": "21",
-  "Lambda1": "2276422278488769315180877121195001853192191/50000000000000000000000000000000000000",
-  "Lambda2": "20721110868710045364322205264722614136086990741321532688286239575117369418356872192767537839190968017/1000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
-  "Lambda3": "22694676069566137770776464448745331132543107978868198424497295921379929373758184772991524182325318163343938479472341352459549192340014636345553/15625000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
-  "Gamma1": "3285728529886092675461610740013790787209816521985644403916561418524695827719713/25000000000000000000000000000000000000000000000000000000000000000000",
-  "Gamma2": "1411069241671552489790224345659899373469718285109001498074940361331623262949969/10000000000000000000000000000000000000000000000000000000000000000000000000",
-  "Gamma3": "773459483762140301457110577041637446243337534412729827171981044120938468981649/500000000000000000000000000000000000000000000000000000000000000000000000000000",
-  "A_inv": "633824695651204893433764249500/633824695651204893433764249499",
-  "P_1": "5125321159582218458470169852335686658379/1250000000000000000000000000000000000000",
-  "P_2": "626106135216113852185825136377732612149/312500000000000000000000000000000000000"
- }
+  "K1": "114",
+  "K2": "19",
+  "g": "1022460174054402",
+  "theta": "2535300595993548995678819057664/2037035976334486086268445688409378161051468393665936250636140449354381299763336706183397376",
+  "beta": "107116478516728826402076345066603177910783812615776273884",
+  "b": "49",
+  "eps_tr": "1/1684996666696914987166688442938726917102321526408785780068975640576",
+  "R_tr": "18",
+  "Lambda1": "43362",
+  "Lambda2": "696110000",
+  "Lambda3": "9681500000000",
+  "Gamma1": "9730274591121100340965711603746273/302231454903657293676544",
+  "Gamma2": "53505311101345909377651681263/302231454903657293676544",
+  "Gamma3": "2417851639230458454549009/1208925819614629174706176",
+  "A_inv": "1208926396103282936086351/1208925819614629174706176",
+  "P_1": "5070121229775617198211547/1208925819614629174706176",
+  "P_2": "2467842146892493253151017/1208925819614629174706176",
+  "base_degree": "1",
+  "base_left": "1",
+  "base_right": "1",
+  "scalar_rel": "1",
+  "ring_mode": "61",
+  "seed_mode": "1",
+  "seed_degree": "2",
+  "C_mask": "73483",
+  "beta_sis": "186471601734642372177140755894802391904391910195751942619",
+  "form_pad": "1",
+  "pack_digits": "17",
+  "ring_log": "0",
+  "mask_stride": "38",
+  "cov3": "1273/100",
+  "cov2": "1273000",
+  "short_columns": "6820"
+ },
+ "amend": [
+  {
+   "id": "I3",
+   "kind": "rule",
+   "expr": "Lambda1 >= 2*sqrt(3)*R_tr*sqrt((N+3)) and Lambda2 >= sqrt(2)*pi*R_tr**2*(N+3) and Lambda3 >= 20*pi*R_tr**3*(N+3)*sqrt((N+3))/(9*sqrt(2))"
+  },
+  {
+   "id": "Ncmp",
+   "kind": "func",
+   "args": [
+    "u"
+   ],
+   "expr": "u*(u+10)/8"
+  },
+  {
+   "id": "I6",
+   "kind": "rule",
+   "expr": "(2*beta < q and H1 <= beta and 4*H2*q <= 3*beta**2 and 2509*floor(H3)*q**2 <= 1000*beta**3) and R_tr == 18 and g >= 2**49 and (N+3)*1024 <= g and 1*H3 <= g and 10000000*(N+3) <= g and g**4*mu_tr >= 34/25 and H2**5 < g**12 and 1000*eps_tr <= mu_tr and cov3 >= 1273/100 and cov2 >= (100000)*cov3 and is_int(beta_sis) and 1 <= beta_sis and 2*beta_sis < q and beta_sis**4 < q**3 and beta_sis*g**2*mu_tr >= sqrt(N+3)*Gamma1 and 200*beta_sis**2*g**2*mu_tr >= 231*cov2*q and 70*beta_sis**3*g**3*mu_tr >= 99*cov3*q**2 and H1 < g**4 and beta_sis*g*mu_tr >= 90000*cov2+20000000*cov3+200"
+  },
+  {
+   "id": "I4",
+   "kind": "rule",
+   "expr": "(g**2 <= 2**40*2**lam and Gamma3 >= xi_tr*(1 + H3/g) and A_inv >= mu_tr/(mu_tr - eps_tr) and P_2**(b-1) >= (g**(-3) + eps_tr)/mu_tr and P_1**(b-1) >= (g**(-2) + 2*eps_tr)/mu_tr and Gamma2**(b-1) >= g**(-2)/mu_tr and Gamma1**(b-1) >= g**(-1)/mu_tr and Gamma2 >= A_inv*Lambda1*Gamma3*P_2 and Gamma1 >= A_inv*max(Lambda1*Gamma2, Lambda2*Gamma3)*P_1)"
+  },
+  {
+   "id": "n2",
+   "kind": "def",
+   "expr": "ceil((6*K2*(N+4)+3*K2+(3*n/2)*(J+3)+C_mask+J+1+n)/2)"
+  },
+  {
+   "id": "dec_msm_g1",
+   "kind": "def",
+   "expr": "12*(3*n/2)+(D-1+ceil((D-1)/nu)+2+(nu-1)*nc)"
+  },
+  {
+   "id": "dec_msm_g2",
+   "kind": "def",
+   "expr": "(3*J+7)*(3*n/2)+3*C_mask+n+1"
+  },
+  {
+   "id": "dec_pairings",
+   "kind": "def",
+   "expr": "24*K2+4*(6*K2+J+4)"
+  },
+  {
+   "id": "n1",
+   "kind": "def",
+   "expr": "(2*K1+1)*(N+4)+2*ceil((D-1)/nu)+Delta-Delta/nu+(N+1)+10"
+  },
+  {
+   "id": "C6",
+   "kind": "rule",
+   "expr": "n == 4332 and seed_mode == 1 and seed_degree == 2 and q%4 == 1 and ((q%3)**2)%3 == 1 and ((q%19)**2)%19 == 1 and 2*n <= D and Delta >= n+3"
+  },
+  {
+   "id": "C7",
+   "kind": "rule",
+   "expr": "base_degree == 1 and base_left == 1 and base_right == 1 and scalar_rel == 1 and K1 >= 1 and K2 >= 1 and 2*K1*K2 == n and is_int(mask_stride) and 1 <= mask_stride and (2*K2)%mask_stride == 0 and (n/seed_degree)%mask_stride == 0 and C_mask == 17*n+2*K2-14-5*(mask_stride-1)"
+  },
+  {
+   "id": "dec_sum_g2",
+   "kind": "def",
+   "expr": "6*K2*((N+1)/2+12)+1+3*(J+2)"
+  },
+  {
+   "id": "P1",
+   "kind": "rule",
+   "expr": "Delta <= D and J == ceil((D-1+nu*nc)/Delta) and Jp == 1 and Delta%nu == 0 and n <= D"
+  },
+  {
+   "id": "C5",
+   "kind": "rule",
+   "expr": "ring_mode == dR and dR == 61 and ring_log == 0 and ((q%4027)**66)%4027 == 1 and lam == 100 and N == 391693 and nu == 2048 and nc == 1692 and pack_digits == 17 and is_int(short_columns) and 0 <= short_columns and 15*short_columns <= N and is_int(form_pad) and 1 <= form_pad and form_pad <= dR and n == 4332 and seed_degree == 2 and K1 >= K2+1 and K2 == 19 and J <= 24 and matrix_coeffs >= 55000000 and dR*((ell+1)*(3*floor(k/2)+2*(k%2))+2*floor(k/2)) + 2*121*(k+ell+1) + 2*D+N+nc+32+(2*K1+6*K2+6)*(N+4)+2*K2 + (Delta-Delta/nu+2*ceil((D-1)/nu)+16)+(J+3)*(3*n/2)+C_mask + 12996+60*(n+J+1)+10000+189336+(N+1)+100+1766949+J <= 3*matrix_coeffs"
+  },
+  {
+   "id": "n",
+   "kind": "def",
+   "expr": "k*dR+form_pad"
+  },
+  {
+   "id": "H3",
+   "kind": "def",
+   "expr": "min(xi_tr/(g**3*mu_tr-xi_tr/g),ceil(g/max(1,ceil(g**4*mu_tr/(1+1/sqrt(g))**255)-1))-1+ceil(max(0,(1+1/sqrt(g))**256-g**4*mu_tr))*xi_tr/(g**3*mu_tr-xi_tr/g))"
+  },
+  {
+   "id": "D",
+   "kind": "def",
+   "expr": "N+5+nu*nc"
+  },
+  {
+   "id": "ell",
+   "kind": "def",
+   "expr": "ceil((N+2*short_columns)/pack_digits)+3"
+  },
+  {
+   "id": "Bsearch",
+   "kind": "def",
+   "expr": "(N+4)*(g+1)"
+  },
+  {
+   "id": "dec_sum_g1",
+   "kind": "def",
+   "expr": "(2*K1+1)*((N+1)/2+24)+(N+1)/2+64"
+  },
+  {
+   "id": "search_spread",
+   "kind": "def",
+   "expr": "max(g*sqrt((N+7)/48)+3/2, g*sqrt((N+23)/48)+14, ((20/37)*((10001/10000)*((206443/125000)*sqrt(g*sqrt((N+7)/48))+(47/18+1/5000000)*sqrt(g/2))+404500))**2)"
+  },
+  {
+   "id": "msis_bound",
+   "kind": "def",
+   "expr": "beta_sis"
+  },
+  {
+   "id": "I2",
+   "kind": "rule",
+   "expr": "R_tr >= 18 and 1000*exp(-99*R_tr**2*N/(200*(N+3))) <= eps_tr and eps_tr < mu_tr and g**3*mu_tr > xi_tr/g"
+  },
+  {
+   "id": "msis_norm",
+   "kind": "def",
+   "expr": "2"
+  }
+ ]
 }
