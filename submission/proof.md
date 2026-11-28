@@ -1,0 +1,1284 @@
+# Praxis with a Euclidean coefficient-norm SIS reduction
+
+Throughout the proof $N$ is the protected external variable count and $N_*=N_o+3$ is the number of internally sampled box coordinates. The padding and three tags preserve the external witness relation. The construction, coefficient placement and probabilities for the amended model follow.
+
+## Amendment C5
+
+Write \(d=d_R\), \(h_R=\mathrm{ring\_log}\), \(p=\mathrm{pack\_digits}\), \(p_f=\mathrm{form\_pad}\), \(A_c=3n/2\), \(S_0=\lceil(D-1)/\nu\rceil\), and \(m=k(\ell+1)d\). Write \(U_d=33,V_d=32\). Require \(\mathrm{ring\_mode}=d=16\), \(h_R=4\), and \(32\mid(q-1)\). Require \(\lambda=100\), \(N=391693\), \(\nu=2048\), \(n_{\mathsf c}=1692\), \(p,p_f\in\mathbb{Z}\), \(1\le p\le d\le 4p\), \(1\le p_f\le d\), \(4000\le n\le4800\), \(K_1\ge K_2+1\), \(K_2\le19\), \(J\le24\), and \(m\ge55000000\). This branch fixes \(p=16\), \(p_f=2\), \(k=273\), \(K_1=115\), \(K_2=19\), \(n=4370\), and integer \(0\le s_p={\rm short\_columns}\le(N+689)/14\). It requires \((J-1)\Delta+N+694+n\le2D-2\). The scalar arithmetic guard is \(W+V\le 3m\), where \(W\) and \(V\) are the following integers:
+\[
+ W=d\big((\ell+1)(3\lfloor k/2\rfloor+2(k\bmod 2))+2\lfloor k/2\rfloor\big)
+       +2\big(U_d k+V_d(\ell+1)\big),
+\]
+\[
+ \begin{split}
+ V={}&2D+N+689+n_{\mathsf c}+2100+(2K_1+6K_2+17)(N+693)+2K_2\\
+    &+(\Delta-\Delta/\nu+2S_0+16)+(J+3)A_c+C_{\rm mask}\\
+    &+n^2/2+2n+60(n+J+1)+10000+50600+(N+690)+100+11187410+J .
+ \end{split}
+\]
+
+The fixed values give \(W=6624(\ell+1)+22370\) and \(2K_1+6K_2+17=361\). The guard uses the protected value \(m\). Use the negacyclic coefficient order \(R=\mathbb Z[Y]/(Y^{16}+1)\) and its power basis. The polynomial is irreducible over \(\mathbb Q\): at \(Y=X+1\) the constant is two, the leading coefficient is one and all intermediate coefficients are even, because \((X+1)^{16}=X^{16}+1\) in characteristic two by iterated squaring. Thus Eisenstein at two applies. Fix a primitive \(32\)-nd root \(\omega\in\mathbb F_q^\times\), available by the guard and cyclicity of the field multiplicative group. Its sixteen distinct odd powers are the roots of \(Y^{16}+1\), so evaluation \(E\) at them gives an algebra isomorphism \(R/qR\simeq\mathbb F_q^{16}\). This follows by interpolation on distinct points, and the maps are ring homomorphisms, so both directions preserve the required entry law.
+
+The evaluation map first scales coefficients \(j\) by \(\omega^j\), then runs the unnormalized length-sixteen transform with kernel \(\omega^2\). This takes at most fifteen scale products and seventeen nonunit twiddles: there are \(16\log_2(16)/2\) butterfly twiddle positions and at least \(16-1\) unit positions. The inverse uses the inverse kernel and sixteen postscalings by \(16^{-1}\omega^{-j}\). The unnormalized transform matrices are symmetric with entries \((\omega^2)^{ij}\) and \((\omega^{-2})^{ij}\). Transposing reverses the order of the scaling and transform with identical costs. Thus \(U_d=33\) for \(E^{-\top}\) and \(V_d=32\) for \(E^\top\), as charged in \(W\).
+
+### Seed-oracle encoding
+
+In the scored branch, the seed oracle's response type is a vector of \(d_R\) scalar-field coordinates, in the order of the \(d_R\) evaluation maps defining \(E\). At each of the existing seed and entry indices it samples this tuple by independent uniform scalar coordinates and records it as the answer. The conceptual coefficient entry of the matrix is the unique element \(E^{-1}\) maps that tuple to. Since \(E\) is bijective, these conceptual entries are uniform in \(R_q\), mutually independent, and have the same law as directly sampling all their power-basis coefficients in the stated basis. The raw oracle answers are already \(E(M_{ij})\). Encryption and decryption read them in these coordinates. They never convert individual matrix entries to split form, and the transformations charged in \(W\) are exactly those on the mask functionals and accumulated columns. This changes the representation of the same seed oracle, with one query per entry and the same independent-answer consistency rule. The reduction programs responses in these coordinates using its coefficient challenge as specified in Targets.
+
+### Kernel conversion and scope
+
+The coefficients are placed at the slots proved in Amendment n. Each uniform entry has exactly \(d_R\) independent field coefficients in the stated power basis. A form-kernel vector therefore has constant coordinate zero and maps to zero under the nonconstant columns in the selected coefficient ring. Conversely these equations force all form coefficients to vanish. A short integer scalar multiple has integer coordinate 0 equal to zero because its residue vanishes and the reduction uses \(2B_{\rm E}<q\) from (I6). Forming the packed vector by Amendment ell preserves every ordinary and tag coordinate once, adds only zeros, and commutes with integral reduction and field scaling. This proves the kernel-to-Module-SIS conversion in the heavy-stack lemma and in Targets. The rank bound and inverse theorem use only the search distribution and the short multiple of a vector with zero constant coordinate. Their hypotheses and conclusions are independent of the computation method for the protected ring. LIFT is a base-field integer-vector operation, so its correctness and time bounds are also independent of that ring.
+
+The reduction programs the chosen uniform Module-SIS challenge into the nonconstant seed matrix columns and samples the constant entries independently in the same ring. This is exactly the stipulated random oracle distribution. The view, mask, classification, and reduction arguments use the resulting linear form map, its stated kernel, and its coefficient tables. Their proofs in Amendments n, C6, C7 and Targets apply without further ring identities. The same ring algorithms account for preprocessing and kernel tests, with the already stated query and runtime capacities. Correctness, extraction and the extractability-error corollary for this exact instance follow from Targets and Amendment Ncmp.
+
+## Amendment I2
+
+Use $R_{\rm tr}\ge18$ and require
+\[
+1000\exp(-99 R_{\rm tr}^2 N/(200(N+692)))\leε_{\rm tr}.
+\]
+The remaining requirements are $ε_{\rm tr}<μ$, $g^5μ>1$, and $μ<μ_{\rm tr}$, where $μ=θ-100ε_{\rm tr}$. The actual covariance trimming radius is $\widehat R=R_{\rm tr}\sqrt{N/(N+692)}$, with $N_*=N_o+3$. I3 proves the upper tail $10^d\exp(-99\widehat R^2/200)$ by Markov's inequality. For counting use the enclosing ellipsoid of radius $R_{\rm tr}\ge\widehat R$, as in I3.
+
+Any projected feature-row deviation from the center is at most $\widehat R(g/\sqrt{12})\sqrt{N_*}$ times that row's coefficient sup norm by Cauchy--Schwarz. A difference doubles this bound, which gives $R_{\rm tr}g\sqrt{N/3}=T_{\rm tr}$ as the factor. The determinant and lifting comparisons in I5 and I6 therefore use the protected definition of $T_{\rm tr}$. The other uses concern the trimming loss and the enclosing ellipsoid.
+
+## Amendment I3
+
+The amended (I3) is
+\[
+Λ_1\ge 2\sqrt3 R_{\rm tr}\sqrt N_*,\qquad
+Λ_2\ge \sqrt2 π R_{\rm tr}^2 N_*,\qquad
+Λ_3\ge \frac{20 π R_{\rm tr}^3 N_*\sqrt N_*}{9\sqrt2} .
+\]
+The rank-two and rank-three geometric lower bounds change. All three inequalities here are checked by the parameter model.
+
+### Which inverse-theorem steps use the change
+
+P3 includes I3. Other admissibility tests are independent of $Λ_i$. The unchanged lattice operations define all prefixes and fibers. The strong regularity bound $mh\leγ_d/g^d$ implies the original one. I2 gives the trimming loss, and mu_tr proves B.18(c) and the actual rank-three rule. The projected counts below feed I3 regularization and I6 inversion.
+
+### Integer-lattice facts used below
+
+For an integral basis $B$ with a largest row minor on $J$, each component of $y\in{\rm span}_{\mathbb R}B$ is $B_iB_J^{-1}y_J$, with entries of the row $B_iB_J^{-1}$ bounded by one in absolute value by Cramer's rule and maximality of the minor. The component is therefore at most $\|y_J\|_1$ in absolute value. When the columns of $B$ generate a saturated integer lattice, their quotient in the ambient free integer group is torsion-free and finitely generated, hence free. Extending these columns by lifts of a quotient basis gives a unimodular basis of the ambient group. Taking its transpose shows $B^\top\mathbb Z^I=\mathbb Z^d$.
+
+For the lifting fact, let $Δ$ be an integer matrix of rank $k'>0$ with a nonzero minor $M$ of order $k'$ on rows $I_0$ and columns $J_0$. Put $δ=\det M$. Assume $δ\ne0\bmod q$, so $M$ is invertible modulo the prime $q$. Given $c^\topΔ=0\bmod q$, write $I_1$ for the remaining rows and choose an integer vector $w\equivδ^{-1}c_{I_1}\bmod q$. Set $u_{I_1}=δ w$ and $u_{I_0}^\top=-w^\topΔ_{I_1,J_0}{\rm adj}M$. Then $u^\topΔ_{J_0}=0$ by the adjugate identity. Those columns span the column space over $\mathbb Q$, so $u^\topΔ=0$. The inside rows also agree with $c$ modulo $q$, by uniqueness of the solution for them using $M$ invertible modulo $q$. For rank zero take $u=c$. These facts use no inverse-parameter condition other than the nonzero modular minor at the lifting step.
+
+### Prefix estimates
+
+Here are the unchanged parts of the prefix lemma on the amended parameter domain. Let $Θ$ be a saturated lattice of rank $d$, with integral basis matrix $B$ and a largest minor on $J$. Order its coordinates with $J$ first, let $I_k$ be the first $k$ coordinates, and let $Θ_k={\rm span}_{\mathbb R}(B_{I_k})\cap\mathbb Z^{I_k}$, $k\ge d$. Let $h_k,m_k$ be its height and largest fiber density. Its rank is $d$ because the selected minor remains invertible. If $Y$ is a basis of $Θ_k$, then $B_{I_k}=Y C$ for an integral nonsingular $d$-square matrix $C$. The fibers of the prefix are thus the level sets of $B_{I_k}^{\top}r$. The group $G_k=B_{I_k}^{\top}\mathbb Z^{I_k}=C^\top\mathbb Z^d$, by saturation and the integer-lattice lemma (b), has index $|\det C|$ in $\mathbb Z^d$. The $d$-row determinants of $B_{I_k}$ are multiplied from those of $Y$ by $\det C$. As their largest absolute value is the original $h(Θ)$, this gives $h_k [\mathbb Z^d:G_k]=h(Θ)$ and shows that $J$ is still a largest minor for $Θ_k$. At $k=d$, the column span is all of $\mathbb R^J$, so $Θ_d=\mathbb Z^J$, $h_d=1$ and $m_d=g^{-d}$. At the full set of coordinates the saturated lattice is $Θ$.
+
+On adding the next row to $B_{I_k}$, let $s_k$ be the order of that row as a column in the quotient $\mathbb Z^d/G_k$. Adjoining it multiplies the size of the subgroup modulo $G_k$ by $s_k$, so $h_{k+1}=s_k h_k$ by the index identity. For a fixed value of $B_{I_{k+1}}^\top r$, the new coordinate is in at most one residue class modulo $s_k$; its allowed values in an interval of $g$ integers number at most $\lceil g/s_k\rceil$. For each such value the remaining prefix has fiber density at most $m_k$. Consequently $m_{k+1}\le m_k\lceil g/s_k\rceil/g$. If $s_k\ge g$ this also makes the new coordinate constant on the fiber. If $s_k=1$, the power inequality $m_{k+1}^b h_{k+1}^{b-1}\le m_k^b h_k^{b-1}$ is immediate. For $2\le s=s_k<g$, use $\lceil g/s\rceil/g\le 1/s+1/g\le s^{-1+1/b}$. To verify the second inequality, if $s\ge2^b$ then $1/s+1/g<2/s\le s^{-1+1/b}$. Otherwise $g\ge2^b$ and the concave function $x^{1/b}-1-x/2^b$ is nonnegative on $[2,2^b]$: it is zero at $2^b$, and at $2$ it is at least $(\log 2)/b-2^{1-b}>0$ for $b\ge7$. The last strict inequality follows from $\log 2>1/2$ and $2^{b-2}>b$ for integers $b\ge7$. This proves the power inequality in all its cases.
+
+Rank-three regularity and the sparse rank-four case are proved in mu_tr.
+
+### Trimming estimate
+
+For the trimming lemma, a centered uniform box entry can be added to a uniform independent variable on $[-1/2,1/2]$ to get the continuous uniform variable on $[-g/2,g/2]$. The added variable's moment generating function is at least one by convexity, so the centered box entry has moment generating function bounded by $\sinh(x)/x$ with $x=tg/2$ at argument $t$. Its series is bounded by $e^{x^2/6}$ because $(2j+1)!\ge6^j j!$ for $j\ge0$, by induction on $j$. Let $Y=B^\top r-\mathbb E[B^\top r]$ and $\Sigma=(g^2/12)B^\top B$. Independence of the box entries gives $\mathbb E e^{u^\top Y}\le e^{u^\top\Sigma u/2}$. With $Z$ an independent standard $d$-dimensional Gaussian, the Gaussian moment generating function gives
+\[
+ \mathbb E e^{(99/200)\|\Sigma^{-1/2}Y\|_2^2}
+ =\mathbb E e^{\sqrt{99/100} Z^\top\Sigma^{-1/2}Y}
+ \le \mathbb E e^{(99/200)\|Z\|_2^2}=10^d .
+\]
+The inequality conditions on $Z$; the last equality follows by scaling each normal density in the integral. By Markov's inequality the probability of being outside the trimming ellipsoid is at most $10^d e^{-99\widehat R^2/200}\leε_{\rm tr}$ by (I2) and $d\le3$. Trimming any subset removes at most that absolute density. This establishes the trimming conclusion without a norm assumption.
+
+### Projected fiber counts
+
+The claim of `lem:sparse` is as follows. Let $B$ be a basis of an integral lattice $Θ$ on $I\subseteq[N_*]$, of rank $d\in[3]$. Take $i'\in[N_*]\setminus I$. Let $F\ne\varnothing$ be a set in the box on $I\cup\{i'\}$ trimmed by $Θ$, and $\Phi(r)=(B^\top r_I,r_{i'})$. If (a) $\Phi(F)$ has affine dimension $d+1$ and lies in a coset of an index-$q$ subgroup of $\mathbb Z^{d+1}$, then
+$\Pr[F]\leΛ_d g^d h(Θ)m(Θ)/q$.
+If (b) $F^\perp$ has rank $d'$ with $1\le d'<d$, a largest minor on $J\subseteq I$, and every vector of $F^\perp$ restricts to a vector in ${\rm span}_{\mathbb R}Θ$ on $I$, then
+$\Pr[F]h(F^\perp)\leΛ_{d-d'} g^{d-d'}h(Θ)m(Θ)$.
+Here $F^\perp$ is the lattice of integer vectors normal to the differences in $F$.
+
+For each possible image $(y,x)$, the probability of $B^\top r_I=y,r_{i'}=x$ is at most $m(Θ)/g$ by independence, so $\Pr[F]\le|\Phi(F)|m(Θ)/g$. We count images in $C=\mathcal{T}_Θ\times[2,g+1]$.
+
+For (a), put $s=d+1$, $δ=q$, $J=\varnothing$, and let $p$ be the identity. Write $B=(B_1,B_2)$ with $B_1$ empty, and use $|\det(B_1)_J|=1$.
+For (b), put $s=d+1-d'$ and let $Y$ be an integral basis matrix of $F^\perp$; $Y_J$ is invertible. The submatrix $B_J$ has row rank $d'$ since the columns $Y_J$ lie in its real column span. The integral kernel of $B_J$ is saturated in $\mathbb Z^d$, of rank $d-d'$. It has a basis that extends to an integral basis of $\mathbb Z^d$: the quotient by a saturated subgroup of $\mathbb Z^d$ is finitely generated and torsion-free, hence free, and lifts of a quotient basis give the extension. Using this basis change, write $B=(B_1,B_2)$ where $(B_2)_J=0$ and $(B_1)_J$ is invertible square. The columns of $B_2$ number $s-1$. Trimming is basis independent since the mean and covariance transform by the same invertible change on the image coordinates.
+
+In case (b), the injective map $a=(a_{[d]},a_{d+1})\mapsto(Ba_{[d]},a_{d+1})$ maps the real annihilator of the differences of $\Phi(F)$ isomorphically onto the real annihilator of the differences of $F$, by the restriction assumption. The first annihilator has dimension $d'$ and its integer points form a saturated lattice with basis matrix $V$. The real annihilator of differences of $F$ is spanned by its integer points because those differences are integer vectors, so the restriction premise on integer normals suffices for this isomorphism. Split its rows into $V_1,V_2,V_3$ of lengths $d',s-1,1$. The image of its basis is $Y A$ for an integral nonsingular $d'$-square matrix $A$, as its columns are integral independent normals. At rows $J$, this gives
+\[
+(B_1)_J V_1=Y_J A .
+\]
+Consequently $V_1$ is invertible and $|\det(B_1)_J| δ\ge h(F^\perp)$, where $δ=|\det V_1|$. Write $y=(y_1,y_2)$ according to the basis split. Projection $p:(y,x)\mapsto(y_2,x)$ is injective on any affine translate of the kernel of $V^\top$, because there the first block of a difference is determined by $V_1^\top$. It therefore preserves the affine dimension of $\Phi(F)$, which is $s$. The projections of differences of image points lie in the kernel of
+\[
+ (y_2,x)\longmapsto V_2^\top y_2 + x V_3^\top
+          \pmod{V_1^\top\mathbb Z^{d'}} .
+\]
+The map is onto because $V^\top \mathbb Z^{d+1}=\mathbb Z^{d'}$ by saturation and `lem:lattice-facts` (b), while the $y_1$ contribution vanishes in the quotient. The kernel has index $δ$ in $\mathbb Z^s$. Thus in both cases $p(\Phi(F))$ has full affine dimension $s$, cardinality $|\Phi(F)|$, and lies in $p(C)$ and in a coset of an index-$δ$ lattice.
+
+A full-dimensional finite set $X$ of $m$ points in such a coset has ${\rm vol}_s{\rm conv}(X)\ge(m-s)δ/s!$. To see this, start from any $s+1$ affinely independent points forming a simplex. One can add the points successively while maintaining a triangulation of their hull using all inserted points as vertices. For a point outside the hull, each boundary facet simplex strictly visible to the point gives a new simplex by coning it to the point. Those simplices have disjoint interiors and fill the new region, as rays from the point first hit the old hull in its visible boundary. At least one facet is strictly visible, so at least one full simplex is added. If a point is in the hull, take the unique smallest face of the triangulation containing it. This face has positive dimension since the point is distinct from all earlier vertices. Subdivide that face by coning its boundary faces to the point and make the corresponding subdivision of every full simplex incident to it, by adjoining the complementary simplex vertices. This covers exactly those full simplices and replaces each by at least two, since the point lies in the relative interior of the face. Hence there are at least $m-s$ full simplices. Each has volume at least $δ/s!$, since the determinant of $s$ independent differences of coset points is a nonzero integer multiple of the determinant $δ$ of its lattice. Since $m\ge s+1$, the region containing $X$, if convex, has volume at least $δ/s!$. In particular, applying both consequences to $p(C)$ gives
+\[
+ |\Phi(F)|\le s!{\rm vol}_s p(C)/δ+s
+             \le (s+1)!{\rm vol}_s p(C)/δ .
+\]
+
+The projection of the ellipsoid $\mathcal{T}_Θ$ to the last $s-1$ coordinates has volume at most $v_{s-1}R_{\rm tr}^{s-1}(g/\sqrt{12})^{s-1}\sqrt{\det(B_2^\top B_2)}$, where $v_j$ is the volume of the Euclidean unit $j$-ball. Indeed, write its enclosing ellipsoid as the image of a unit ball by $R_{\rm tr}\Sigma_Θ^{1/2}$ plus the center. The projected map has a Gram matrix on its range equal to the bottom-right block $R_{\rm tr}^2(g^2/12)B_2^\top B_2$, which gives the product of its nonzero singular values. The interval in $p(C)$ has length $g-1$. In either case $(B_2)_J=0$. By expansion of $\det(B_2^\top B_2)$ into squared row minors, and because $|\det(B_1)_J\det(B_2)_{J'}|=|\det B_{J\cup J'}|\le h(Θ)$ for each $J'\subseteq I\setminus J$ of size $s-1$,
+\[
+ |\det(B_1)_J| \sqrt{\det(B_2^\top B_2)}
+ \le h(Θ)\sqrt{\binom{N_*}{s-1}} .
+\]
+Combining with the counting bound and $\Pr[F]\le |\Phi(F)|m(Θ)/g$ gives
+\[
+ \Pr[F]|\det(B_1)_J|δ
+ \le g^{j}h(Θ)m(Θ)
+      (j+2)!v_j R_{\rm tr}^{j}\sqrt{\binom{N_*}{j}/12^j},
+ \ j=s-1 .
+\]
+Use $\binom{N_*}{j}\le N_*^j/j!$ and $v_1=2,v_2=π,v_3=4π/3$. The three upper bounds on the geometric factor are $2\sqrt3 R_{\rm tr}\sqrt N_*$, $\sqrt2π R_{\rm tr}^2N_*$, and $20π R_{\rm tr}^3N_*^{3/2}/(9\sqrt2)$. They are at most the three allowed $Λ_j$. In case (a), divide by $q$ to obtain the claim. In (b), replace $|\det(B_1)_J|δ$ by $h(F^\perp)$ on the left to obtain the claim.
+
+For a regular rank-four lattice case (b) applies for $d'=1,2,3$. Its feature box lies in the standardized ellipsoid of radius eleven: whitening is orthogonal projection of at most forty centered physical box coordinates of magnitude at most $g/2$, giving squared radius at most 120 in units $g^2/12$. No trimming is needed. The Cauchy--Binet sum has at most forty supported rows. Thus the geometric factors for $j=1,2,3$ are bounded by $(j+2)!v_j 11^j\sqrt{\binom{40}{j}/12^j}$, below $242,22000,1610000$ respectively.
+
+### Regularization with the new count
+
+This subsection proves regularization under the growth conditions in Amendment I4.
+
+The claim of `lem:regularize` is that a saturated lattice $Θ$ on $I\subseteq[N_*]$ of rank $d\in[4]$ with $m(Θ)\geμ+(4-d)ε_{\rm tr}$ is contained in a regular saturated lattice of rank in $[d,4]$ and maximum fiber density at least $m(Θ)-(4-d)ε_{\rm tr}$.
+
+Write $e=ε_{\rm tr}$ in this paragraph and the next two. Induct downwards on rank for all such $I$ simultaneously. Each recursive normal and its regular extension use the same prefix coordinates. An extension is only to the next coordinate of $I$. At rank four use the sparse basis of mu_tr. At rank three use the full-normal rule of mu_tr, with its possible single deletion before a rank-four return. Any recursive return of rank three has passed through this case. Hence all rank-three trimming lattices and all rank-three outputs in the inverse induction are full normals of their untrimmed densest fibers. Use the height bound only for those outputs. For $d\le2$, use `lem:prefix` with a largest minor at $J$ and $J$ first in the coordinate order. Denote the prefixes by $Θ_k$, their heights and max densities by $h_k,m_k$, and the step order by $s_k$. The densities are nonincreasing, so each is at least $μ+(4-d)e$. Take a densest fiber of $Θ_k$ to form $F_k$. If the preceding $F_{k-1}^\perp$ strictly contains $Θ_{k-1}$, trim this fiber if the preceding regular lattice has rank at most three, using the lattice $\widetildeΘ_{k-1}$ specified below. Otherwise leave the fiber whole. The density of each $F_k$ is at least $m_k-e$ by `lem:trim`. Its normal lattice contains $Θ_k$. If this inclusion is strict, saturation gives a rank $d_k>d$. Its rank is at most four since a fiber of a rank-$a$ lattice has density at most $g^{-a}$ by fixing coordinates outside an invertible $a$-row minor, and $g^{-5}<μ\le m_k-(4-d)e$ by (I5). Its max fiber density is at least $\Pr[F_k]\geμ+(3-d)e\geμ+(4-d_k)e$. By induction let $\widetildeΘ_k$ be a regular saturated containing lattice of rank at least $d_k$, with $m(\widetildeΘ_k)\ge m(F_k^\perp)-(4-d_k)e\ge m_k-(4-d)e$. This constructs the trimming lattice for the next step, and if $F_{|I|}^\perp\neΘ$ it gives the desired final lattice.
+
+If $F_{|I|}^\perp=Θ$, let $j<|I|$ be the last strict index, or $j=d-1$ when there is none. For $j<k<|I|$ the step order $s_k$ is below $g$. Otherwise `lem:prefix` (b) would make the new coordinate constant in the fiber of $Θ_{k+1}$ containing $F_{k+1}$; its unit vector would then be in $F_{k+1}^\perp=Θ_{k+1}$ and vanish at $J$, forbidden by `lem:lattice-facts` (a). Iterating the power inequality in `lem:prefix` (b) gives
+\[
+ μ(m(Θ)h(Θ))^{b-1}
+ \le m(Θ)^b h(Θ)^{b-1}
+ \le m_{j+1}^{b}h_{j+1}^{b-1}.
+\]
+When $j=d-1$, $m_d=g^{-d}, h_d=1$. The bound on $γ_d^{b-1}$ in (I4) gives $m_d^{b}h_d^{b-1}\leμ(γ_d/g^d)^{b-1}$.
+
+When $j\ge d$, let $\tilde d$ be the rank of $\widetildeΘ_j$. The set $F_{j+1}$ uses this lattice for trimming in ranks at most three and is whole in rank four. Its normal lattice is exactly $Θ_{j+1}$, of rank $d<\tilde d$, and with largest minor on $J$ by `lem:prefix` (a). Restrictions to the first $j$ coordinates lie in the span of $Θ_j$ by the definition of the prefix lattice, hence in the span of $\widetildeΘ_j$. Apply projected count (b), with the smaller support constants when $\tilde d=4$. Since $\Pr[F_{j+1}]\ge m_{j+1}-e\ge m_{j+1}/A_{\rm inv}$ by (I4) and $m_{j+1}\geμ$, the stronger induction bound gives
+\[
+ m_{j+1}h_{j+1}\le A_{\rm inv}L_{\tilde d,d}γ_{\tilde d}/g^d .
+\]
+Also $m_{j+1}\le m_j\le\Pr[F_j]+e\le g^{-d-1}+e\leμ P_d^{b-1}$ by the rank of $F_j^\perp$ and (I4). For $d=1$, (I4) allows $2e$ in the numerator and therefore implies the same inequality. Set $L_{\tilde d,d}=Λ_{\tilde d-d}$ for $\tilde d\le3$. In rank four $Γ_4=2$ and $2L_{4,2}\le44000<Λ_1Γ_3$, $2L_{4,1}\le3220000<Λ_2Γ_3$ by I3 and $Γ_3\ge9$. Thus (I4) gives $A_{\rm inv}L_{\tilde d,d}γ_{\tilde d}P_d\leγ_d$. Multiplying yields $m_{j+1}^b h_{j+1}^{b-1}\leμ(γ_d/g^d)^{b-1}$. Now $b>1$ and $μ>0$ give $m(Θ)h(Θ)\leγ_d/g^d$. This proves regularity and finishes the induction.
+
+B.21 also holds verbatim at $μ_{\rm tr}$. Run the same induction with $μ_{\rm tr}$ replacing $μ$ and rank cap three. The rank-three base is B.18(c). For $d\le2$, every trimmed fiber has mass at least $μ_{\rm tr}+(2-d)e$, exceeding $g^{-4}$, so no normal has rank four. For each strict inclusion the input mass is at least $μ_{\rm tr}+(3-d_k)e$ since $d_k\ge d+1$. The recursion loses at most $(3-d)e$ including the current trimming. The base and last-strict-index inequalities use (I4) at $μ_{\rm tr}$, which follows from (I4) at $μ$ because the density denominators increase and $x/(x-e)$ decreases. These inequalities prove the same stronger regularity, which implies regularity with the original $Γ_d$.
+
+## Amendment I4
+
+Require $g^2\le2^{40}\cdot2^λ$ and $γ_i μ_{\rm tr}\le Γ_i μ$ for $i=1,2$, together with
+\[
+\begin{gathered}
+ Γ_3\ge9ξ_{\rm tr},\qquad
+ A_{\rm inv}\geμ/(μ-ε_{\rm tr}),\\
+ P_2^{b-1}\ge(g^{-3}+ε_{\rm tr})/μ,\qquad
+ P_1^{b-1}\ge(g^{-2}+2ε_{\rm tr})/μ,\\
+ γ_2^{b-1}\ge g^{-2}/μ,\qquad
+ γ_1^{b-1}\ge g^{-1}/μ,\\
+ γ_2\ge A_{\rm inv}Λ_1Γ_3P_2,\qquad
+ γ_1\ge A_{\rm inv}\max\{Λ_1γ_2,Λ_2Γ_3\}P_1 .
+\end{gathered}
+\]
+The upper range gives $\sqrt g\le 2^{10}2^{λ/4}$, so the expected $O(\sqrt g N_*^{1/4})$ group work is $O(2^{λ/4}N_*^{1/4})$ for the common efficiency derivation.
+
+I3 uses these inequalities for regularization. The unchanged $H_2\geγ_2/(g^2μ)$ bounds the height by the stronger induction inequality. I5–I6 use these bounds for the minor tests and inverse. Trimming and sparse counting depend on the basis, covariance and fiber density, as shown in I3.
+
+## Amendment mu_tr
+
+Set $μ_{\rm tr}=9ξ_{\rm tr}/(8g^4)$, the cutoff for B.18(c), giving $H_3=8g$. Write $e=ε_{\rm tr}$. For the actual inverse use $μ=θ-100ε_{\rm tr}<μ_{\rm tr}$, inverse parameters $γ_i$ (gamma1_inv, gamma2_inv) for $i=1,2$, and $γ_i=Γ_i$ for $i=3,4$ with $Γ_4=2$. The I4 guards give $H_i=Γ_i/(g^iμ_{\rm tr})\geγ_i/(g^iμ)$ for $i=1,2$. The I3 induction proves $mh\leγ_d/g^d$ and hence original regularity. I2 proves the trimming loss, I3–I4 the sparse count and regularization, and I5–I6 admissibility and inversion. Other lattice and fiber definitions have no cutoff.
+
+B.18(a),(b) are proved in I3. At the actual cutoff, for saturated rank three of mass $m\geμ+e$, start with the full normal of an untrimmed densest fiber $F$. It contains the input and has mass $m$, since $F$ is a fiber for both and other fibers only shrink. If it has rank four it is already sparse and regular. At rank three it equals the input, and the bounds below give the desired regularity and height directly, without deletion. At the higher cutoff $μ_{\rm tr}>g^{-4}$ the full normal remains rank three, and every suffix order is below $g$ by B.18(b). The all-small height estimate below applies directly, giving $h\le H_3$ and regularity as in B.18(c).
+
+### Unit slopes at the higher density cutoff
+
+Put $\rho_0=666767/1000000$. In a rank-$d$ fiber, fix every suffix input and test its $d$ pivots. Each pivot is then determined. Dropping $d-1$ of these tests leaves each selected pivot equation with probability at least $g^{d-1}$ times full fiber mass. In particular, for rank four at mass at least $\mu$, or rank three at mass at least $g\mu$, each equation succeeds with probability at least $\rho_0/g$.
+
+Consider a cyclic equation $y+\sum_i a_i x_i=c\bmod s$ with $s\ge2g$, independent length-$g$ intervals and success at least $\rho_0/g$. There is at most one $y$ per suffix tuple. Fix the other inputs at a favorable offset for a chosen $x$. The successful $(x,y)$ pairs number at least $\rho_0g$ in a box of side $g$, and lie in one coset of the determinant-$s$ lattice of differences $a x+y=0\bmod s$. Subdivide each box coordinate into intervals of length at most $4\sqrt g$, giving fewer than $\rho_0g$ boxes for $g\ge2^{49}$. A shortest nonzero lattice vector in maximum norm has norm $m\le4\sqrt g$. It is primitive in this lattice, since a proper lattice divisor would be shorter. Swap axes to make its horizontal component $\pm m$. The lines parallel to this direction containing lattice points are spaced by $s/m$ in the intercept $y-\lambda x$, where $|\lambda|\le1$. Indeed a primitive vector extends to a lattice basis and its determinant with the second basis vector is $\pm s$. There are at most $2gm/s+1\le4\sqrt g+1$ such lines meeting the box, and at each horizontal position at most $\lceil gm/s\rceil$ intersect its vertical interval. Within each line the horizontal lattice step is $m$. Hence the total point count is at most
+\[
+ g\,\lceil m/2\rceil/m+4\sqrt g+1 .
+\]
+For $m\ge2$ the ceiling ratio is at most $2/3$: even $m$ give $1/2$, and odd $m\ge3$ give $(m+1)/(2m)\le2/3$. Also $4\sqrt g+1<g/10000<g(\rho_0-2/3)$ at $g\ge2^{49}$. Thus $m=1$. The horizontal component in the original axes is nonzero since a vertical lattice vector has vertical coordinate divisible by $s$. The defining congruence now gives $a=0,\pm1\bmod s$.
+
+There cannot be three nonzero suffix coefficients. Fix all other inputs at a favorable offset, reflect signs, and add independent centered intervals of length one to the three integer variables. Their smoothed sum is a sum of three continuous uniforms of width $g$, and every originally successful tuple lies in a target interval enlarged by three. On a circle of period $s$, convolution with a centered interval of half-length $b\le s/2$ preserves symmetry and monotonicity in circular distance because its derivative has the sign of $f(x+b)-f(x-b)\le0$ for $0\le x\le s/2$. Thus the centered target has maximum mass. The ordinary mass of the centered interval of width $g$ is $F(2)-F(1)=2/3$, where $F(t)=\sum_{j=0}^3(-1)^j\binom3j(t-j)_+^3/6$ from simplex inclusion-exclusion. The support radius is $3g/2$. No adjacent lift meets its interior because $s\ge2g$. The folded density is at most $1/g$ by folding one width-$g$ uniform and convolving with probability laws. The enlargement adds at most $3/g$, giving a bound below $\rho_0$. This proves unit slopes with at most two nonzero suffix coefficients.
+
+For modular pivot equations use $s=q$. For exact rational equations, with other inputs fixed at a favorable offset, more than $g/2$ successful $x$ values include an adjacent pair because $g$ is even. The corresponding integer $y$ difference forces the rational slope to be an integer. Now reduce the whole integer equation modulo an integer $s\ge2g$ greater than twice every coefficient's absolute value plus two. The modular classification applies to its superset of successes and unwraps to integral slopes $0,\pm1$ in the exact equation. 
+
+For the rank-four application start with any saturated integer basis matrix $B$ and explicitly choose the pivot indices $J$ to be rows of a minor of largest absolute determinant, whose magnitude is the height $h$. The pivot probability argument holds for this particular choice. Normalize by $P=B B_J^{-1}$, so $P_J=I_4$ and each normalized pivot equation is among the exact rational equations just considered. All entries of $P$ are integers by the slope result. Saturation then puts every integer column of $P$ in the original lattice. Conversely every lattice vector $Bu$ equals $P B_Ju$ with integral pivot vector $B_Ju$, so the columns of $P$ form an integral basis of the same lattice. Every $4$-minor is changed from the corresponding minor of $B$ by division by $\det B_J$. The maximal absolute minor of $P$ is therefore exactly one, from this maximum-minor choice. Since $P$ is an integral lattice basis the height is $h=1$.
+Each normalized row has at most three signed unit entries including its pivot. The support has at most 12 coordinates and the covolume is at most 9 by the product of the row lengths. These imply the looser height-two, support-40 and covolume-100 bounds used below, including regularity with $\Gamma_4=2$.
+
+### Heights of selected rank-three normals
+
+For the full normal of an untrimmed densest fiber use B.18(b) with height $h=\prod_i s_i$. If all suffix orders are less than $g$, the power comparison gives $h\le(g/\rho_0)^{49/48}<5.1g$ since $g<2^{50}$ and $\rho_0>417/1000$.
+
+If some suffix order is at least $g$, its conditional probability factor is $1/g$. Move that coordinate $y$ first; its new order $s$ in the pivot quotient is at least its original order and thus $s\ge g$. Any other nonunit suffix order would contribute at most $1/2$ because $g$ is even and $\lceil g/t\rceil\le g/2$ for all integer $t\ge2$. Together with the pivot factors this gives mass at most $g^{-4}/2<\mu$. Hence the pivot quotient generated by the suffix rows is cyclic, generated by the row of $y$, and $h=s$.
+
+Normalize the three pivot rows to the identity. The suffix rows modulo $\mathbb Z^3$ generate this quotient, and all points of the fiber give the same element in it because the exact rows give the same pivot-adjusted vector. Writing every suffix row as a multiple of the generator therefore yields the global congruence $y+\sum_i a_i x_i=c\bmod s$, with no pivot variables. For each fixed tuple of suffix inputs other than $y$, the congruence allows at most one $y$ and the full fiber allows at most one pivot triple. Dropping the pivot tests, the congruence succeeds with probability at least $g^3m\ge\rho_0/g$.
+
+Suppose $s\ge2g$. The unit-slope bound applies. Reflect signs and shift the active variables to $[0,g-1]$. The integer sum has $W\le3$ active variables including $y$. Two distinct lifts require $W=3$ and have end distances $d_1,d_2\ge0$ summing to at most $g$. There cannot be three lifts because the range is shorter than $4g$. For two lifts, dropping upper bounds on the three variables bounds the number of assignments by $\binom{d_1+2}{2}+\binom{d_2+2}{2}\le(g+4)^2/2$. This is below $\rho_0g^2$ at $g\ge2^{49}$. Since $y$ and the three pivots are fixed by a successful suffix tuple and the selected lift, the resulting mass is below $\rho_0/g^4$, a contradiction. Thus only one lift can be attained. Its equality is an exact normal with nonzero coefficient on $y$ and zero pivot entries. It is independent of the original three normalized rows because their pivot entries form the identity. This contradicts rank three of the full normal. Hence $h=s<2g$ in every large-order case, even without any public annihilation condition. No deletion from a rank-three normal is required.
+
+Expanding the nonunit prefix factors $1/s_i+1/g$ gives $m\le g^{-3}ξ_{\rm tr}(1/h+1/g)$. The leading term is $1/h$, and the other terms total at most $a(1/2+1/g)^{a-1}/g\le(1+2/g)/g$ for $a$ nonunit factors by the mean value theorem, checking $a=1,2$ and the decreasing ratio. Thus $mh<9ξ_{\rm tr}/g^3\leΓ_3/g^3$.
+
+## Amendment I5
+
+Keep $Λ_iγ_i<μq$ for $1\le i\le3$ and $H_1T_{\rm tr}<q$, $4H_2T_{\rm tr}^2<q$, $54H_3T_{\rm tr}^3<q$. Replace the density test by $g^{-5}<μ$ and require $2400000/q+5/g^5<μ$ and $480000g^4<q$. The latter two tests are the rank-four feature count and minor conditions used in I6. The sampler below excludes rank four for every heavy stack, so the view, extraction and reduction still need only three gradients and three probes. The auxiliary fourth-rank lattice is solely part of the inverse proof. The unchanged comparison counts and final probability bounds are proved in Ncmp and Targets.
+
+### Six public rows and prescribed completions
+
+Put $N_o=N+689$ and $N_*=N_o+3$. Exterior and low weights have the entries
+\[
+ w(j)=(16j+1,(j+1)^2\bmod P,(j+1)^3\bmod P,(j+1)^4\bmod P,C(j),(j+1)^5\bmod P),
+ \quad C(j)=\sum_{a=1}^4 w_a(j).
+\]
+Use $P=2097257$. Its predecessor factors as $2^3\cdot7\cdot17\cdot2203$. Trial division at primes through 46 gives residues $1,1,3,5,3,6,10,18,18,28,2,20,30,10$ for 2203. Exponentiating 3 gives $3^{P-1}=1\bmod P$, with the complementary powers at primes 2, 7, 17 and 2203 equal to $2097256,360681,1623884,22951$. Each one's difference from one is coprime to $P$ by Euclid's algorithm. Thus for each prime divisor of $P$ the order of 3 is $P-1$, proving primality.
+
+Use low single coordinates $j=0,\ldots,14$. For each $i=4,\ldots,23$, choose a pair at $a_i,a_i+2^{i-4}$ with $0\le a_i<256$, avoiding all earlier indices. At most $2(15+2(i-4))<256$ choices are forbidden. Exterior coordinates are the first $N$ unused indices starting at 256, hence at most $255+N+20$. In particular every used index is below $P-1$, and $16j+1\le 2^{23}+4081$. Equal sums of equally many exterior-type weights with at most five terms on each side give matching first five power sums of $j+1$ modulo $P$. Newton's formula $r e_r=\sum_{i=1}^r(-1)^{i-1}e_{r-i}s_i$, with $e_0=1$, follows by differentiating the product $\prod_j(1+x_jX)$ and multiplying out its logarithmic derivative. It determines the monic polynomial of the multiset, so equality identifies the indices with repetitions.
+
+The completed witness uses 177 high binary pairs. Their respective prescribed differences are $2^i$ in the first direction for $i=24,\ldots,40$ and in each of directions two, three, four and six for $i=0,\ldots,39$. Set their fifth differences equal to the sum of differences in the first four directions plus a positive integer $c_i$. Also use 40 checksum pairs with differences $-2^j$ in direction five only, $0\le j\le39$. Under the linear checksum defect $w_5-\sum_{a=1}^4w_a$, the 217 high pair differences have defects $c_i$ and $-2^j$. Choose the $c_i$ successively in $[1,2^{32}]$ so that no nonempty signed sum of at most five distinct defects vanishes. The powers of two alone satisfy the requirement by dominance of the largest one. At a new choice the forbidden values are signed sums of at most four previous values, and $\sum_{r=0}^4 2^r\binom{216}{r}<2^{32}$. This verifies greedy existence. Add 200 high singleton pads, fixed to one.
+
+A high baseline or singleton has first weight $L+16a+1$ with $L=2^{42}$ and $0\le a<2^{33}$, and each other entry independently in $[0,2^{41})$, with an offset $2^{40}$ on entry five. A high pair consists of the baseline and that baseline plus its prescribed difference. All weights are nonnegative and below $2^{43}$. Choose the 417 baselines or singleton vectors in succession. In addition to assigned positions reserve every future pair difference as a formal term with either sign, used at most once. Whenever a balanced high signed sum with at most five unit multiplicities on each side and at most one coefficient of magnitude two has an unbalanced assigned stage, require its maximum absolute entry above $2^{26}$ if it has at most four multiplicities per side and nonzero otherwise. A stage with aggregate zero contributes either zero or its unit difference, since using both coefficients of magnitude two is excluded. Thus any condition with a last unbalanced stage reduces to a nonconstant multiple of its new baseline plus fixed positions and reserved differences. The bad baselines form at most one integer box of coordinate side at most $2^{27}+1$ (with at most $2^{23}+1$ choices for the first entry on its step-sixteen grid) for up to four multiplicities per side, and at most one point for five. This gives fewer than $2^{160}$ candidates per box using $(2^{23}+1)(2^{27}+1)^5<2^{160}$. Orient a new occurrence positive and put it first. If the new occurrence is a doubled position, or one of the other at most nine positions is doubled, enumerate its location separately. At a stage there are fewer than 1024 choices of a formal position, including reserve symbols (their signs can be treated as signs of their coefficients). For an explicit bound, place all positive positions first, then all negative ones, since summands commute. For any exact positive multiplicity $l$ and negative multiplicity $l$ with $1\le l\le r$, the word with no doubled position is fixed by at most $2\cdot1024^{2l-1}$ choices. With one doubled position it is fixed by at most $2(2l)1024^{2l-2}$ choices, allowing its marked place among the positive and negative occurrences and their known multiplicities. Hence the sum over $l\le4$ is below $2^{72}$ and the sum over $l\le5$ below $2^{92}$. The bad baseline count is below $2^{233}$ in a set of size $2^{238}$. Enumerating endpoint cells of the integer boxes and checking cell corners supplies a choice in polynomial time in the number of pads at this fixed dimension and multiplicity. These weights are public setup constants.
+
+In every vanishing signed relation of total absolute coefficient sum at most ten, equal signed multiplicities follow from the first weight being one modulo sixteen. Their high multiplicities must also agree: each side's residual after subtracting $L$ per high occurrence is nonnegative and below
+\[
+ 5(2^{37}+1)+(2^{41}-2^{24})+2^{40}+5(2^{23}+4081)<L .
+\]
+The sum of high first-bit increments uses each stage once, with at most one doubled occurrence giving the extra $2^{40}$. For the coefficient pattern with two magnitude-two terms and at most one unit, the unit cannot be present by equality of multiplicities, and equality of two weights is excluded already by the unit-only pair case. In all other patterns there is at most one double. An unbalanced high stage is excluded by the greedy condition, since the low terms have at most four multiplicities per side when a high stage appears, and maximum difference below $4(2^{23}+4081+3(P-1))<2^{26}$. If every high stage balances, its pair gives zero or one signed virtual difference. There are at most five such differences, so a nonempty checksum sum is nonzero, whereas all exterior-type weights have zero defect. With no virtual terms the Newton argument completes the exclusion.
+
+Take the six public rows with these weights on exteriors, their negatives on pads, and zeros on tags. Complete any exterior witness as follows. In the first row subtract the exterior weight sum's residue modulo sixteen using that many low singles starting at zero. This is possible without a negative remainder since every exterior weight is above the total low-single weight 1695. The remaining sum is divisible by sixteen and below $2^{41}$ since all exterior indices lie below $255+N+20$ and their sum is at most $N(N+551)/2$. Choose pair second members for its bits. For directions two, three, four and six encode the exterior sum plus $2^{28}$ less the selected low contributions in that direction. At most 35 low pads are selected and their weights in these directions are below $P$; the result lies in $[0,2^{40})$. In each ordinary direction set the homogeneous entry to the fixed-one weights plus all selected-pair baseline weights, with the $2^{28}$ offset in directions two, three, four and six. All 237 pairs have exactly one selected member, so the baseline sum is independent of the witness. Set the homogeneous checksum defect to the sum of fixed and high baseline defects. After choosing the 177 bits the remaining defect is $-\sum c_i b_i$. The checksum pairs cancel it using its 40-bit encoding, since $177\cdot2^{32}<2^{40}$. All six rows now vanish, and the first two rows supply the two public form slots; the other four are independent sampler shifts. The 15 singles, 237 pairs and 200 fixed pads are precisely 689 internal Boolean coordinates.
+
+### Shifted box sampler
+
+First draw independent length-$g$ boxes $u_i$, $1\le i\le N_*$, and $u_\diamond$ on $\{2,\ldots,g+1\}$. Set $u_0=A_0+u_\diamond-\lfloor\sum_i u_i/2\rfloor$, $A_0=\lceil N_*(g+1)/2\rceil$. Then draw independent uniform scalars $Z_1,\ldots,Z_6\in\mathbb F_q$ and use $r=u+\sum_{ℓ=1}^6 Z_ℓ H^{(ℓ)}$ modulo $q$ in the right factors. On the prescribed honest completion $r^\top v=u^\top v$ modulo $q$. Use that integer for all searches. Write $\mathrm{wt}(v)=\sum_{i=1}^{N_*}v_i$. Its public center is $\lfloor A_0+(g+3)(1+{\rm wt}(v)-N_*/2)/2\rfloor$. Its centered error against the independent centered box sum is at most $3/2$ and its variance bound is $(g^2-1)(N_o+7)/48$, by the sum of squared coefficients (one diamond of coefficient one and $N_*$ coefficients $\pm1/2$). Its deterministic centered magnitude is at most $(N_o+5)(g-1)/4+3/2<B_{\rm search}/2$ for the admitted $N$, using the unchanged $B_{\rm search}=(N+1)(g+1)$. Tag differences remain bounded by $g$ and have the same distributions. The weight and shifts in search_spread now use internal $N_o$ wherever they count box coordinates; the contracted witness sums charge at most 252 retained selected pad bits in addition to the protected external Hamming weight.
+
+### Heavy stacks for the six shifts
+
+The shifted-sampler rank lemma proved in search_spread applies to the six public rows. A stack failing to annihilate any one is light by the $1/q$ bound. For an annihilating stack the fiber law is that of the unshifted boxes with their independent diamond. Rank five or above is light by I5. For a zero-homogeneous rank-four heavy stack, the reduced rows have the sparse coefficient patterns above. The weight evaluation has magnitude below $10\cdot2^{43}<q$ per row. Thus annihilation modulo $q$ is an integer equality and the six-row weight exclusion forces each reduced row to be supported only on tags, impossible at rank four.
+
+If the homogeneous column is nonzero at rank four, the zero-homogeneous rank-three subspace has mass at least $g$ times the stack's mass: conditional on the ordinary boxes, the remaining equation costs probability at most $1/g$ over the diamond. Its reduced rows obey the same support bound at density $gμ$, hence it is the space of the three tags. Fix their values, normalize the last row's zeroth coefficient to one and subtract its tag entries. The remaining equation has conditional probability at least $ρ_0/g$. Condition on the parities $u_i=2x_i+π_i$ of the nontag variables. Then $\lfloor\sum_i u_i/2\rfloor=\sum_i x_i+$ a parity-dependent constant after the fixed tags are absorbed. The diamond fixes the remaining value with probability $1/g$ when it lies in its allowed interval. Thus in some parity class the sum $\sum_i(2v_i-1)x_i$ must fit a length-$g$ interval modulo $q$ with probability at least $ρ_0$, by conditioning away the independent diamond. The $x_i$ are independent intervals of length $g/2$.
+
+For each $α_i=2v_i-1$, fix the other inputs attaining success $ρ_0$ on the length-$g/2$ interval. Two successes have gap one or two, giving a signed integer or half-integer coefficient. The progression plus target spans less than $g^2+g$ in its ordinary part. For an odd doubled coefficient, the two input parities place their progressions near opposite points modulo $q$, so at most one hits. An integer magnitude at least five or an odd doubled magnitude at least five therefore costs at most $g/5+1<ρ_0 g/2$ successes. All signed magnitudes are at most four.
+
+If every coefficient is integral, smoothing 48 nonzero terms assuming there are that many gives mass at most $\sqrt2(g+192)/((g/2)\sqrt{48})<ρ_0$ by the one-dimensional density bound. The other terms are fixed and the remaining diameter is below $q$, so the interval has only one effective lift. If some coefficient is fractional, the whole signed real sum using half-integers spans at most $4N_*g<q/4$. Its integer and odd-half parts map to regions separated by $q/2$ up to this diameter, hence at most one parity class of the numerator can hit. Since $4\mid g$, the parities of all inputs on their length-$g/2$ intervals are independent uniform bits. Exactly half their patterns are legal. On each, after fixing parities the individual nonzero widths after smoothing are at least $g/4$ and the steps are at most eight. Smoothing any 48 terms and fixing the rest gives conditional mass at most $\sqrt2(g+384)/((g/4)\sqrt{48})<2ρ_0$, contradicting success $ρ_0$ after the half factor. Thus at most 47 coefficients are nonzero.
+
+Annihilation of the first public row requires
+\[
+ 2H^{(1)}_0+\sum_i H^{(1)}_i+\sum_iα_i H^{(1)}_i=0\bmod q
+\]
+with indices outside the tags. The pair baselines cancel in the first two terms, and their increments subtract at most $2^{41}-16$. The fixed pads give at least $200L$ and the fifteen small singles cost at most 1695. The resulting baseline exceeds $200L-2^{41}-1695$. The deviations have magnitude at most $188(L+2^{37}+1)+4(2^{41}-16)$, using at most 47 nonzero deviations of magnitude at most four and the total sum of distinct first-bit increments. The former lower bound is larger. The doubled expression has magnitude below $2^{55}<q$, so this also excludes rank four. Heavy rows therefore annihilate the six public rows and their stack has rank at most three.
+
+## Amendment I6
+
+Write $B_E={\rm beta\_sis}$, $C_3={\rm cov3}$, $C_2={\rm cov2}$, $e=ε_{\rm tr}$. Require $2β<q$, $β\ge B_E$, and
+\[
+ R_{\rm tr}=18,\quad b=49,\quad 2^{49}\le g<2^{50},\quad
+ 10^7N_*\le g,\quad H_3=8g,\quad 4\mid g,\quad 40000eg^4\ge1,\quad H_2^{16}<g^{39},\quad
+ 10000e\leμ,\quad g^4μ\ge666767/1000000 .
+\]
+Require $C_3\ge351/10$, $C_2\ge1950000$, $B_E\in\mathbb Z$, $1\le B_E$, $2B_E<q$, $B_E^4<q^3$, $H_1<g^4$, and
+\[
+ B_Eg^2μ\ge\sqrt{N_*}γ_1,\quad
+ 200 B_E^2g^2μ\ge231 C_2q,\quad
+ 70 B_E^3g^3μ\ge99 C_3q^2,\quad
+ B_Egμ\ge67000 C_2+1448000000+200 .
+\]
+The inverse theorem for the actual sampler is proved next. The exact Euclidean bounds and lift appear in msis_bound. The still stronger protected bound on $β$ in P4 supports the same reduction-time and range hypotheses. Neither the admissibility comparison E nor the inverse argument changes the security target.
+
+### Joint inverse on the box coordinates
+
+Write $e=ε_{\rm tr}$. Let a nonzero modular row family on box coordinates have maximum joint fiber probability $p>θ$. Zero columns can be removed. In each active prefix let $p_i$ be the maximum modular fiber mass. Conditioning the new coordinate proves $p_i\ge p_{i+1}$. We construct a regular saturated lattice of rank $d\le4$ containing the prefix row family modulo $q$ and of mass at least $p_i-4e>μ$. At the first nonzero column, the prefix is contained in $\mathbb Z$ of mass $1/g$; $γ_1\ge1$ by I4.
+
+For an extension write each prefix row as $Bc'$ modulo $q$ in the current basis $B$ and append its last entry to obtain a coefficient vector $c$. Choose a densest longer modular fiber, trimming by the old lattice if $d\le3$. Call the resulting set $F$, of mass at least $p_{i+1}-e$. Rank four uses the whole fiber. Its image $\Phi=(B^\top r_I,r_{i+1})$ lies in the common affine equations for all the $c$, at least one of which is nonzero and defines an index-$q$ coset since an appended coefficient is nonzero. If $d\le3$, the projected count (a) of I3 and $Λ_dγ_d<qμ$ exclude affine dimension $d+1$. If $d=4$, normalize the first four features by $B_J^{-\top}$ at a largest pivot minor, of height $h\le2$. Each normalized row has at most ten coefficients of magnitude at most one, so its feature width is at most $10(g-1)<10g$. The extra width is $g$. Normalization divides the index-$q$ coset's covolume by $h$. The simplex count then bounds a full-dimensional image by $5!h\cdot10000g^5/q+5$ points. Each image point has mass at most $g^{-5}$ by the four pivots and the independent new coordinate. The mass condition in I5 therefore excludes full dimension five.
+
+Let $Δ$ have columns formed by differences of image points from a fixed point and rank $k'\le d$. Choose a maximal pivot $B_J$ of determinant magnitude $h$ and normalize by $A^{-1}$ for $A={\rm diag}(B_J^\top,1)$. All entries of $A^{-1}Δ$ have magnitude at most $T_{\rm tr}$ if $d\le3$ by I2, or $10g$ if $d=4$ by the sparse row bound. Every minor of $A^{-1}$ multiplied by $h$ is integral by the complementary-minor identity, obtained by appending complementary standard columns and expanding after multiplication by $A$. Cauchy–Binet gives the same property for minors of $A^{-1}Δ$. A nonzero $k'$-minor times $h$ has magnitude below $q$ by I5, using $h d!T_{\rm tr}^d$ or $2\cdot24(10g)^4$. Since $q\nmid h$ and all $(k'+1)$ minors vanish, this proves rank $k'$ modulo $q$. The rank-zero case needs no minor. Apply the integer lifting fact of I3 to every $c$ to obtain integer annihilators of the image differences reducing to the chosen coefficients. Their pullbacks $(Bu_{[d]},u_{d+1})$ are normals to $F$ and lift all new prefix rows. This normal lattice has rank in $[1,4]$ by $g^{-5}<μ$, and mass at least $p_{i+1}-e>μ+3e$. Regularization in I3 loses at most $3e$ and yields the next invariant. All domains are subsets of the same $N_*$ coordinates.
+
+For the actual sampler a form with zeroth coefficient zero and probability above $θ$ annihilates all six public directions by I5's sampler argument. Its pure-box law is then the one just analyzed. The same applies to each zeroth-zero row of a heavy stack. The terminal normal lattice admits a short multiple of that line by the lattice mass and rank-four intersection estimates and the rank-one to rank-three length bounds in msis_bound. Those estimates use only the just-proved lift, the density and the six public equations, without assuming the conclusion here. Its Euclidean radius $B_E$ is at most $β$, and the infinity norm is bounded by the Euclidean norm. Restore zero coordinates, including coordinate 0. This proves the amended inverse theorem for every line heavy under the actual sampler, as needed by the mark and extraction proofs.
+
+## Amendment Ncmp
+
+For the variable $u$ used by the bound $E$, set
+\[
+N_{{\rm cmp}}(u)=\frac{u(u+10)}8 .
+\]
+The remaining formula for $E$, the values of $u=2Q+2$ used by the proof, and the two tests in (P5) are as specified in the protected model. The new count applies to the bad events that can pay a $θ$ charge. The other pair and entry terms continue to pay for the full collection of possible coincidences.
+
+### Coupling and bad events
+
+Fix $M,Q$. By the symbolic-game coupling, replace the masked message by an independent uniform string through the first target query, before its answer. Sample the resulting formal-equality simulation with label images independently of coins and $r$. Receive the initial entries, give each guessed operand a fresh variable of its group and insert each result only if formally new. Each call adds at most three entries.
+
+Assign independent uniform exponents to guesses and evaluate. Couple with the real random-mask run until two formally distinct same-group entries coincide. Share fresh labels for new result values. For a guessed operand reuse its independent exponent unless previously assigned, in which case redraw uniformly among unused exponents. This is uniform on unused exponents as required by the injection law. Before a collision the transcripts agree by induction. Initial collisions have the initial mark. At a later good collision the difference is guess-free in the target group; the new entry cannot be a guessed operand introducing a fresh variable. The result receives the old label and the monitor marks a good difference. A redraw of a guessed operand is already a bad collision with its new variable, even if no mark is recorded then. A charged target query before a collision specifies an existing evaluated target entry with a bad expression (an unassigned entry gives the guess mark). Thus charged first marks are covered by bad noninitial collisions or bad target-value events.
+
+Use difference $D$ and $χ=0$ for a collision, entry $D$ and $χ=1$ for a target query. The source-group view bounds guess-free source differences by $ε_f$. With a guess variable, a nonzero guess-monomial coefficient is a constant or a formally nonzero source expression, since only pairing multiplies source terms. For every fixed $r$ the latter is nonzero on some valid coins by source coincidence and $ε_f<1$. After clearing $ϖ$, the event equation is a nonzero polynomial of degree at most $d_f+1$: one guess adds one degree to a source term, and pure products of two guesses have cleared degree at most eight. The independent field supports of size at least $q-D$ give probability at most $(d_f+1)/(q-D)\le ε_f$.
+
+For a guess-free target event, the view gives probability at most $ε_f$ at each $r$ without a formal identity $D=χ\kappa$. At an identity, formal distinctness (or the exclusion of a formal key) gives a nonzero stack, and all such $r$ lie in its fixed fiber. A bad stack is light, so this part costs at most $θ$.
+
+### Counting the light-stack charges
+
+Only guess-free target events incur $θ$. At call $j$ the later entry of such a collision is the result; a fresh operand introduces its own variable. The earlier entries include at most two received, $j-1$ results, and pure guessed variables. At most one of the latter can have a guess-free difference with the result, since the difference of two distinct guess variables is nonzero. Thus at most $j+2$ comparisons can cost $θ$. Target entries that are guess-free must be received or results, at most $Q+2$. Their total with comparisons is $\sum_{j=1}^Q(j+2)+Q+2=u(u+10)/8-1$.
+
+The full count for all other bad events is bounded by the number of pairs plus the number of entries in a table of at most $L+3Q$ entries, and hence by $\binom{L+3u}{2}+L+3u$. The pair count may overcount comparisons between different groups, which only increases the bound. Combining the union bounds establishes the amended charged-mark estimate
+\[
+ \Pr[\text{charged first mark}]
+ \le N_{{\rm cmp}}(u)(θ+ε_f)
+       +(\binom{L+3u}{2}+L+3u)ε_f .
+\]
+This bound holds for each $M$.
+
+### Generic ledger and scope of the amendment
+
+The generic ledger has the same implication from (P5). In the amended $E$, all coefficients as a polynomial in $u$ are nonnegative and its degree is two. Here $L\ge1$, $N_{{\rm free}}>0$ by (P2), and $\binom{L+3u}{2}$ expands with nonnegative constant, linear and quadratic coefficients. The new $N_{{\rm cmp}}$ has nonnegative coefficients. For real $Q$ on $[0,2^λ-1]$, the function $Q\mapsto E(2Q+2)-(Q+1)/2^λ$ is convex because its quadratic coefficient is nonnegative. At the first endpoint it is at most zero by the first P5 test. At the second it is $E(2^{λ+1})-1$, at most zero by adding the P5 tests. By convexity it is at most zero throughout. The threshold side conclusion of the generic ledger becomes $θ<2^{1-2λ}$ for $λ\ge1$. Indeed putting $U=2^{λ+1}$, we have $N_{{\rm cmp}}(U)-N_{{\rm cmp}}(2)=U^2/8+5U/4-3>2^{2λ-1}$. Every other term in $E(U)-E(2)$ is nonnegative, so the second P5 bound implies the stated strict threshold limit.
+
+The only admissibility use of this count is $E$ in P5, which still implies $ε_f<1$ via $E(2)\ge24ε_f$. Expression degrees, coins, oracle labels, and mark definitions are independent of the count. The factor-one-half lemma compares actual failure probabilities via uniform-mask coupling. The initial and guessed marks use received-expression comparisons and unassigned-label uniformity. The reduction uses degree, gradient distribution, rank and the short-vector guarantee. Their hypotheses and arguments are therefore unaffected. Targets combines these results with the proved charged-mark and generic bounds.
+
+The extractability-error corollary follows with its original statement from Targets and the factor-one-half lemma. For allowable budgets, in the combined bit experiment with uniform $b$, put $f_i=\Pr[\mathsf{Tgt}\wedge\mathsf{Fail}\mid b=i]$. The probability of both a correct bit and extraction failure is at most $1/2+(f_0+f_1)/4$. The target-query bound in Targets gives $f_i\le (Q+1)/2^λ+s_i$ for each $i$. Both reductions run in time bounded by $t_R=t+O(Q+d_R Q_H+μ)+{\rm poly}(D,\log q)$, including fixed description and advice, so each $s_i$ is bounded by ${\rm Adv}^{{\rm MSIS}}(t_R)$ by its defining maximum. Substitution gives extractability error at most $(Q+1)/2^{λ+1}+{\rm Adv}^{{\rm MSIS}}(t_R)$ at the same extractor time. Outside the stated budgets, the trivial probability upper bound 1 yields error $1/2$ as in the corollary. This accounts for every result in the background list of the bound block.
+
+## Amendment D
+
+Keep the external system $S$ on $N$ bits. As in I5 extend it internally by 689 unconstrained Boolean padding bits and three Boolean tags. Its $N_*+1$ positions include the homogeneous coordinate. The prescribed completion gives all eight tag variants of every external witness, and any satisfying internal assignment projects to an external witness.
+
+Use $N_*+1$ distinct Booleanity points $d_0,\ldots,d_{N_*}$, a distinct key point $ρ$, and the same $n_c$ cosets of size $ν$ for the external constraints. Hence $D=N_o+5+ν n_c$. Use the protected subgroup placement in the finite scored algorithm with this $D$. The algebraic identities apply to every admissible set of points. At $d_0$ set $A=0,B=e_0$. At $d_i$, $i>0$, set $A=e_i-e_0,B=e_i$, including all pad and tag Booleanity points. Fix a public primitive eighth root $\omega_8$ in the scalar field, which exists because $8\mid q-1$. Set $c_*=(\omega_8+\omega_8^{-1})^{-1}$; indeed $(\omega_8+\omega_8^{-1})^2=2$ since $\omega_8^2+\omega_8^{-2}=0$. At $ρ$ set $A=c_*(e_{\mathsf b_1}+e_{\mathsf b_2})$ and $B=c_*(e_{\mathsf b_1}+e_{\mathsf b_2}-e_0)$. On the constraint cosets keep the protected evaluations, extending those linear forms by zero in all pad and tag entries. The coordinate polynomials are the unique interpolants of degree below $D$. Store their sparse point-value descriptions rather than a dense coordinate-by-degree table. Define $Z_0$ to vanish at all $d_i$ and $ρ$, $Z$ at every evaluation point except $ρ$, $Z_*=(X-ρ)Z$, and $L_ρ=Z/Z(ρ)$. Thus $Z_*=Z_0Z_{\mathcal K}$, where $Z_{\mathcal K}=\prod_t(X^ν-δ_t^ν)$ is the monic coset vanishing polynomial.
+
+Here is the QAP criterion under this setup. For a symmetric $W$, $P_W=A^\top W B$ takes values $0$ at $d_0$, $W_{ii}-W_{0i}$ at $d_i$ with $i>0$, and $c_*^2(W_{\mathsf b_1,\mathsf b_1}+W_{\mathsf b_2,\mathsf b_2}+2W_{\mathsf b_1,\mathsf b_2}-W_{0,\mathsf b_1}-W_{0,\mathsf b_2})$ at $ρ$. Once the Booleanity tests hold, this last expression equals $W_{\mathsf b_1,\mathsf b_2}$, using symmetry and $2c_*^2=1$. On each constraint coset $P_W/Z_0$ is the list of terms in that constraint's quadratic test. Let $R_W$ be the polynomial of degree below $ν n_c$ interpolating these coset values. The sum of $X^a$ on $δ_t\mathcal G$ is zero unless $ν\mid a$, in which case it is $νδ_t^a$. Among degrees below $ν n_c$, the multiples of $ν$ give an invertible Vandermonde matrix in the distinct $δ_t^ν$. Consequently all coset sums vanish if and only if $R_W$ omits all divisible powers. Under the Booleanity and constraint tests, $P_W-W_{\mathsf b_1,\mathsf b_2} L_ρ-Z_0 R_W$ vanishes at every evaluation point. It is therefore divisible by $Z_*$, with quotient degree below $D-1$ from $\deg P_W\le2D-2$. Equivalently $P_W-Z_0R_W$ is divisible by $Z$ with quotient degree below $D$. Conversely, either such identity with an allowed $R$ implies the Booleanity values and the coset sum tests by evaluation, and $R$ is the unique interpolated remainder. In the key identity, evaluation at $ρ$ gives exactly the specified corner $W_{\mathsf b_1,\mathsf b_2}$. For a witness vector $v$, these identities apply to $vv^\top$, with $P_v=A_v B_v$ and key corner $\mathsf b_1\mathsf b_2$.
+
+The new key evaluation has $A(ρ)=c_*(e_{\mathsf b_1}+e_{\mathsf b_2})$, which together with $A(d_i)=e_i-e_0$ for $i>0$ spans all form coordinates: the differences span the hyperplane of coordinate sum zero and $A(ρ)$ has coordinate sum $2c_*\ne0$. The vectors $B(d_i)=e_i$ are still a basis. These properties, the QAP criterion and the updated $D$ are the only changes in the generic comparison and coincidence arguments, explicitly used in C7. The point descriptions consist of the nonzero input terms and $O(D)$ point data. For evaluation of all coordinate polynomials at a scalar off the point set, tabulate the $D$ Lagrange weights there and accumulate the listed nonzero coordinate entries times their weights. For a witness, accumulate the point values of the two scalar witness polynomials and interpolate only those two polynomials, not the coordinate table. The same subgroup interpolation and vanishing-polynomial algorithms therefore give $O(|S|+D\log D+\log q)$ setup and the claimed scalar polynomial work with these point sets. The extra Booleanity evaluations and the key evaluation add only a constant number of nonzero coefficients. The score still uses the fixed original nonzero-coefficient charge.
+
+## Amendment ell
+
+Set \(p=16\), \(s_p={\rm short\_columns}\) and \(\ell=\lceil(N+689+2s_p)/16\rceil+3\). Divide external and pad coordinates in order into \(s_p\) short blocks of fourteen, then blocks of sixteen. Pad the final block and unused positions with zeros. The ordinary column count is \(s_p+\lceil(N+689-14s_p)/16\rceil=\lceil(N+689+2s_p)/16\rceil\). Place the three tag coordinates in the constant positions of their separate following columns and use the independent homogeneous column zero. Sample every matrix entry independently, including entries whose witness slots are padded.
+
+The placement is injective, preserves coefficient Euclidean norm, and commutes with reduction and field scaling. The slot-zero form is \(v_0\), and the next 4368 forms are the coefficient list of the matrix product of the packed input, and the final form is zero. A form-kernel vector has \(v_0=0\) and \(A\hat v=0\). Thus the short multiple used by the reduction packs to a nonzero solution of the same norm to the uniform Module-SIS problem with dimensions \(kd_R,\ell d_R\). For any fixed tag variant of an external witness, condition on all columns except column zero. Since its homogeneous coordinate is one, the independent uniform column zero adds a uniform coefficient vector to the remaining fixed vector. Consequently each form value is uniform on the affine space where the constant is one and every padding slot is zero. This distribution is sufficient for both the exact key-weight bound and the expected fallback bound.
+
+## Amendment C6
+
+Require $n=4370$, $\mathrm{seed\_mode}=2$, $\mathrm{seed\_degree}=1$, $2n\le D$, and $\Delta\ge n+3$. The seed-degree parameter is the designated mode and the actual form field degree is $n$. Put $s=n/2=2185$. Here is a deterministic choice of its public field data.
+
+Put $P=8741=4\cdot2185+1$. To certify primality and the scalar-field action, the successive square residues $a^{2^i}\bmod P$ for $i=0,\ldots,13$ are
+
+    a=2:    2, 4, 16, 256, 4349, 7018, 5530, 4882, 5958, 563, 2293, 4508, 7980, 2215
+    a=6048: 6048, 5960, 6917, 5396, 545, 8572, 2338, 3119, 8169, 3767, 3646, 6996, 3157, 1909
+
+Multiplying the selected residues for exponents $8740,4370,1748,460,380$ yields $(1,8740,4626,7296,1992)$ in the first row and $(1,8740,1908,4848,7323)$ in the second. The four differences from one in the complementary powers of two are coprime to $8741$ by Euclid's algorithm. Since $8740=2^2\cdot5\cdot19\cdot23$, two has order $8740$ modulo each prime divisor of $8741$, which forces that divisor to be at least $8741$. Thus $P$ is prime. The scalar prime has residue $6048\bmod P$, whose order is $8740$ by the second row.
+
+The cyclotomic polynomial $\Phi_P(X)=1+X+\cdots+X^{P-1}$ is irreducible over $\mathbb F_q$: the $q$-Frobenius orbit of a primitive $P$-th root contains all $P-1$ roots by that order. Let $\zeta$ be the image of $X$ in the field quotient by this polynomial. Let $H$ be the subgroup of order four in $(\mathbb Z/P)^\times$, and for each coset $C$ put $b_C=\sum_{h\in C}\zeta^h$. Frobenius permutes the $2185$ cosets in a single cycle and fixes each $b_C$ under its $2185$-th power. Thus the periods are in $K=\mathbb F_{q^{2185}}$ inside this quotient.
+
+The trace Gram entry $\operatorname{Tr}_{K/\mathbb F_q}(b_{aH}b_{bH})$ is the sum of the products over all simultaneously translated cosets. Writing the second subgroup factor as the first times $r\in H$ and summing the translate and first factor together, this becomes $\sum_{r\in H}\sum_{w\ne0}\zeta^{w(a+br)}$. Because $-1\in H$, a single term has $a+br=0$ exactly when the two cosets coincide. The other inner sums are $-1$ by the geometric series. The Gram matrix is therefore $P I-4\mathbf1\mathbf1^\top$. Its eigenvalues are $P$ off the all-one direction and $P-4\cdot2185=1$ on that direction. The all-one vector and its orthogonal complement span here since $2185$ is nonzero in $\mathbb F_q$. This Gram matrix is invertible. The periods are consequently independent, and their Frobenius orbit has length $2185$.
+
+Take $b=b_H$ and $c=5b^2$. The scalar $5$ is nonsquare in $\mathbb F_q$ since $q\equiv2\bmod5$ and quadratic reciprocity at five has positive sign. It remains nonsquare in the odd-degree extension $K$, since the norm exponent $1+q+\cdots+q^{2184}$ is odd. The nonzero $c$ is then nonsquare. If $c$ lay in a proper subfield of $K$ containing $\mathbb F_q$, the degree of $b$ over that subfield would divide both two and the odd extension degree, so it would lie in the same subfield. This contradicts the full orbit of $b$.
+
+The element \(c\) has degree \(s\), so its minimal polynomial \(P_c(Y)\) is the product of the \(s\) linear factors for its consecutive Frobenius conjugates. The coefficients are in \(\mathbb F_q\) by invariance. Put
+\[
+ P_T(X)=P_c(X^2).
+\]
+A root \(t\) with \(t^2=c\) has degree two over \(K\) by nonsquareness. It generates \(K\) over \(\mathbb F_q\) through its square and then has degree \(2s=n\) over \(\mathbb F_q\). Thus \(P_T\) is its monic irreducible polynomial. The nontrivial automorphism fixing \(K\) sends \(t\) to the other square root, \(-t\). It is the \(q^s\)-Frobenius. Consequently the fixed subfield of this involution has representatives with even powers only: comparing coefficients in the basis \(1,t,\ldots,t^{n-1}\) negates precisely the odd slots, and the characteristic is odd. Use this basis for the coefficient positions of Amendment n, and use \(F_0=\mathbb F_q\) and \(e=1\) in the one-variable notation.
+
+Construct \(P_c\) and the Frobenius tables once as fixed public arithmetic data, using this explicit quotient, exponentiation and monic reduction. The polynomial product for \(P_c\) and the field operations in the deterministic construction take polynomial arithmetic in the fixed dimension. These tables depend on neither the seed nor the encryption coins. For \(s-1\) and \(s+1\) keep the fixed matrices whose rows give the coefficients of each monomial's image under the respective Frobenius. The \(s\) map is just the sign change by parity. Each of the two other Frobenius maps commutes with it, because they are powers of the same automorphism. Thus the image of a monomial has the same half-turn eigenvalue as that monomial, and its representative has coefficients only in the same parity positions. Each of the two dense tables therefore has an even block and an odd block of size \(s\) each. For the two matrices, compute the image of \(t\) by modular binary exponentiation and obtain the images of its powers by repeated multiplication and reduction modulo \(P_T\). This is polynomial preprocessing in \(n,\log q\), yields two \(n\)-square matrices, and fixes no secret. The public tables are part of the form-field arithmetic description, like the irreducible polynomial, rather than part of the ciphertext or of the per-system QAP setup. Both honest algorithms apply these fixed maps as specified in C7 and n1. The reduction can evaluate their rows at its private points with \(O(n^2)\) arithmetic, and its description includes the tables with \(O(n^2)\) entries. These are within \(O((N_\star+n)D)\) because \(n\le D\). The half-turn and the three consecutive Frobenius identities used in C7, the coefficient kernel for the SIS reduction, and the key-weight proof in Targets therefore hold for this field. The fixed scalar work of applying the dense maps in encryption and decryption is proved below, with no reliance on sparse representatives.
+
+## Amendment C7
+
+Require \(\mathrm{base\_degree}=\mathrm{base\_left}=\mathrm{base\_right}=\mathrm{scalar\_rel}=1\), \(K_1,K_2\ge1\), and \(2K_1K_2=n\). Require \(\mathrm{mask\_stride}=1\) and \(C_{\rm mask}=13n-2K_2-10\). This is the one-variable grid. Write \(e=A_H=B_H=1\) and \(h=n\) when using field-degree notation. There are \(A_c=3K_1K_2=3n/2\) cells, indexed by a left leg \(a\) with \(0\le a<K_1\) and a right leg \((b,\mathrm X)\), \(0\le b<K_2\), \(\mathrm X\in\{\mathrm E,\mathrm O,\mathrm V\}\). Write \(p_X=\mathbf1_{\mathrm X=\mathrm O}\). Set \(\lambda_a=2K_2a\), \(k_{\mathrm{leg}}=2b+p_X\). Put \(k_c=\lambda_a+k_{\mathrm{leg}}\). For E and O the cell weight is the coefficient of \(T^{k_c}\) in \(U=z(w)\sigma^{n/2-1}(z(w))\); for V use \(V=z(w)\sigma^{n/2}(z(w))\). The half-turn fixes \(V\) so only even powers occur there. For the appropriate parity \(p_X\), divide \((k_c-p_X)/2\) by \(K_2\). Its quotient \(a\) and remainder \(b\) recover the two digits and cover each slot exactly once. The key cell is \(a=b=0,\mathrm X=\mathrm E\), with weight the constant coefficient of \(U\).
+
+### Factor masks and publication
+
+Use the independent scalar coins below and the shifted centered sampler of I5 in the full internal dimension. The evaluation coin \(\upsilon\) is uniform nonzero, the scalars \(\pi,s_{\mathrm E},s_{\mathrm O},s_{\mathrm V},\zeta_0,\zeta_1,\zeta'',\eta,\Omega_{22},\alpha\) are independent uniform nonzero, \(\Omega_{12}\) and the coordinates \(y_i\) are independent uniform scalars, and \(\tau\) is uniform off the evaluation points. Sample \(\varepsilon\) uniformly from the field excluding \(0,-1\). Let \(F_x(T)\) be the reduced representative of \(\sigma^{n/2+1}(T^x)\), computed by C6. Write \(z_-,z_\circ,z_+\) for the reduced vectors of linear form coefficients at Frobenius powers \(n/2-1,n/2,n/2+1\), respectively, evaluating at \(\upsilon\) when used as scalars. Use the derived nonzero scales $(\eta_1,\eta_2,\eta_3)=\eta(1,\varepsilon^2,\varepsilon^4)$ from the primitive coin $\eta$. Define the leg scales by
+\[
+ \pi_a=\pi(\upsilon^{\lambda_a}+\varepsilon F_{\lambda_a}(\upsilon)),\qquad
+ s_{\rm leg}=s_{\mathrm X}\upsilon^{k_{\rm leg}},\qquad
+ \gamma_c=\pi_a s_{\rm leg},\qquad
+ \kappa=\gamma_{\rm key}L_\rho(\tau).
+\]
+Here \(\pi_0=\pi(1+\varepsilon)\ne0\), hence \(\kappa\ne0\) on valid coins. On E/O use the right mask
+\[
+ \vartheta_{\rm leg}
+ =\upsilon^{k_{\rm leg}}(\eta_1 z_\circ+\eta_2 z_+)
+   -\varepsilon^{-1}F_{k_{\rm leg}}(\upsilon)(\eta_2 z_-+\eta_3 z_\circ),
+\]
+and on V use \(\upsilon^{k_{\rm leg}}(\eta_3 z_+-\eta_1 z_-)\). For every input coordinate \(i\) including tags, use the left row \(\pi_a(y_i,A_i(\tau))\) and the right column \((s_{\rm leg}(r_i+A_i(\tau))+\vartheta_{{\rm leg},i},\,s_{\rm leg}(B_i(\tau)-y_i))^\top\). Multiply each left row on the right by the hidden-basis matrix with rows \((1,\Omega_{12})\) and \((0,\Omega_{22})\), and each right column on the left by its inverse. Publish the resulting coordinate arrays in G1 and G2, respectively, the G2 search bases \([s_{\rm leg}]_2\), and the single G1 column \([\zeta'' y_i]_1\). There is one right sector and there are no alpha-scaled source-group inputs. Keep the public target-group element \([\alpha\kappa]_T\), with independent \(\alpha\), and the seed and masked message. This slot preserves the protected overhead count. The decryption algorithm does not require this target-group input.
+
+### Transmitted coordinates for the prescribed pads
+
+Keep the full internal dimension $N_o+4$ for the sampler, QAP, forms and ring instance. For transmission put $N_{\rm pub}=N+252$. Retain the homogeneous index, the external indices, the fifteen small single pads, the second position of each of the 237 pairs, and the three tag indices. Write $I_{\rm fix}$ for the 200 fixed-one pads, and $A_i,B_i$ for the first and second indices of pair $i$ in this paragraph. Define a linear embedding $\mathcal T$ into the full coordinate space by columns
+\[
+ b_0=e_0+\sum_{j\in I_{\rm fix}}e_j+\sum_{i=1}^{237}e_{A_i},\qquad
+ b_{B_i}=e_{B_i}-e_{A_i},\qquad b_j=e_j
+\]
+for the remaining retained indices. The rows at the retained indices form an identity, hence the embedding is injective. The prescribed completion for every tag variant is exactly $\mathcal T v'$ for its vector $v'$ of retained coordinates: the fixed pads equal $v'_0=1$ and the first pad of a pair is $1-v'_{B_i}$. The full internal Booleanity constraints, secret draws and uniform matrix columns are retained.
+
+For each of the raw left and right factor coordinate vectors and the raw Y vector, compute its contracted exponents $\mathcal T^\top X$ by sums and differences before multiplying the group generator. Thus each array has $N_{\rm pub}+4$ transmitted entries. The same contraction on the ordinary subspace applies to the common-direction left array of n1. The scalar guards already pay for computing the full raw exponents, and contraction takes additions only. Every transmitted slot still uses one generator multiplication. For an honest completion the contracted coordinate sum is $(v')^\top\mathcal T^\top X=v^\top X$, so all full-witness polynomial identities and search variables below are exact for the transmitted arrays. Decryption initializes each source sum from its retained homogeneous entry. It adds only the chosen nonzero retained coordinates thereafter.
+
+For the generic view expand each transmitted exponent as the indicated fixed signed combination of raw exponents, distributing products in the target expression. The raw symbols in the view proof below describe these polynomials and are not additional delivered labels. All coefficients of the expansion are independent of the coins and of $r$, so every degree bound and coefficient comparison in the proof applies to the resulting expanded expression. A matrix of matched coefficients on the retained coordinates expands to $W_c=\mathcal T W'_c\mathcal T^\top$ and a search vector to $u_c=\mathcal T u'_c$. The rank of the stack is preserved: $\mathcal T^\top$ is onto on input tuples, and applying $\mathcal T$ to each output is injective. Likewise $W_c r=\mathcal T W'_c(\mathcal T^\top r)$ gives the same joint fiber mass. The stack and its fiber are on the full coordinates used by I5 and I6. The full view gives symmetry, all passing tests and the same field ties on this expanded stack. In particular its fiber conditions and row-space recovery use the original sampler. The expansion of an expression is only an analysis of its coefficients; it introduces no oracle call or extra initial label. The number of compared initialized labels is the actual published count. Linear combination of raw entries also initializes each extractor sketch at the corresponding published entry, because the sketch map on each source group is linear. This is fixed initialization; subsequent transcript operations and the external witness test use the same algorithms.
+
+### The six cancellation grades
+
+Use $L_a=X^{\lambda_a}$, $R_j=X^{k_j}$, and let $L_a^+,R_j^+$ denote their respective reduced conjugates under $\sigma^{n/2+1}$. In each summation below the index $c$ is the cell $(a,j)$ in the indicated family. Define the ordinary products $W_X=\sum_{c\in C_X}W_cL_aR_j$ for $X=U,V$, the left-conjugated products $W_X^+=\sum_{c\in C_X}W_cL_a^+R_j$, the right-conjugated product $U^-=\sum_{c\in C_U}W_cL_aR_j^+$ and the both-conjugated product $U^{\pm}=\sum_{c\in C_U}W_cL_a^+R_j^+$. In the form field $U^{\pm}=\sigma^{n/2+1}(W_U)$ because Frobenius is multiplicative and fixes every matrix coefficient.
+
+Factor out $\pi\eta$ from the matched mask terms. Substitute $(\eta_1,\eta_2,\eta_3)=\eta(1,\varepsilon^2,\varepsilon^4)$ and multiply the two terms of $\pi_a/\pi$ into each right mask. The resulting coefficients of $\varepsilon^i$ are
+\[
+\begin{array}{c|l}
+0 & W_U z_\circ-W_V z_- \\
+1 & W_U^+ z_\circ-W_V^+ z_- -U^- z_-\\
+2 & W_U z_+-U^{\pm}z_-\\
+3 & W_U^+z_+-U^-z_\circ\\
+4 & W_Vz_+-U^{\pm}z_\circ\\
+5 & W_V^+z_+
+\end{array}
+\]
+Denote them by $M_i$. This expansion includes the term from the inverse-$\varepsilon$ right mask at exponent one or three when multiplied by the ordinary left digit, and at exponent two or four when multiplied by its conjugate. For the even-grade identities the field weights of an honest assignment $v$ are $U=z(v)\sigma^{n/2-1}(z(v))$ and $V=z(v)\sigma^{n/2}(z(v))$. The equalities $U z_\circ=V z_-$, $U z_+=\sigma^{n/2+1}(U)z_-$ and $V z_+=\sigma^{n/2+1}(U)z_\circ$ follow by substitution and commutativity. In these equations each $z$ is evaluated at $v$. Thus each honest even polynomial vanishes modulo $P_T$, and each odd polynomial is used without division.
+
+An ordinary left digit has degree at most $n-2K_2$. An ordinary right digit has degree at most $2K_2-1$, with a further decrease by one in the V family. A conjugated digit has degree at most $n-1$. The first even polynomial has degree at most $2n-2$ and the next two at most $3n-3$. After division by $P_T$ their lengths are at most $n-1,2n-2,2n-2$. For grade one the two parts with a left conjugate have lengths at most $2n+2K_2-2$, while the right conjugate has length at most $3n-2K_2-1$. The same bounds apply to grade three. As $n\ge4K_2$, the latter length dominates. Grade five has a V right digit and length at most $2n+2K_2-3$.
+
+For each grade send the G2 basis with exponents $(\pi\eta/\zeta'')\varepsilon^i\upsilon^a$ in the listed range starting at $a=0$. Multiply the exponent by $P_T(\upsilon)$ for even grades only. All six ranges total
+\[
+ (n-1)+2(2n-2)+2(3n-2K_2-1)+(2n+2K_2-3)=13n-2K_2-10.
+\]
+Use the coefficients of $M_i$ for odd grades and the exact quotient $M_i/P_T$ for even ones. The one cancellation MSM paired with the witness-summed Y therefore removes the original mask value. In the generic comparison the three even grades occur separately, and their additional terms vanish modulo $P_T$. This preserves the three field identities independently.
+
+### Scored encryption arithmetic
+
+This accounts for all arithmetic of the admitted finite mode. Write \(S_{\rm nz}\) for the number of nonzero point coefficients traversed in preparing the QAP exponents, to which the benchmark assigns \(2^{30}\). We show at most \(S_{\rm nz}+3m\) variable scalar multiplications in that cost convention.
+
+At \(\upsilon\) apply the four parity blocks of the C6 tables to the respective subvectors of \((1,\upsilon,\ldots,\upsilon^{n-1})\). Each block is an \(s\)-square fixed matrix. Pair consecutive input positions as in C5, with one unpaired input if \(s\) is odd. The products per block are at most \(s(\lfloor s/2\rfloor+(s\bmod2))+\lfloor s/2\rfloor\). The four-block bound is \(n^2/2+n\) when \(s\) is even and \(n^2/2+2n-2\) when \(s\) is odd, by substitution of \(s=n/2\). In both cases use \(n^2/2+2n\). This supplies every needed conjugated digit evaluation. The half-turn applies signs to the same powers and uses no products. Form the two combined tables for
+\[
+ A_\eta=\eta_1z_\circ+\eta_2z_+,\qquad B_\eta=\eta_2z_-+\eta_3z_\circ.
+\]
+The third form used by the masks is \(C_\eta=(\eta_3 A_\eta-\eta_1 B_\eta)/\eta_2\), by direct expansion with the existing nonzero \(\eta_2\).
+
+
+Use the invertible evaluation representation of the negacyclic coefficient ring from C5. For each of the two independent masks pull the row functional back through \(E^{-1}\) using its transpose. After the pointwise products pull each accumulated column functional back through \(E\) using its transpose. By C5 the transpose of \(E^{-1}\) costs at most \(U_d\), and \(E^\top\) costs at most \(V_d\), including their fixed scalings. Thus the total transformation cost is at most \(2(U_d k+V_d(\ell+1))\), the term in C5.
+
+For each evaluation root write the two transformed row-weight sequences as \(A^{(1)},A^{(2)}\), and the uniform matrix column as \(B\), all of length \(k\). For a pair of consecutive indices \(u,v\) add
+\[
+ (A^{(h)}_u+B_v)(A^{(h)}_v+B_u)
+ - A^{(h)}_u A^{(h)}_v - B_u B_v
+   = A^{(h)}_uB_u+A^{(h)}_vB_v,\qquad h=1,2.
+\]
+Compute the sum of the row-only terms separately for the two rows and the sum of the column-only terms once per column, shared across the two outputs. The identity verifies both desired matrix products term by term. Every pair uses two main multiplications and one column correction product. A final unpaired row needs two products per column. The two row corrections take \(2\lfloor k/2\rfloor\) products per evaluation root. Hence the total cost of the products and both transforms is bounded by
+\[
+ W_{\mathrm{mat}}
+ =d\big((\ell+1)(3\lfloor k/2\rfloor+2(k\bmod2))+2\lfloor k/2\rfloor\big)
+       +2\big(U_d k+V_d(\ell+1)\big)=W .
+\]
+The fields and independent ring entries are unchanged. Only their scalar arithmetic is reorganized. The resulting two form coefficient vectors are exactly \(A_\eta,B_\eta\), with the known slot-zero homogeneous contribution. Form \(C_\eta\) by its linear combination using the two precomputed ratios \(\eta_3/\eta_2,\eta_1/\eta_2\), at two multiplications per input coordinate.
+
+Partition the QAP roots into the \(N+694\) Booleanity and key singleton factors and \(n_{\mathsf c}\) constraint cosets. Their vanishing factors at \(\tau\) are respectively \(\tau-p\) and \(\tau^\nu-a^\nu\) for a coset represented by \(a\). Compute \(\tau^{2^j}\) for \(1\le j\le11\) by successive squaring. On the list of \(b=N+694+n_{\mathsf c}\) factor values, ordered with singletons first, use prefix and suffix products to get their product and their outer complements. Prefix values through the singleton group and the whole list give \(Z_0(\tau)\) and \(Z_*(\tau)\). A first value and an end complement can be copied without multiplying by one. The full prefix uses \(b-1\) products, the suffix excluding its unused first product uses \(b-2\), and the \(b-2\) interior complement products supply the rest. At a coset node of size \(2^j\), split it into its two child cosets of size \(2^{j-1}\). Each child's vanishing evaluation is the precomputed power \(\tau^{2^{j-1}}\) minus the corresponding public power of a representative. The two child complements are the outer complement at the parent times the sibling vanishing evaluation. With two multiplications per internal node of a $\nu$-leaf tree, this provides all \(Z_*(\tau)/(\tau-p)\) using \(2(\nu-1)n_{\mathsf c}\) products after the outer pass. At \(\rho\) the complement is \(Z(\tau)\). The sum of all products is at most \(3b-5+11+2(\nu-1)n_{\mathsf c}=2D+N+689+n_{\mathsf c}+11\), which fits the \(2D+N+689+n_{\mathsf c}+16\) term. The public QAP coefficients at \(p\) are encoded with the fixed multiplier \(1/Z_*'(p)\). Multiplying an encoded point coefficient by its cofactor now makes the exact Lagrange contribution with one multiplication. The three nonzero Booleanity point coefficients for each of 689 pads, the nine tag Booleanity coefficients and the five entries at \(\rho\) use at most 2081 products and are covered by the total allowance 2100 above the cofactor and shared terms. All these scalars are over \(\mathbb F_q\).
+
+Compute the shifted search coordinates by summing the six scaled public rows and adding the box draw. This uses at most six products per internal coordinate, including the homogeneous one, and is included in the coefficient 17 of the linear term of C5. The G1 factor computations use at most \((2K_1+3)(N+693)\) multiplications, including the shared hidden-basis scalar \(\Omega_{12}y_i+\Omega_{22}A_i\), the two per-left-scale exponents and the extra Y-column scaling. In G2 put \(U_i=B_i(\tau)-y_i\) and \(V_i=r_i+A_i(\tau)-(\Omega_{12}/\Omega_{22})U_i\). Prepare the three shared vectors \(V_\mathrm E=s_\mathrm E V+A_\eta\), \(V_\mathrm O=s_\mathrm O V+A_\eta\), and \(V_\mathrm V=s_\mathrm V V+C_\eta\). Computing \(V\) and these three vectors costs four multiplications per input coordinate. This and the two for \(C_\eta\) contribute \(6(N+693)\) within the grouped linear term of C5. For a right leg of type E or O its first coordinate is \(a V_{\rm X}+b B_\eta\), where \(a=\upsilon^{k_{\rm leg}}\) and \(b=-\varepsilon^{-1}F_{k_{\rm leg}}(\upsilon)\) are its precomputed scalars. At each input coordinate precompute the products \(V_{\rm E}B_\eta\) and \(V_{\rm O}B_\eta\) once. Store one product \(ab\) per E or O leg. The exact bilinear identity
+\[
+ a V_{\rm X}+b B_\eta=(V_{\rm X}+b)(B_\eta+a)-V_{\rm X}B_\eta-ab
+\]
+uses one multiplication per entry after those precomputations. On V use the one product \(\upsilon^{k_{\rm leg}}V_{\rm V}\), and on every leg the second coordinate is the one product \((s_{\rm leg}/\Omega_{22})U\). Thus the right exponent work is at most \((6K_2+2)(N+693)+2K_2\) multiplications after the shared vectors. The ordinary expansion of the identity and of the shared vectors gives exactly the previous mask and hidden-basis exponents. This arithmetic changes no source element or scalar distribution.
+
+### Reused scale factors for the published source exponents
+
+For the sparse powers of Amendment n1, start at the already sampled exponent \(\zeta_0\). Compute \(\tau^\nu\) by eleven squarings, including \(\tau^2\). Advance the sparse base exponent by repeated multiplication by \(\tau^\nu\). For each sparse entry also obtain the shifted entry with one multiplication by \(\tau\). Together these use at most \(2S_0-1\) further products. For the non-sparse list start at \(\zeta_1\tau\). The gap between consecutive allowed exponents is one, except at a skipped multiple of \(\nu\) where it is two. Multiply the current exponent by the already available \(\tau\) or \(\tau^2\) accordingly. At most \(\Delta-\Delta/\nu\) further products therefore produce that list including its initial exponent. The total for both lists is at most \(\Delta-\Delta/\nu+2S_0+16\). This produces the same scalar exponents with the scale factors retained throughout; each transmitted element still takes its own fixed-base generator multiplication. These recurrences also hold at \(\tau=0\).
+
+The key and non-key sparse right constants and the \(J\) regular right constants are prepared once. Each associated right exponent multiplies its \(\gamma_c\) by the corresponding constant, at one multiplication per slot. The search exponents are the precomputed leg scales. The mask power list uses the tabulated powers of \(\upsilon\) multiplied by one constant for each grade and the monic-modulus factor on even grades, with one multiplication per slot after combining these constants. Compute the five needed powers of $\varepsilon$ and prepare the derived mask and cancellation scales with at most fifteen products in the fixed table allowance. The optional generator repeat adds no exponent work.
+
+
+For the shared direction data of n1, obtain the three tag Lagrange values from the tag-three coordinate, from \(A_1-c_*L_\rho\), and from \(A_2-c_*L_\rho\). The key exponent formation already computes \(L_\rho\). At \(\tau\), compute the shared left scale \(\zeta_0/U(\tau)\) using the inverse charged below. The array combines \(S_j=A_j^{\rm o}+B_j^{\rm o}\) by an addition and inserts the single homogeneous correction before multiplying by that scale, for \(N+690\) products. The five fixed quotients of n1 are formed directly using two products for each numerator at most, plus one scale product per entry and one product for each shifted copy; including the shared inverse scale takes at most 21 multiplications. Compute the three linear factors and \(U(\tau)\) with two products; the two extra right list constants each use multiplication by \(U(\tau)/\zeta_0\). Including one more product for this shared scale, a product for \(c_*L_\rho\), and fixed constants or copies, all these extra scalar computations fit the \((N+1)+100\) bound. The two new right lists use one product per entry after the common constants are prepared, included in the counted correction slots.
+
+The fixed scalar tables use at most \(n^2/2+2n+60(n+J+1)\) multiplications. In particular the preceding Frobenius-table evaluations and the two combined weight arrays use at most \(n^2/2+2n+4n\) multiplications outside the coefficient-ring transformations already counted, and the \(\upsilon\) power list uses at most \(3n\). The left, right and cell scale tables use at most \(10(2K_1+3K_2+A_c)<35n\). Reuse the already computed \(\tau^\nu\) and obtain \(h=(\tau^\nu)^{\Delta/\nu}\) by binary powering. Here \(1\le\Delta/\nu\le D<q<2^{254}\), so at most 508 scalar products suffice. Start with \(Z_0(\tau)/\zeta_1\) at one multiplication using the cached inverse, and multiply the preceding value by \(h\) in each of the next \(J-1\) slots. The two sparse right constants use two more multiplications with the cached inverse of \(\zeta_0\). This totals at most \(J+510\le2J+600\), including at \(\tau=0\) by starting with the specified constant. Evaluate the monic form modulus by Horner's rule with \(n\) products. For each of the eight mask grades, multiply its listed scalar factors in the mask exponent formula, keeping the power of \(\upsilon\) for the already charged slot product. The grade factor contains at most four scalar factors, including the inverse of \(\zeta''\) and the modulus evaluation or signed epsilon scale where applicable. Even allowing four products per grade costs 32. The cofactor at \(\rho\) times the public inverse derivative gives \(L_\rho(\tau)\) in one product, then multiply by \(\gamma_{\rm key}\) and finally by \(\alpha\) for two more. The tag constants and shifts are covered by the preceding shared direction count. Thus the modulus, grade and key calculations take at most \(n+35<10(n+J+10)\) multiplications. The remaining per-n coefficient is at most 52 besides \(n^2/2+2n\), with at most \(12J+700\) further multiplications. This fits \(n^2/2+2n+60(n+J+1)\) since the scored shape has \(n\ge4000\). Invert the bounded list of scale denominators, including \(\varepsilon,\Omega_{22},\zeta_0,\zeta_1,\zeta'',\eta_2\) and, when needed, the common \(Z_*(\tau)\) and the three-root factor \(U(\tau)\) used in n1. At most ten inversions and the additional fixed products are covered by 10,000 multiplications at the protected prime. All other operations for these arrays are additions, subtraction, or selection of entries.
+
+The mixed quotient list has the explicit bound $11187410+J$ from n1. The remaining finite scalar encryption terms sum to at most \(V\) of C5. They include the cofactor products, shared mask forms, left and right factor multiplications, scaled power recurrences, the \((J+3)A_c+C_{\rm mask}\) correction slots, the fixed table and inversion allowances, the bound \((N+690)+100\) for the shared tag directions, and the target exponentiations. Both target-group exponentiations use the same fixed generator. Use the target representation from search_spread. Compute generator powers two through seven in six products and share them. Scan 85 width-three windows for each exponent, with three squarings and at most one table product per window. At 67 field products each, $6+2\cdot85\cdot4=686$ target products use $45962<50600$ field products. The fixed native basis maps use at most 144 field products each, within this allowance.
+
+### Efficiency and asymptotic choices
+
+Amendments n1, n2 and the operation-count amendments give the complete counted construction. It uses one seed query per matrix entry and at most one key query per algorithm. All internal tag variants reuse the matrix. At fixed \(d_R\) the matrix and its adjoint cost \(O(k(\ell+1)d_R)\) field operations. The finite form maps and masks cost \(O(n^2+n\log n)=O(n\log n)\) on \(n\le4800\). The QAP algorithms take \(O(D\log D+|S|)\) operations. The search and its fallback are bounded in search_spread.
+
+### Parameter selection and Corollary 5.8
+
+Use the amended selector only at BN254, \(\lambda=100\), and the benchmark system shape. For other inputs it dispatches to the original parameters and algorithms, so the original Corollary 5.8 applies there. In the amended branch, the shape and guards uniformly bound the number of field coefficients, array lengths and transform sizes. In particular the input system has at most \(1692(2\cdot2047+1)(391693+1)\) coefficients, the ordinary search has cap \(B_{\rm search}<q/2\), and the evaluation-point mode returns \(j<q\). The finite proofs bound size and work uniformly over all admitted systems and subgroup placements at this branch. Divide these four bounds by their positive scales \( \lambda N,\lambda^2N/\log\lambda,\lambda N\log\lambda,2^{\lambda/4}N^{1/4}\) at the fixed shape. Taking the maximum with the original branch's constants gives the same four asymptotic bounds for \(N\ge\lambda^2\). The correctness and extraction claims at all admissible points are proved in Targets.
+
+### Algebraic and reduction interfaces
+
+In `lem:moore`, the field has degree \(n\) and \(z\) plays no role in the statement. To derive the property at the amended degree, if a combination of \(d\) successive Frobenius columns is zero then a polynomial \(\sum_{j=0}^{d-1}a_j X^{q^j}\) vanishes at the entries of \(\sigma^s(h)\). Its roots are closed under \(\mathbb{F}_q\)-linear combinations, and the independent entries give \(q^d\) distinct roots. If any coefficient is nonzero, its degree is at most \(q^{d-1}\), a contradiction. This proof uses only the field and its Frobenius.
+
+Here is the full classification argument for the actual field ties of Amendment C7 with the specified \(z\). Let \(W_c\) be symmetric, pass the Booleanity tests, and satisfy the original three ties, with row space \(\mathcal V\) of dimension \(d\le3\) containing no kernel vector. The zero-dimensional case has zero stack. Let the columns of \(U_*\) over \(\mathbb F_q\) be a basis of \(\mathcal V\), with rows \(u_i^\top\). These rows span \(\mathbb F_q^d\). For \(s\) in \(\mathcal I_*=\{n/2-1,n/2,n/2+1\}\), put \(h_s=U_*^\top\sigma^s(z)\), and put \(h_0=U_*^\top z\). Injectivity of \(z\) on \(\mathcal V\) means the entries of \(h_0\) are independent over \(\mathbb F_q\). In particular \(d\le n\), and the Moore property proved above gives that the three \(h_s\) span over \(\mathbb F_{q^n}\). Write \(W_s\) for \(W_U,W_V,\sigma^{n/2+1}(W_U)\) in the indicated order. Each \(W_s\) has its rows and columns in the extension of \(\mathcal V\), so \(W_s=U_* X_s U_*^\top\) for a unique symmetric \(X_s\). Indeed a left inverse \(L_*\) of \(U_*\) exists, and \(X_s=L_*W_sL_*^\top\); projections back to \(\mathcal V\) act identically on the columns and rows. The ties give \(X_s h_{s'}=X_{s'}h_s\). If \(\sum_s a_sh_s=0\), then \((\sum_s a_sX_s)h_{s'}=0\) for every \(s'\), and spanning gives \(\sum_s a_sX_s=0\). Thus there is a linear map \(X\) with \(X(h_s)=X_s\). The trilinear form \(C(h,u,v)=u^\top X(h)v\) is symmetric in the last two slots and in the first and last slots by the ties, initially on spanning \(h_s\) and then on all vectors by linearity. It is therefore fully symmetric. Each Booleanity test gives \(C(h,u_i,u_i-u_0)=0\) on the spanning \(h_s\), hence on all \(h\). The identities \(X_s=\sigma^s(X_{n-s})\) for \(s=n/2-1,n/2\) follow from the relation between the first and third matrices and because \(W_V\) has even \(T\)-degrees and \(\sigma^{n/2}\) fixes the scalar coefficients, as \(U_*\) and \(L_*\) have field entries fixed by \(\sigma\).
+
+First suppose \(u_0\ne0\). Extend \(l_0=u_0\) to a basis \(l_0,\ldots,l_{d-1}\) chosen from the rows. For each \(\delta\in\{0,1\}^{d-1}\), let \(p_\delta\) satisfy \(l_0^\top p_\delta=1\), \(l_j^\top p_\delta=\delta_j\) for \(j>0\), and set \(w_\delta=U_*p_\delta\). Symmetry lets any repeated positive index in \(C(l_i,l_j,l_k)\) be reduced via the test replacing one occurrence by \(0\). Hence those values depend only on the set of positive indices present. Conversely the cube of the linear functional \(p_\delta\) takes the value \(\prod_{i\in A}\delta_i\) for this set \(A\), and all sets occur since \(d-1\le2\). The matrix of these values indexed by \(A,\delta\) is invertible: indexing \(\delta\) by its support gives the subset-incidence matrix, triangular with diagonal 1 in any inclusion-compatible ordering. Therefore
+\[
+ X(h)=\sum_\delta c_\delta(h^\top p_\delta)p_\delta p_\delta^\top
+\]
+for coefficients in the extension field. The squares \(p_\delta p_\delta^\top\) are independent by the same evaluation matrix, now on pairs of basis vectors since \(d-1\le2\). Write \(z_\delta=z(w_\delta)=h_0^\top p_\delta\ne0\). Comparing coefficients of the squares in \(X_s=\sigma^s(X_{n-s})\) gives \(c_\delta\sigma^s(z_\delta)=\sigma^s(c_\delta)z_\delta\) for the two consecutive \(s\). Hence \(c_\delta/z_\delta\) is fixed by \(\sigma\) and belongs to \(\mathbb F_q\), as the fixed points of \(x\mapsto x^q\) are exactly this field. Write it as \(\chi_\delta\). Returning from the matrix restriction gives \(W_s=\sum_\delta\chi_\delta z_\delta\sigma^s(z_\delta)w_\delta w_\delta^\top\). In particular the first two polynomial representatives give the stack \(\sum_\delta\chi_\delta\mathbf H(w_\delta)\).
+
+Let \(f\) be any field-linear test that vanishes on the cells. It vanishes on the \(W_s\). Put \(Q_*=\sum_\delta\chi_\delta f(w_\delta w_\delta^\top)p_\delta p_\delta^\top\), a matrix over \(\mathbb F_q\). The vanishing gives \(h_0^\top Q_* h_s=0\) for all three \(s\), hence \(h_0^\top Q_*=0\). Independence of the entries of \(h_0\) over \(\mathbb F_q\) implies \(Q_*=0\), so independence of the squares implies \(\chi_\delta f(w_\delta w_\delta^\top)=0\) for every \(\delta\). Apply this to all Booleanity tests to deduce that any nonzero coefficient is on a Boolean assignment. If every external constraint test passes, apply the same argument to them to see that each supported assignment is a witness. In any representation by honest stacks of Boolean assignments in \(\mathcal V\), the assignments equal some \(w_\delta\) because their evaluations on the chosen basis fix their \(p_\delta\). Hence the same test argument applies to any such representation.
+
+If \(u_0=0\), take any basis \(l_1,\ldots,l_d\) from the other rows. Booleanity implies \(C(h,l_i,l_i)=0\), so by symmetry every coordinate of the trilinear form with a repeated index vanishes. This gives zero if \(d<3\). For \(d=3\) its only possible value on distinct indices is a shared scalar \(c\). Evaluating \(X_s=\sigma^s(X_{n-s})\) on pairs of different basis vectors gives \(c\, h_s=\sigma^s(c)h_0\) in the basis \(l_1,l_2,l_3\), since \(h_s\) is obtained from \(h_0\) by Frobenius and the basis is over \(\mathbb F_q\). If \(c\ne0\), the first two consecutive vectors \(h_s\) would both be proportional to \(h_0\), impossible by the Moore independence of the three vectors in dimension three. So again \(X=0\), and the stack vanishes. This proves the classification clauses, including that a nonzero usable stack in the stated case has a witness in its row space.
+
+The rank and inverse clauses of ${\rm lem:heavy}$ are proved in Amendment msis_bound. For the packing clause, write $x\bmod q=a v$, $a\ne0$, for the kernel vector $v$. In either shortness convention $x_0=0$ since $v_0=0$ and $|x_0|<q$. Packing copies each of the $N_*$ coordinates once and inserts zeros. It commutes with reduction, so $A\hat x=aA\hat v=0\bmod q$. For every infinity-short $x$ this gives $0<\|\hat x\|_\infty=\|x\|_\infty\leβ$. For every Euclidean-short $x$ it gives $0<\|\hat x\|_2=\|x\|_2\le B_E$. Only the second problem is costed.
+
+### Degree, view and recovery gradients
+
+Expand the retained-coordinate arrays into raw exponents as specified above. Every coefficient comparison applies to that expanded identity in the full internal coordinates. Its stack and gradients are those of the expanded view.
+
+Fix the seeded matrix and hence the form coefficients. For source exponents \(a\) in G1 and \(b\) in G2 include their generators. A guess-free target expression is
+\[
+ \mathsf E=\sum_{a,b}D_{ab}\,a b+D_K\alpha\kappa .
+\]
+The coefficients are fixed scalars. No source exponent uses \(\alpha\). The factor \(\varpi=\Omega_{22}\zeta_0\zeta_1\zeta''\varepsilon\) clears all denominators in every paired product. For degree accounting put \(e_*=1\), since C6 uses one-variable representatives of degree below the form dimension. The degree of \(\pi_a\) is at most \(n+e_*\): the ordinary and conjugated left degrees are each at most \(n-1\) and the two independent scalar factors are \(\pi,\varepsilon\). The QAP factors have degree below \(D\), and the hidden-basis matrix supplies at most one further factor. The sparse and shifted G1 powers have degree at most \(D\) including scale, and the Y exponent has degree two. The fixed degree bound for G1 is therefore \(d_1=D+n+2+e_*\). The degree of \(\gamma_c\) is at most \(n+2+2K_2\), since the right scale has ordinary degree at most \(2K_2-1\) plus its one independent scalar. The key scale still has degree three.
+
+The cleared sparse correction bases, including the new right entries of polynomial degree at most \(D+2\), have degree at most \(D+n+8+2e_*K_2\), which is at most the combined-list bound below since \(D\ge4\). For non-sparse ones the polynomial part has degree at most \(2D-2\) from P1, and the cell scale and remaining clearing factors give at most \(2D+n+4+2e_*K_2\). The first and second right coordinates before the masks have degree at most \(D+n+6+2e_*K_2\) after clearing, by \(k_{\rm leg}\le n-1\), the degree below \(D\) of the QAP polynomials and the linear hidden-basis inverse. Each term of a right mask is a leg power of degree at most \(n-1\) times a form of degree at most \(n-1\), with one \(\eta\) and an optional inverse \(\varepsilon\). It has cleared degree at most \(2n+10\), allowing the fourth power of \(\varepsilon\) in the derived scales. A cancellation basis has monomial degree at most \(3n-3\) and cleared degree at most \(3n+10\), including its scalar factors and clearing factors. Search bases have cleared degree at most \(n+5\). Since \(2n\le D\), all G2 exponents after clearing fit \(d_2=2D+n+13+2e_*K_2\). The cleared key terms fit \(D+8\). The product degree before a guessed-operand factor is at most \(d_1+d_2=3D+2n+15+e_*(2K_2+1)\). By C5, \(K_1=115\) and \(K_2=19\). Thus this bound is at most \(d_f=3D+2n+2K_1+7\). The extra guess factor of degree one and all listed separate bounds fit \((q-D)\varepsilon_f\) by its protected formula. The search coordinates enter only linearly, within the same degree bounds.
+
+For any fixed \(r\), the primitive scalar coin sets are independent with sizes at least \(q-D\), including the two exclusions on \(\varepsilon\) and the \(D\) exclusions on \(\tau\). The clearing factor is nonzero there. The product-set bound proved in Targets shows that an identity holding on all valid coins is a polynomial identity after clearing, because \(d_f<q-D\) by P5 and \(\varepsilon_f=(d_f+60)/(q-D)\). A nonidentity has coincidence probability at most \(d_f/(q-D)\le\varepsilon_f\). At an identity \(\mathsf E=\chi\kappa\) the coefficient of \(\alpha\) gives \(D_K=0\), since \(\kappa\) is a nonzero polynomial. All stack comparisons henceforth use only the plain factor sector.
+
+Write the two transformed left exponents as \(F_1^{a,i}=\pi_a y_i\) and \(F_2^{a,i}=\pi_a(\Omega_{12}y_i+\Omega_{22}A_i)\). The right exponents are
+\[
+ H_1^{\mathrm{leg},j}=\ell_{\mathrm{leg},j}
+       -(\Omega_{12}/\Omega_{22})s_{\rm leg}(B_j-y_j),\qquad
+ H_2^{\mathrm{leg},j}=s_{\rm leg}(B_j-y_j)/\Omega_{22},
+\]
+where \(\ell_{\mathrm{leg},j}=s_{\rm leg}(r_j+A_j)+\vartheta_{\mathrm{leg},j}\) is independent of the hidden basis. No other G2 input contains a hidden-basis variable. For any G1 input \(a\) denote its evaluation at \(\Omega_{22}=0\) by \(\widetilde a\); for \(F_2^{a,i}\) this is \(\Omega_{12}F_1^{a,i}\). Take the part of the Laurent identity with \(\Omega_{22}^{-1}\) and positive degree in \(\Omega_{12}\). Cancel its common factor \(-\Omega_{12}/\Omega_{22}\). The resulting identity is
+\[
+ \sum_{a,\mathrm{leg},j}\delta_{a,\mathrm{leg},j}\,\widetilde a\,s_{\rm leg}(B_j-y_j)=0,
+\]
+where \(\delta_{a,\mathrm{leg},j}\) is the coefficient of the pair with \(H_1^{\mathrm{leg},j}\), subtracting the matched coefficient of \(F_2^{a,i},H_2^{\mathrm{leg},j}\) if its G1 input is \(F_1^{a,i}\). This follows because only a second left coordinate produces a positive \(\Omega_{12}\)-degree when paired with \(H_2\). Differentiate with respect to \(y_{j_0}\) and then set \(y=B(\tau)\). Terms from differentiating \(\widetilde a\) vanish and the result is the zero sum of \(\delta_{a,\mathrm{leg},j_0}\,s_{\rm leg}\widetilde a|_{y=B}\).
+
+The left-input types in the sum are \(1,\zeta_0 p(\tau),\zeta_1\tau^v,\zeta''B_i,\pi_a B_i,\Omega_{12}\pi_a B_i\), separated by degrees in \(\zeta_0,\zeta_1,\zeta'',\pi,\Omega_{12}\). The polynomials \(p\) include the sparse powers and the new quotient difference polynomials. In the first four types the monomials \(s_{\rm leg}=s_{\mathrm X}\upsilon^{k_{\rm leg}}\) distinguish the legs in each kind. The \(\zeta_1\) powers are distinct and the \(B_i\) are independent by their \(d_j\) values. The polynomials in the \(\zeta_0\) type need not be independent: the identity says for each leg and right coordinate \(j_0\) their coefficient-weighted sum is the zero polynomial in \(\tau\). In this type each \(\widetilde a\) is the full first input independent of \(y\) and the hidden basis, so its aggregate ordinary pairing with that \(H_1^{\mathrm{leg},j_0}\) vanishes at every coin and every \(r\). For the last two types use the constant term in \(\varepsilon\), giving the distinct cell monomials \(\pi s_{\mathrm X}\upsilon^{k_c}\) and the independent \(B_i\). Thus the matched factor coefficients agree individually and all unmatched first-right terms cancel identically as sums, which is sufficient both for the class comparison and the derivative. Formal projection onto first-left factors continues to respect formal equality and receives no contribution from the \(\zeta_0\) type.
+
+In the multidegree with one \(\pi\) and zero degrees in \(\zeta_0,\zeta_1,\zeta''\) and net hidden-basis degree, the pairs are the matched factor products, first-left pairs with the search bases and generator, the correction lists in two matching inverse-scale classes, and the Y column with cancellation bases. This enumeration follows by checking the degrees of the published exponents: the left first factors have one \(\pi\), the left second also has one hidden-basis degree, and the three other nonconstant left types carry only one of the three scales. The right factor scales and correction types above are their only complementary types. The left-generator pair with any published right exponent of degree one in \(\pi\) has an inverse scale and cannot enter this class. Define \(W_c\) by matched factor coefficients, and \(u_c\) by minus the first-left search-pair coefficients. The class identity is
+\[
+ \sum_c\gamma_c b_c+\Phi_*=\chi\kappa,\qquad
+ b_c=y^\top(W_cr-u_c)+y^\top(W_c-W_c^\top)A(\tau)
+              +(P_{W_c}+Z_c h_c+Z_0 R_c)(\tau).
+\]
+Here the two correction types produce \(Z_c h_c+Z_0R_c\) with allowed \(R_c\), by the residue-preserving monic division proved in n1. The term \(\Phi_*\) collects the masks from the factor products, the Y cancellation products and the first-left generator pairs. It is free of all \(s_{\mathrm X}\). Taking the constant term in \(\varepsilon\) and the coefficients of the distinct \(\pi s_{\mathrm X}\upsilon^{k_c}\) gives \(b_c=0\) except at the key cell, where \(b_c=\chi L_\rho\). The original identity then also gives \(\Phi_*=0\).
+
+For each \(c\), the linear coefficient in \(y\) at \(d_0\) gives \(W_c r=u_c\). The same comparison at \(\rho,d_i\) shows \(W_c-W_c^\top\) vanishes on the spanning vectors in Amendment D, hence \(W_c\) is symmetric. The constant coefficient gives \(\deg Z_c h_c\le2D-2\) since the \(P_{W_c},Z_0R_c,L_\rho\) terms have that bound. Thus \(\deg h_c<D\) for a non-key cell or \(<D-1\) in the key cell. The QAP identities in Amendment D give all Booleanity and constraint tests, with the ordinary or keyed vanishing factor as applicable. In particular the Booleanity tests follow first by checking the \(d_i\), where the key polynomial is zero. In the key cell evaluate then at \(\rho\) where the two vanishing factors are zero. The Booleanity equalities reduce \(P_{W_c}(\rho)\) to \((W_c)_{\mathsf b_1,\mathsf b_2}\) in the new key evaluation. Therefore \((W_c)_{\mathsf b_1,\mathsf b_2}=\chi\). Take the coefficient of $\eta$ in $\Phi_*$, then its coefficients at degrees zero, two and four in $\varepsilon$. The mask contributes $\pi y^\top M_i(\upsilon)$ at grade $i$. The only other terms at that grade are Y pairs with the corresponding even cancellation list, all multiples of $P_T(\upsilon)$. Odd lists use odd grades, and the generator terms have zero $\eta$ degree. Therefore the vanishing coefficients of $y$ give the three stated field ties after replacing $\upsilon$ by the form generator.
+
+If \(r'\) replaces \(r\), the coefficient-matching result shows the difference in the target value is \(\sum_c\gamma_c y^\top W_c(r'-r)\), because no other exponents depend on \(r\). Thus the identity remains valid throughout its prescribed locus. If all stacks are zero, it holds formally at every \(r'\) and the key corner forces \(\chi=0\). If an identity is formal for all \(r\), its equations \(W_c r=u_c\) for every \(r\) force all \(W_c=0\) and again \(\chi=0\). A difference of source expressions pairs with the other source generator to an expression of zero stack. If it vanishes identically at any fixed \(r\), this argument says it is formally zero, so formally different source expressions have the stated coincidence bound. This proves the view clauses with the new corner and one actual sector.
+
+The formal derivative of the target expression with respect to the search coordinates, for a marked identity, is the vector \(\sum_c\gamma_c W_c^\top y\). To compute it use the private evaluation and reverse accumulation of the reduction. At each recovery point project the G1 input polynomials by setting \(\Omega_{12}=\Omega_{22}=0\) and taking the part linear in \(\pi\); these are exactly the first left coordinates. This is a linear projection and therefore respects formal equality of G1 expressions. A first right leaf at retained index \(j\) has derivative \(s_{\rm leg} b_j\) where \(b_j\) is the corresponding embedding column. Other G2 leaf derivatives are zero. The \(b_j\) are linearly independent, so store every gradient in this basis during the reverse pass. The matched \(F_1,H_1\) coefficients are precisely the coefficients of the projected product in the derivative. Since unmatched first-right coefficients vanish for a marked identity, this is its full stack gradient. Formally equal targets have zero difference stack and the same gradients; formally equal G2 inputs also have equal derivative records by pairing their difference with a first-left input and applying the zero-stack result. The projected gradients always lie in the marked row space. For a nonzero linear functional on it that vanishes on a given proper subspace, the derivative polynomial after dividing by \(\pi\) is nonzero: take its degree-zero coefficient in \(\varepsilon\) and the distinct monomials \(s_{\mathrm X}\upsilon^{k_c}y_i\). Its degree is at most \(n+2+2K_2\), establishing the recovery comparison used in Targets. The optional empty alpha sector has identically zero stack and gradients.
+
+The running time with the revised exponent lists has the bound
+\[
+ t+148Q+(d_R+5)Q_H+C_R+2T_{\rm LIFT},\qquad
+ C_R=8I+3L+2C_{\rm post}+C_{\rm set}+C_{\rm desc},
+\]
+with \(I\) for computing the initial exponents at one point, \(C_{\rm post}\) for processing one tried expression, \(C_{\rm set}\) for fixed transcript initialization, and \(C_{\rm desc}\) for the description. Here \(I,C_{\rm post},C_{\rm set},C_{\rm desc}\) are the costs for the revised exponent lists, and \(C_R=O((N_\star+n)D+\mu)\). We give the dependence on the form indices explicitly.
+
+The per-call bound can be checked by the following implementation in the reduction's unit-operation model. Keep per group a table of assigned exponents indexed both by label and by field value, and a label table status for excluded strings. Both allocated and excluded strings are keys of the same label table, so unused-string sampling excludes both. A label record includes its value at the independent test point and a reference to its first expression node, if any. The reference or zero record is kept on repeated assignments. For an unclassified operand in an addition, scalar product or pairing, keep counters of the remaining exponents and unclassified strings in its group. Draw an integer uniformly below the latter count and compare it to the former count to decide membership. If it is a label, sample a uniformly unused exponent. Insert the relevant forward and reverse entries and update the counts. A rejection only writes its status and updates the unclassified-string count. This gives at most eight operations per unclassified operand: one status lookup, one integer sample and comparison, one exponent sample, two insertions and two counter updates. The conditional laws follow from a uniform injection after the already assigned and excluded labels have been fixed. Record-less labels in answered calls use the common zero expression, at most two further record writes per call.
+
+For a result, allow at most 24 main operations. This includes two lookups of operands and up to three arithmetic operations each at the true and private test points. A result-label lookup, a fresh unused string sample when needed, and the two table insertions use at most four more. Updating both counts uses two. Allow six writes for an expression node (operation tag, operand references, scalar operands if needed, and result reference). The remaining four cover the private-value comparison, recording the first differing target pair, advancing the expression-log index, and checking or recording eligibility for name calls. A name call uses the same routine for negation, and then returns the two labels, with at most two label writes. It is rejected if the input's eligibility flag is absent. Repeated name calls return the already assigned opposite exponent label. An insertion at a known exponent leaves the old reverse entry in place and the private comparison uses its stored record.
+
+For the at most six recovery passes, the forward evaluation at each point takes at most three arithmetic operations per logged gate. The private test point above uses the full exponents. At recovery points, the projected first-left values and the single-sector first-right derivative leaves are prepared before the call loop as described above. Only the right operand of a pairing can contribute a derivative in \(r\), as every G1 value is independent of \(r\). For each of the at most two trial expressions, traverse the resulting straight-line expression log backwards. A sum or scalar multiplication adds the adjoint times the corresponding scalar derivative to the adjoint of each predecessor. A pairing uses the evaluated first operand as its derivative with respect to the second. For a predecessor that is an input leaf, skip it if its derivative is zero in the current sector. Otherwise it is a first right coordinate with derivative equal to one prepared field scalar times \(b_j\). Directly accumulate the contribution times this scalar in retained coordinate \(j\). This is at most three field operations for each of two precursors: a product by the gate derivative, an additional product for a leaf, and an accumulation. A non-leaf involves just the first product and accumulation. The references in the stored log give direct accesses to indexed registers, and each field operation computes its result in its destination register. Neither uses a label-table lookup. Initialize all node adjoint registers to zero before each reverse pass, using one field write per node and pass, then set the starting adjoints for the trial. These updates compute the derivatives by the chain rule in reverse order. Each recovery point therefore costs at most \(3+2(6+1)=17\) operations per call for both expression trials. Initializing the output vectors and the at most two starting adjoints per trial is fixed postprocessing. Including six passes, the call bound is at most \(24+2\cdot 8+2+2+6\cdot17=146\le148\). A fresh key-oracle answer takes one lookup, sample and insertion. A fresh seed-oracle answer replaces its one sample by \(d_R\) coordinate samples. This gives \((d_R+5)Q_H\) when each oracle has at most \(Q_H\) queries.
+
+Only fixed inputs and setup change. The public dense matrices, digit spectra and fixed division data take \(O(n^2)\) field elements of description. Applying the dense table maps at each private point takes \(O(n^2)\) operations, within \(O(nD)\). Computing the initial exponents at each of at most eight points evaluates \(O(N_\star)\) degree-below-\(D\) QAP polynomials, advances powers through lengths \(O(D+n)\), and forms the \(O(nD)\) scalars in the split QAP group arrays. For the mask vectors, naive transposed ring multiplication takes \(O(nd_R+nN_\star)\) work, bounded by \(O(nD+nN_\star)\) since \(d_R\le n\le D\). Source factor entries take \(O(nN_\star)\) further operations. For postprocessing, apply the full form map to at most three vectors per sector by naive ring multiplication and solve a fixed-width linear system. The same \(O(nD+nN_\star)\) bound covers this before LIFT. Initialization queries and stores the same ring entries and creates the group label records with at most \(O((N_\star+n)D+\mu)\) operations, including masking. The fixed instance QAP polynomials and form indices fit the same size as advice in the protected cost model. Hence \(C_R=O((N_\star+n)D+\mu)\). The lifting step is called at most twice, once per tried expression. This establishes the bound above and the stated \(t+O(Q+d_R Q_H+\mu)+\operatorname{poly}(D,\log q)\) specialization.
+
+Expand each recovered gradient once in postprocessing. The total support size of the embedding columns is linear in the internal dimension, so this takes linear work and does not enter the per-call bound. This accounts for the background list for the forms and weights block. The generic record and mark bounds depend on the degree, view, sampler and label counts. The degree and view properties needed for the repacked construction are proved above. The extractor sketches only use the coefficient arrays of the left and right factors, independently of the internal representation of the form list.
+
+
+## Amendment P1
+
+Require $Δ\le D$, $J=\lceil((D-1)+νn_c)/Δ\rceil$, $J'=1$, $ν\midΔ$ and $n\le D$. This covers the non-sparse merged interval of n1. Since $(J-1)Δ<U_*=(D-1)+νn_c$ and the shifts preserve residues modulo $ν$, the degree bound for each multiplier $Z_0X^{jΔ}$ is below $2D-1$. The monic division and view proof of n1 handle the actual remainder.
+
+## Amendment n1
+
+There are
+\[
+ n_1=(2K_1+1)(N_{\rm pub}+4)+2\lceil(D-1)/\nu\rceil+\Delta-\Delta/\nu+(N_{\rm pub}+1)+10
+\]
+transmitted G1 elements. Use the single factor sector, field mask bases and Y column of C7. Let \(S_0=\lceil(D-1)/\nu\rceil\) and
+\[
+ I_0=\{0\le a<D-1:\nu\mid a\},\qquad
+ I_0^*=I_0\cup\{a+1:a\in I_0\},\qquad
+ I_1=\{0\le a<\Delta:\nu\nmid a\}.
+\]
+Send \(P_a^0=[\zeta_0\tau^a]_1\) for \(a\in I_0^*\), and \(P_a^1=[\zeta_1\tau^a]_1\) for \(a\in I_1\). There are \(2S_0\) sparse entries because \(\nu\ge2\), and \(\Delta-\Delta/\nu\) non-sparse ones by alignment. Use \(Z_c=Z_*\) in the key cell and \(Z_c=Z\) elsewhere. Send one \(B_c^0=[\gamma_c Z_c(\tau)/\zeta_0]_2\) per cell and \(J\) bases \(B_{c,j}^1=[\gamma_c Z_0(\tau)\tau^{j\Delta}/\zeta_1]_2\), \(0\le j<J\). The factor arrays, search bases and cancellation arrays are those of C7, each once. Add the tag quotient difference bases below and then apply the same optional existing-generator parity padding, computed as one scalar multiplication by one. Send the seed, the one element \([\alpha\kappa]_T\), and the masked message. There is exactly one fixed-base generator multiplication per transmitted group slot and one more in GT for the key. All scalar exponents use the displayed fixed factors and tabulated powers, with constant work per exponent.
+
+
+### Reusing the right quotient corrections
+
+For the two interested tag coordinates let $u_i=z(e_i)$, $i=1,2$. For a U cell let $\delta_c$ be the coefficient of the polar product $u_1\sigma^{n/2-1}(u_2)+u_2\sigma^{n/2-1}(u_1)$ at its basis exponent. For a V cell use the corresponding polar product with $\sigma^{n/2}$. The latter is invariant under the half-turn because that automorphism exchanges the two terms. Since $z$ is linear, the three ordinary corners and the target from the selector satisfy the coordinate equation
+\[
+ \xi_c(v^{(t)})=\xi_c(a_t)+\xi_c(b_t)-\xi_c(c_t)+\delta_c .
+\]
+The coefficients $\delta_c$ depend on the public seed and fixed field only. In addition to the original right quotient bases publish the $J$ elements
+\[
+ M_j=\sum_c \delta_c B^1_{c,j}\quad(0\le j<J)
+\]
+and the non-key element $M'_0=\sum_{c\ne c_{\rm key}}\delta_c B_c^0$. For each indicated list compute the three weighted ordinary sums. Its target sum is then the first plus the second minus the third plus the published mixed element. This forms the exact original target operands, including their signs. The key-only sparse operand and the two direction lists use their original weights, and each cancellation list uses its full original MSM. Direct normalization uses the original weighted operands without the mixed recovery.
+
+Here is the full scalar computation of the new published values. Each tag lives in an independent constant-position ring column. Apply the inverse 16-point transform to each of the two tag columns in each row, using $2\cdot33k=18018$ products. Put the resulting $kd_R$ coefficient lists between zero in the constant slot and zero in the final padding slot. Evaluate $\sigma^{n/2-1}$ on each tag vector through its two fixed parity-preserving blocks of dimension $n/2$. For each block pair consecutive inputs, storing the fixed row correction terms in advance. The identity in C7 uses one product per pair in each row and one shared input correction per pair, plus one product per row for the last unpaired input. For these four blocks the total is at most $n^2/2+2n$, as follows by substituting $n/2$ for the block dimension in that formula. The half-turn is a sign operation on odd coefficients.
+
+Take $B=16384$. Use the same unnormalized radix-two transforms as in the weight evaluation below, whose nonunit twiddle count is $T(B)=98305$. The four forward transforms of the two tags and two non-half-turn conjugates suffice for both unreduced products. The half-turn of each tag uses its existing transform shifted by $B/2$, since the $B$-th root has that power equal to $-1$. Form the two U polar terms and the two V polar terms pointwise, then add in each family and invert one transform per family. The four products and the two inverse scalings use at most $6B$ products. Monic division of either result by the fixed modulus uses its reversed reciprocal and modulus, exactly as in the weight evaluation below. Each division has two products with fixed factors, each with one forward transform, one inverse, $B$ pointwise products and at most $B$ inverse scalings. Throughout, the largest ordinary convolution length is at most $2n-1<B$. Thus the two complete reductions cost at most $8T(B)+8B$. Including the initial products and transforms, the total for the two polar polynomials is at most $14T(B)+14B$ products. Reading their cell coefficients is copying monomial slots, and the V result has no odd powers.
+
+Use $A_c$ products for all $\delta_c\gamma_c$. Sum these products and retain the key product to obtain the sum excluding that key as well. Multiply the full sum by the already prepared $Z_0(\tau)\tau^{j\Delta}/\zeta_1$ for each $j$, and multiply the non-key sum by the already prepared $Z(\tau)/\zeta_0$. These are $J+1$ further scalar products. Therefore the scalar bound for the entire new publication is
+\[
+ 2\cdot33\cdot273+n^2/2+2n+14(98305+16384)+A_c+J+1
+ =11187410+J .
+\]
+Each of the $J+1$ new slots is transmitted as one scalar multiple of the G2 generator.
+
+For the generic arguments fix the seed matrix. The new exponents are then fixed linear combinations of existing right quotient exponents. Expand every use of a mixed element in the paired-expression proof by linearity. This expansion has the same degree, clearing factor, and allowed quotient powers as the existing view. Its coefficients depend on the already fixed seed matrix and are independent of the scalar coins and the search vector. It uses no extra oracle call, and the first-mark counts use only the actual labels. All right quotient inputs have a zero G2 extractor record because they contain no first-right coordinates. Their fixed combinations have zero records for the same reason. The extractor uses these records directly, with no need to query the seed. Computing or expanding this fixed description for the reduction uses at most $O(JA_c)$ scalar combinations before transcript traversal and is covered by its $(N_*+n)D$ initialization bound.
+
+### One common left array for the internal tag directions
+
+Write \(d_1',d_2',d_3'\) for the three tag Booleanity points, \(L_1,L_2,L_3\) for their QAP Lagrange polynomials, and \(A_i,B_i\) for the coordinate polynomials of tag \(i\). The new key evaluation gives
+\[
+ A_i=B_i=L_i+c_*L_\rho \quad(i=1,2),\qquad A_3=B_3=L_3 .
+\]
+For an ordinary coordinate \(j=0,\ldots,N+689\) let \(S_j=A_j^{\rm o}+B_j^{\rm o}\). Define the three-root factor and common direction polynomials by
+\[
+ U=(X-d_1')(X-d_2')(X-\rho),\qquad
+ G_j=\frac{S_j+\mathbf1_{j=0}(L_1+L_2+c_*L_\rho)}{U}.
+\]
+At both tag points in \(U\), the sum of the ordinary A and B vectors is \(-e_0\); at \(\rho\) this sum is \(-c_*e_0\). Thus each \(G_j\) is a polynomial of degree at most \(D-4\). Also \(U A_i\) is a multiple of \(Z_*\) for \(i=1,2\): outside \(U\)'s three roots the Lagrange polynomial \(A_i\) vanishes at every QAP point. It has degree at most \(D+2\).
+
+Define five fixed polynomials
+\[
+ F_i=-\frac{A_i L_{3-i}}{Z_*}\quad(i=1,2),\qquad
+ F_{i,i'}=\frac{2A_i A_{i'}-\mathbf1_{\{i,i'\}=\{1,2\}}L_\rho}{Z_*}\quad(i<i').
+\]
+Each numerator vanishes at all QAP points: \(A_i\) has nonzero point values only at its own tag point and \(\rho\), and \(L_{3-i}\) only at the other tag point; two distinct tag coordinate polynomials overlap only for tags one and two at \(\rho\), where the product with factor two is \(2c_*^2=1\). The degrees of these quotients are at most \(D-2\). Compute the full \(N+690\) values of \(\zeta_0G_j(\tau)\) and send their \(N_{\rm pub}+1\) contracted exponents as in C7, and for each of the five \(F\)'s send \([\zeta_0 F(\tau)]_1\) and \([\zeta_0(\tau-\rho)F(\tau)]_1\). There are \(N_{\rm pub}+1+10\) left entries. For every cell \(c\), send two right entries
+\[
+ B^{(i)}_c=[\gamma_c U(\tau)A_i(\tau)/\zeta_0]_2,\qquad i=1,2 .
+\]
+Their generation uses the scalar evaluations and the schedule in C7.
+
+As before all full combinations use the same third tag \(t\). Let \(v_0=(w,0,0,t)\) and \(v=(w,b_1,b_2,t)\), and let \(d_v=b_1b_2\). They have the same allowed remainder \(R_w\). Put \(G_w=\sum_{j=0}^{N+689}w_jG_j\) and
+\[
+ F_v=b_1F_1+b_2F_2+b_1b_2F_{1,2}+tb_1F_{1,3}+tb_2F_{2,3}.
+\]
+For either \(i=1,2\), the part of \(P_v-P_{v_0}\) linear in \(b_i\) excluding mixed terms is \(A_i(S_w+A_i)\), where \(S_w=\sum_{j=0}^{N+689}w_jS_j\); this uses \(b_i^2=b_i\). By the definition of \(G_w\) and \(w_0=1\), with all fixed and complementary Boolean pads included,
+\[
+ A_i(S_w+A_i)=U A_i G_w-A_i L_{3-i}.
+\]
+The mixed terms are the three products already handled in the \(F_{i,i'}\), including the subtraction of \(d_vL_\rho\). Hence the exact polynomial identity is
+\[
+ P_v-P_{v_0}-d_vL_\rho=U(b_1A_1+b_2A_2)G_w+Z_*F_v.
+\]
+Compute the one ordinary witness sum \([\zeta_0 G_w(\tau)]_1\) once. For each full variant, use the paired weighted right entries \(B^{(i)}_c\) for the present bits. For each present bit do the MSM of length \(A_c\), then when both are present add the two MSM outputs before pairing with the same left witness sum. The polynomial multiplier for cell \(c\) is precisely \(\gamma_c U(b_1A_1+b_2A_2)G_w\). If both bits are zero, this pairing is omitted. For the fixed part add \([\zeta_0F_v(\tau)]_1\) to the sparse key operand and \([\zeta_0(\tau-\rho)F_v(\tau)]_1\) to the sparse non-key operand, using the two sets of fixed left entries. The two resulting sparse pairings incorporate \(\gamma_c Z_*F_v\) for their respective cells because \(Z_*=(X-\rho)Z\). The non-key sparse operand still receives \(d_vP_0^0/Z(\rho)\) separately. Combining these contributions with the baseline sparse and nonsparse operands subtracts \(P_v-d_vL_\rho\) in the key cell and \(P_v\) elsewhere.
+
+In the hidden-basis comparison, the new left inputs are polynomials of the existing \(\zeta_0\) type. The two new right lists are of inverse scale \(\zeta_0^{-1}\), with \(\gamma_c\) and a polynomial multiple of \(Z_*\) and with no other variables. Their pairs with any left input of scale \(\zeta_0\) yield multiples of \(Z_*\), and pairs of old sparse right inputs with new left inputs yield multiples of \(Z_c\). The generic comparison therefore absorbs the entire enlarged class into \(Z_c h_c\), with the same residue restrictions on the other class. The constant-polynomial coefficient bounds the final quotient as in C7. All new left exponents have total degree at most \(D\), and the new right list degree is covered explicitly in C7. The shared third-tag selection changes neither exponents nor coin laws.
+
+### A single combination at any tag
+
+For \(v_0=(w,0,0,t)\) the key corner is zero. By Amendment D, \(G_{\rm base}=P_{v_0}/Z_0\) is exact and equals \(Z_{\mathcal K}h_{\rm key}^{v_0}+R_w\). Compute its sparse part by retaining the multiples of \(\nu\), and divide that part by \(Z_{\mathcal K}\) in the variable \(X^\nu\) to obtain \(h^0\), the sparse part of \(h_{\rm key}^{v_0}\). The complementary part \(T_0=G_{\rm base}-Z_{\mathcal K}h^0\) has degree below \(U_*\) and is formed by deleting sparse coefficients of \(G_{\rm base}\), so every retained exponent is nonzero modulo \(\nu\). Polynomial products and monic divisions here take \(O(D\log D)\) field operations: after reversal a monic divisor has constant term one, and the update \(u\leftarrow u(2-fu)\) doubles the correct inverse precision since its residual equals \((1-fu)^2\). For each precision, products use the C3 power-of-two subgroup and split lengths \(O(D)\) into a bounded number of blocks of length at most half the subgroup order. The sum over the doubling precisions is \(O(D\log D)\). Only the witness polynomials are interpolated and the compressed sparse division has length \(O(D/\nu)\).
+
+Once compute
+\[
+ H^0=\sum_{a\in I_0}[X^a]h^0\,P_a^0,\qquad
+ H_{\rm oth}^0=\sum_{a\in I_0}[X^a]h^0\,P_{a+1}^0-\rho H^0,\qquad
+ H_j^1=\sum_{\substack{a\in I_1\\j\Delta+a<U_*}}[X^{j\Delta+a}]T_0\,P_a^1 .
+\]
+For each full combination adjust the first operand by the fixed key-tag terms and pair with \(\xi_{\rm key}(v)B^0_{\rm key}\). Adjust the second by the shifted fixed tag terms and \(d_vP_0^0/Z(\rho)\) before pairing with the weighted non-key \(B^0_c\), and pair each \(H_j^1\) with the \(v\)-weighted \(B^1_{c,j}\) sum. The ordinary path uses the exact mixed recovery above for its target regular and non-key sparse sums. Also subtract the shared direction pairing when a first or second tag bit is present, as above. The polynomial argument in the preceding subsection shows these subtractions remove exactly the \(P_v-d_vL_\rho\) and \(P_v\) terms for the key and other cells, respectively.
+
+For each right leg, form the two weighted left operands by summing \(\xi_c(v)\) times the witness-summed G1 factor of its left leg over the cells at this right leg. Pair them with the two witness-summed right coordinates. In the resulting sum the hidden basis cancels, the two antisymmetric terms \(y(v)A_v-A_v y(v)\) cancel, and the masks are subtracted with the cancellation MSM of C7 paired against the witness-summed Y. The earlier polynomial subtractions remove all \(P_v\) terms except the stated key corner. The first weighted left operand alone is the sum of the left first coordinates; pairing it separately with the search base \(s_{\rm leg}\) at each right leg and summing gives
+\[
+ \Psi_v=[\psi_v]_T,\qquad \psi_v=y(v)\sum_c\gamma_c\xi_c(v).
+\]
+The full corrected sum is
+\[
+ \Lambda_v=[d_v\xi_{\rm key}(v)\kappa+r(v)\psi_v]_T .
+\]
+To evaluate just \(\Psi_v\) there is no use of the second factor coordinate, QAP correction or cancellation.
+
+### Finite work of the scalar baseline
+
+For the scored subgroup placement put \(M=2^{22}\), \(L=2M\), and choose a public scalar \(c\) of order \(2L\). Then \(c\mathcal H_L\) and \(\mathcal H_M\) are disjoint. The public system representation can include the fixed interpolation scalars and tables used below. They depend only on the selected points and field and are determined when the system is encoded. They add no group element or field value to the ciphertext.
+
+For the ordinary polynomials \(F=A_{(w,0,0,0)},B_{(w,0,0,0)}\), partial fractions give
+\[
+ F(X)=\frac{Z_*(X)}{X^M-1}
+      \sum_{j=0}^{M-1} X^j\sum_{p\in\mathcal P}\frac{F(p)p^{-1-j}}{Z_*'(p)} .
+\]
+Indeed the partial fraction identity for \(F/Z_*\) holds by evaluation at all QAP points, and multiplying each term by \(X^M-1\) gives the geometric sum because \(p^M=1\). Encode each public point coefficient with its fixed factor \(1/Z_*'(p)\). After additions selected by the witness bits, multiply the aggregate value for each point by its fixed \(1/p\) to obtain the exact transform input weight from the displayed identity. Both arrays take at most \(2D<8\) million multiplications for this normalization. Encryption uses the same encoding and the cofactor product proved in C7.
+
+For each polynomial use one length-\(M\) transform for the displayed coefficient array and one for its evaluation on each of the two cosets of \(\mathcal H_M\) in \(c\mathcal H_L\). Scale the coefficients by the respective fixed coset powers before the latter transforms. Both arrays take six transforms and at most \(4M\) scalings. When the selected third tag is one, add the two precomputed tag contributions to the respective evaluated numerators. For each of \(F=A,B\), the public tag-three table at shifted point \(x\) has entry \(F_{\rm tag,3}(x)(x^M-1)/Z_*(x)\), where \(F_{\rm tag,3}\) is its QAP coordinate polynomial for that tag. The powers and quotients here depend only on the public points and can be evaluated at setup with the same subgroup transforms in \(O(D\log D)\) work. Because the selected third tag is a bit, this adds no multiplications at decryption. At each shifted point multiply the two evaluated numerators and the fixed factor \(Z_*^2/(LZ_0(X^M-1)^2)\). The factor is defined because the domains are disjoint. Then apply one unnormalized inverse transform of length \(L\), and at most \(U_*\) multiplications by powers of \(c^{-1}\) to recover the actual coefficients of \(G_0\) in the variable \(X\). This works since the quotient is exact and its degree is below \(U_*<L\). It takes below 390 million multiplications, including the small sparse division and the \(2L\) pointwise products. For the transform count, the radix-two butterfly stages have at most \(B\log_2(B)/2-(B-1)\) non-unit twiddles at length \(B\), since each block has a unit first twiddle and the numbers of blocks sum to \(B-1\). The sparse division uses the fixed reversed monic inverse on prefixes of length at most \(1884\), by a convolution at length 4096. For choices of points outside the scoring placement, the unshifted polynomial construction preceding this paragraph uses interpolation and exact division directly.
+
+
+For the finite matrix evaluation, write the packed witness entries as bits \(b_{j,t}\) in the ordinary power basis. In row \(i\), first sum the tuples \(E(M_{ij})\) for which \(b_{j,t}=1\), separately for each possible \(t\). This costs additions only. Multiply each tuple sum componentwise by the fixed tuple \(E(Y^t)\) and sum the results. Evaluation is a ring isomorphism, so applying \(E^{-1}\) once to this total yields the coefficient vector of the ordinary witness product. Convert the three individual tag-column tuples with one inverse each in that row; the homogeneous column is included with its ordinary bit value one at position zero. There are at most \(kd^2\) scaling multiplications, plus \(4kd^2\) for the inverse matrices. Thus this implementation uses at most \(5kd^2\le 5\cdot4800\cdot 16<5376000\) multiplications, using \(d=16\) and \(kd\le n\le4800\). The other work consists of at most \(O(k(\ell+1)d^2)\) additions, a constant multiple of the finite matrix length for the admitted degree. This gives the previous scalar allowance with the negacyclic coefficient ring.
+
+
+For the weights of the at most eight form values, first evaluate the form coefficients of the all-zero-tag extension and of the three tag column vectors. Each other variant is a sum of these four vectors with coefficients zero or one. Frobenius is \(\mathbb F_q\)-linear, so the two dense matrix applications need only be applied to these four vectors, after which each conjugated variant is also formed by additions. For this decryption ledger use the looser full-matrix bound \(4(n^2+n)\) from C5, ignoring the zero off-parity blocks, while the half-turn again uses sign changes. Each \(U,V\) is the product of two polynomials of degree below \(n\), followed by monic reduction. Let \(M_0=16384\), and write \(T(B)=B\log_2 B/2-(B-1)\) for the earlier bound on nonunit products of an unnormalized radix-two transform. The product takes at most \(3T(M_0)+2M_0\) multiplications including inverse scaling. For monic division of a polynomial \(G\) of degree at most a prescribed \(b\ge n\) by \(P_T\), reverse polynomials to define \(G^{\mathrm{rev}}=X^bG(1/X)\) and \(P_T^{\mathrm{rev}}=X^nP_T(1/X)\). From \(G=P_T Q+R\) with \(\deg R<n\), the reversal of \(Q\) through degree \(b-n\) is the first \(b-n+1\) coefficients of \(G^{\mathrm{rev}}/(P_T^{\mathrm{rev}})\), since the reversed remainder starts at index \(b-n+1\) and the reversed monic denominator has constant coefficient one. Its inverse to the required precision is fixed and precomputed by the recurrence implied by multiplying to one. Truncate \(G^{\mathrm{rev}}\) to the first \(b-n+1\) coefficients before convolution as well. Terms at higher indices cannot affect the required prefix of their product. The quotient requires one product against this fixed kernel, and the remainder requires one further product against the fixed \(P_T\). In each such convolution only one input is dynamic. The other input's transform is fixed, so conversion and multiplication cost at most \(2T(M_0)+2M_0\). Here product inputs have degree below \(n\), so all the needed ordinary convolution lengths are at most \(2n-1<M_0\). Use the same padded degree bound \(b=2n-2\) for all these weight divisions. Its fixed reciprocal and spectra apply to every instance. Thus the sixteen weight products and reductions together with the Frobenius applications cost at most
+\[
+ 4(n^2+n)+16(7T(M_0)+6M_0)<105000000
+\]
+throughout the admitted range \(n\le4800\).
+
+For a full combination, write \(\xi_{a,\mathrm{leg}}\) for its grid weights. For every right leg make the two polynomials
+\[
+ C_{\mathrm{leg}}=\sum_a\xi_{a,\mathrm{leg}}F_{\lambda_a},\qquad
+ D_{\mathrm{leg}}=\sum_a\xi_{a,\mathrm{leg}}X^{\lambda_a}.
+\]
+The second is just copying coefficients at distinct ordinary left indices. For the first, multiply the fixed \(n\)-by-\(K_1\) coefficient matrix of \(F_{\lambda_a}\) by each weight column. Pair its input positions using the paired-input identity in C7. For each right leg the row products use \(n(\lfloor K_1/2\rfloor+(K_1\bmod2))\) multiplications and one common input correction uses \(\lfloor K_1/2\rfloor\). The fixed row corrections are tabulated once. Summing over \(3K_2\) right legs, and using \(2K_1K_2=n\), gives at most \(3n^2/4+3K_2 n/2+3n/4\le17420400\) multiplications when \(K_2\le19\).
+
+Form the six weighted leg polynomials as follows. The two ordinary values \(W_U,W_V\) use \(D_{\mathrm{leg}} X^{k_{\mathrm{leg}}}\) in their respective families and are formed by shifts and additions. The two positive-grade values use the same shifts and sums applied to \(C_{\mathrm{leg}}\). The both-conjugated value \(\widetilde W_U^+\) is the sum of \(C_{\mathrm{leg}} F_{k_{\mathrm{leg}}}\) over the at most \(2K_2\) E/O legs. The negative-grade value uses the same sum with \(D_{\mathrm{leg}}\) in place of \(C_{\mathrm{leg}}\). For either sum, transform each dynamic polynomial at length \(M_0\), multiply pointwise by the precomputed transform of \(F_{k_{\mathrm{leg}}}\) and add in those evaluation coordinates. Then invert the transform once for the sum. These products have degrees at most \(2n-2<M_0\), so their ordinary coefficients are recovered exactly. Each sum uses at most \((2K_2+1)(T(M_0)+M_0)\) multiplications including its inverse scaling.
+
+The six mask outputs of C7 can be calculated from the same twelve products of leg polynomials and form polynomials used in the separate-grade schedule. Six products give the even grades, and six the odd grades. There are nine common forward operands from the six weighted leg polynomials and the three form polynomials. Multiply the transformed operands for each term and combine signed results at each node. Invert one transform per grade, so only six inverse transforms and at most six inverse scalings per node are needed. This is bounded by the former allowance \(17T(M_0)+20M_0\), which covers nine forward transforms, up to eight inverse transforms, twelve pointwise product passes and up to eight inverse scalings. The three even divisions use the fixed modulus and recurrence above with \(M_1=32768\). The complete mask scalar count is below the bound
+\[
+ 17420400+78(T(M_0)+M_0)+17T(M_0)+20M_0+3(2T(M_1)+2M_1)
+ <30000000 .
+\]
+The fixed digit spectra, reciprocal and modulus spectra, and matrix coefficients are computed from the already fixed field data and included with the public arithmetic parameters. Their storage is \(O(n^2)\) on this branch, and their entries are independent of any ciphertext.
+
+The earlier QAP preparation uses at most 390 million multiplications including normalization. The weights use fewer than 105 million and the mask calculations for four full variants use fewer than 120 million. The coefficient-ring conversions use at most 5,376,000 and the remaining fixed scalar operations in the ordinary decryption use fewer than one thousand, including the nonzero key-weight inversion and the fixed multiplier of the sparse key operand. Their sum is below 621 million, all within the protected \(632000000+m\). The rare fallback uses the same expected-cost bound proved in search_spread. The new dense form work consists of bounded-degree polynomial multiplications and divisions by FFT and applications of fixed matrices of dimension at most 4800. The scored branch has \(n\le4800\), so its \(O(n^2+n\log n)\) work is bounded by a uniform constant times \(n\log n\), or by the \(D\log D\) scalar term directly since \(n^2\le4800D\). The original growing branch uses its own arithmetic and is unaffected. The operation counts on source and target group elements are unchanged by this coefficient algorithm.
+
+### Tag choice and key recovery
+
+For any external witness use \(w\) for its prescribed padded completion. For \(t\in\{0,1\}\), set \(a_t=(w,1,0,t)\), \(b_t=(w,0,1,t)\), \(c_t=(w,0,0,t)\), and \(v^{(t)}=(w,1,1,t)\), all with homogeneous coordinate one. The three ordinary corners have zero key corner and \(a_t+b_t-c_t=v^{(t)}\) as integer vectors. The target has key corner one.
+
+Return $\bot$ if $ξ_{\rm key}(v^{(0)})=0$. Test the three primary ordinary bases and select their triple if all are nonzero. If it fails and $ξ_{\rm key}(v^{(1)})\ne0$, test the three secondary ordinary bases and select their triple if all are nonzero. With a selected triple, compute only its target base. If that base is zero, directly normalize its one full combination with the nonzero key weight. Otherwise use the ordinary searches below. With no selected triple, compute the primary target base. If it is zero, directly normalize its one full combination with the nonzero primary key weight. Otherwise take the evaluation-point fallback. There are at most seven base tests and four full combinations. All full combinations have the same third tag and share one baseline. Let $v_*$ denote the selected target in the ordinary branch. Branch selection uses only bases and form weights, independently of the search coins.
+
+For the selected triple, use \(v_0'=c,v_1'=a,v_2'=b\) and let \(c_0,c_1,c_2\) denote the rounded centers of the anchor and differences. Before starting line [full-search], form
+\[
+ Q_0=\Lambda_c-c_0\Psi_c,\qquad
+ Q_1=\Lambda_a-(c_0+c_1)\Psi_a,\qquad
+ Q_2=\Lambda_b-(c_0+c_2)\Psi_b .
+\]
+The line solves \(Q_0=t_0\Psi_c\), then solves \(Q_1-t_0\Psi_a=t_1\Psi_a\) and \(Q_2-t_0\Psi_b=t_2\Psi_b\). The two multiplications by the already recovered \(t_0\) use signed binary arithmetic on \(|t_0|\), with sign handled by the fixed Frobenius inversion. These are the only group products that translate targets within the search. The output is the three centered logarithms in the record below. The later key computation forms \(r(v_*)=c_0+c_1+c_2+t_0+t_1+t_2\), subtracts \(r(v_*)\Psi_{v_*}\), and multiplies by the inverse key weight. This gives \([\kappa]_T\). One key-oracle query unmasks the message. At most seven \(\Psi\) values and four full \(\Lambda\) values are needed, and the triple choice is independent of the search vector.
+
+### Exact fallback when no ordinary triple is available
+
+In the evaluation-point branch pair the published \(P^0_0,P^0_1\) with \(B^0_{\rm key}\) to obtain \(E_0=[\gamma_{\rm key}Z_*(\tau)]_T\ne0\) and \(E_1=(\tau/c_{\rm q})E_0\), where \(c_{\rm q}=1\) for unscaled powers. The evaluation point excludes the roots of \(Z_*\). At stage \(h\) use \(w=2^h\), tabulate \(iE_0\) for \(0\le i<w\), and compare with \(E_1-kw E_0\) for \(0\le k<w\). Accept only \(j=kw+i<q\). The first stage with \(w^2>j\) suffices, and the nonzero base has order \(q\), so \(j=\tau/c_{\rm q}\) in the field. Use the fixed Frobenius inversion for \(-E_0\) and double \(h\) times to generate the stage stride. Since \(Z_*=(X-\rho)Z\) and \(L_\rho=Z/Z(\rho)\), normalize by \(K=E_0/((c_{\rm q}j-\rho)Z(\rho))=[\kappa]_T\). The denominator is nonzero. Both pairings are on previously counted inputs and have the same generic formal expressions as in C7.
+
+**One search line and its actual result.** The revised line [full-search] receives the selected mode and the corresponding group operands. On the ordinary mode for the chosen triple, the public centers \(c_0,c_1,c_2\) are the rounded centers of the anchor and the two increments. The line returns
+\[
+ T=(r(c)-c_0,\ r(a)-r(c)-c_1,\ r(b)-r(c)-c_2,\ 0).
+\]
+On the direct-key mode, the same line instead traverses the evaluation-point logarithm search above and returns \(T=(0,0,0,j)\). The index \(j\) is the nonnegative solution in \([0,q-1]\) to the displayed group equation, and the other three coordinates are zero. The divisor for key normalization is applied afterward using this fourth returned component. On a bypass branch no logarithm is computed and \(T=0\). The line also returns the signed component \(t\) of largest magnitude with the smallest index breaking ties. This designated scalar result is an actual recovered logarithm, with \(|t|=\|T\|_\infty\). The witness-sampler range \([-B,B]\) is used for the first three coordinates. The separate input-domain range \([0,q-1]\) for the fourth comes from the order of its nonzero base. The RMS and pointwise bounds below cover this entire record, including its fourth component. Reconstruction and group normalization follow the line on either path.
+
+### View of the correction polynomials
+
+The sparse quotient bases and the common-direction right lists are the inputs with inverse scale \(\zeta_0^{-1}\), and only the combined correction bases have inverse scale \(\zeta_1^{-1}\). The key-scalar degree class in C7 therefore collects the original and tag-difference terms in each cell as \(Z_c h_c^0+Z_0 T_c\), with every exponent of \(T_c\) in a nonzero residue class modulo \(\nu\). Monic division of \(T_c\) by \(Z_{\mathcal K}\) preserves those classes in every subtraction step. Its remainder \(R_c\) has degree below \(\nu n_{\mathsf c}\) and is allowed. Multiplying the multiple part by \(Z_0\) gives a multiple of \(Z_*\), hence of \(Z_c\), and it is absorbed into \(h_c\). Thus the arbitrary correction is precisely of the required \(Z_c h_c+Z_0R_c\) form. The constant-term comparison in C7 bounds the quotient degree by the QAP criterion, and the changed corner is \(W_{t_1,t_2}\) from that criterion. Every other Laurent comparison uses the same input types and the same actual field ties, as proved in C7, with the two-sector copies omitted.
+
+## Amendment n2
+
+The exact half-count is
+\[
+ n_2=\left\lceil\frac{6K_2(N_{\rm pub}+4)+3K_2+(3n/2)(J+3)+C_{\rm mask}+J+1}2\right\rceil .
+\]
+The first two terms count the single right factor arrays and search bases. There is one sparse list of \(A_c\) bases, two common-direction right lists of \(A_c\) bases and \(J\) combined lists of \(A_c\) bases, and the cancellation count is \(C_{\rm mask}\). The additional mixed right correction list has \(J+1\) slots. The optional generator padding gives \(2n_2\) actual slots. The G1 count is proved in n1. Together with the fixed one GT element, seed and masked message, these give exactly the protected size formula and the one-generator-multiplication count from the published scalars.
+
+## Amendment dec_sum_g1
+
+Compute the contracted padded witness sums of the two coordinates of each left leg and the Y column once with tags omitted, using at most \((N+1)/2+252\) additions per array in the witness-weight convention. The at most seven variants add at most three tag entries per array. The one common-direction witness sum uses at most \((N+1)/2+252\) additional additions. For each full combination add at most five fixed entries to each of its two sparse operands and add at most one further fixed multiple to the non-key operand. The up to four full variants each need at most ten additions for the fixed entries and one for the non-key term. One further addition can subtract the fixed multiple in forming the shifted baseline sparse operand. The total 45 fits 64; other weighted operands are charged as MSMs. The total bound is \((2K_1+1)((N+1)/2+252+21)+(N+1)/2+252+64\).
+
+## Amendment dec_sum_g2
+
+For the single right factor sector, compute each of the \(6K_2\) contracted padded witness coordinate sums once, using at most \((N+1)/2+252\) additions each. Only the at most four full combinations need these sums with tags added; each adds at most three entries. Only the target variant has both tag bits set and needs one addition to combine its two direction MSM results. Each mixed target recovery uses three further G2 additions and there are \(J+1\) such lists. Thus the count is \(6K_2((N+1)/2+252+12)+1+3(J+1)\). The fixed search bases require no analogous coordinate sums.
+
+## Amendment dec_msm_g1
+
+The at most seven first-coordinate weighted left operands and four second-coordinate ones each use \(A_c\) points. The baseline sparse key and non-key MSMs use \(S_0\) and at most \(S_0+1\) points respectively. Charge one more point for the fixed multiple \(P_0^0/Z(\rho)\), computed and reused. The baseline non-sparse correction uses \(U_*-(S_0+n_{\mathsf c})\) points. These QAP operands are each computed once and shared, and the common-direction witness sum and fixed-entry adjustments were counted as additions. The bound is therefore
+\[
+ 11(3n/2)+D-1+S_0+2+(\nu-1)n_{\mathsf c}.
+\]
+
+## Amendment dec_msm_g2
+
+The three ordinary variants use \(3(J+1)A_c\) points as an upper bound for their regular right and complete sparse operands. Reuse their regular and non-key sparse sums through the mixed entries of n1. The target key sparse operand uses one further point. The two direction lists use at most \(4A_c\) points across the four variants because their numbers of present tag bits are zero, one, one and two. Each of the at most four full combinations uses its original \(C_{\rm mask}\)-point cancellation MSM. A direct-normalization branch uses at most \((J+1)A_c+2A_c+C_{\rm mask}\) points. Thus \((3J+7)A_c+4C_{\rm mask}+1\) covers every branch. The \(\Psi\) combinations still use the fixed right search bases.
+
+## Amendment dec_pairings
+
+Each of the at most seven \(\Psi\) sums uses \(3K_2\) pairings. Each of at most four \(\Lambda\) sums uses \(6K_2\) factor pairs, \(J\) combined correction pairs, two sparse pairs, at most one common-direction pair and one cancellation pair. Thus the total is at most \(21K_2+4(6K_2+J+4)\). Accumulate each signed sum starting with its first term, updating by the indicated group addition or subtraction. This needs at most one fewer accumulation operation per nonempty sum than its pairing count. The remaining bounded number of GT translations, final normalizations and searches are accounted for in search_spread.
+The exceptional fallback follows the search-base computations and performs two additional pairings with the already transmitted sparse bases. It uses no full combination. Its pairing count is at most \(21K_2+2\), within the same bound.
+
+## Amendment search_spread
+
+### Guessing probability for the shifted sampler
+
+This gives the amended stack definition and replaces Lemma 4.5 in full. On internal coordinates let $W$ be the vertical concatenation of the matrices of any stack. Its rank $d$ is the dimension of its row space. It passes when each matrix is symmetric and passes the internal Booleanity and constraint tests in D. For the actual shifted sampler define $\operatorname{gp}(W)=\max_y\Pr[Wr=y]$; heavy means above $θ$ and light means at most $θ$. Write $r=u+Z$ here with $Z$ the independent uniform vector on the span $\mathcal A$ of the public shift directions. This is indeed uniform, since the map from their independent scalar coefficients to their span is a surjective linear map with equal fiber sizes.
+
+For every stack, $\operatorname{gp}(W)\le g^{-d}$. To prove it, fix any value of $Z$ and any target $y$. Pick $d$ independent pivot columns of $W$. After the nonpivot coordinates of $u$ are fixed, the equation $Wu=y-WZ$ specifies at most one full pivot tuple, since the pivot submatrix is injective. If the zero column vanishes, choose $d$ ordinary pivots and fix the other ordinary coordinates. Their specified tuple has probability at most $g^{-d}$ by independence. If the zero column is nonzero, choose a pivot set containing it by extending it to a column-space basis. Fix the ordinary nonpivots. The specified tuple requires $d-1$ independent ordinary box values, with probability at most $g^{-(d-1)}$. After fixing them, $u_0$ is uniform on $g$ distinct residues through the independent diamond, so its specified value has conditional probability at most $1/g$. Rank zero has probability one. This proves the bound for every fixed shift and averaging gives the same bound for $Wr$.
+
+If the row space is spanned by unit vectors with indices in a set $I\subseteq\{1,\ldots,N_*\}$, a fiber of $W$ is a fiber of $r_I$ because the two linear maps have the same kernel. With $B=\{2,\ldots,g+1\}$ reduced into the field, for $y\in\mathbb F_q^I$ one has
+\[
+ \Pr[r_I=y]=g^{-|I|}\frac{|\mathcal A_I\cap(y-B^I)|}{|\mathcal A_I|},
+\]
+where $\mathcal A_I$ is the coordinate projection of the shift space. Thus the original unit-coordinate equality holds exactly if every shift has zero projection on $I$. In that case the probability is $g^{-|I|}$ on the independent box. If the projection is nonzero, one coordinate of its support covers the whole field because a nonzero linear map to the field is surjective. It cannot be contained in the corresponding $g$-point coordinate interval of $y-B^I$. The bound is then strict. In particular a single ordinary unit with nonzero shift coefficient has guessing probability $1/q$, and the tag units retain $1/g$.
+
+For any $v$ in the row space of $W$, one has $v^\top=b^\top W$ for a row of coefficients $b^\top$. A maximizing joint fiber $Wr=y$ lies in the scalar fiber $v^\top r=b^\top y$. Hence $\operatorname{gp}(v^\top)\ge\operatorname{gp}(W)$. If $W$ does not annihilate the shift space, $WZ$ is uniform on its nonzero image, so conditioning on $u$ also gives $\operatorname{gp}(W)\le1/q$. If $W$ annihilates it, its fiber law is exactly that of $u$. I5 applies these two facts and the rank bound to prove that every heavy stack has rank at most three, and I6 uses the row-space marginal bound for the inverse interface. No later step requires equality for shifted unit coordinates.
+
+For the following search analysis $r_i,r_\diamond$ denote the underlying $u_i,u_\diamond$ of I5. Honest completions cancel all six sampler shifts, so their recovered dot products are exactly those of these boxes.
+
+Let $σ^+=g\sqrt{(N_o+7)/48}$, $R_0=σ^++3/2$, and $M_1=g/4+1/2$.
+The amended spread is
+\[
+ \max\left\{ R_0,\ R_T,\ 
+   (\frac{20}{37}((1000012/1000000)((165623/100000)\sqrt{σ^+}+(47/18+1/5000000)\sqrt{g/2})+118800))^2\right\},
+ \ R_T=g\sqrt{(N_o+23)/48}+14 .
+\]
+The cost uses the concurrent-anchor bound below and $M_1$ bounds an increment in the first triple. Branch choice is independent of the search vector. The terms $R_0,R_T$ bound the RMS of the recombined centered integer and the search record.
+
+For the ordinary search record, the exactly centered variables have second moments bounded by $(g^2-1)(N_o+7)/48$ for the anchor and $2(g^2-1)/12$ for each increment, since each increment involves at most two independent uniform box samples with opposite coefficients. The square of the Euclidean norm is a sum of squares regardless of their correlations. The vector of rounding errors has Euclidean norm below $2$, since the anchor error is at most $3/2$ and each increment error at most $1/2$. The triangle inequality in square mean bounds the ordinary part of the record by $g\sqrt{(N_o+23)/48}+2$. The fourth component is zero except on the direct-key fallback whose probability is at most $135/q^2$ by Targets. Since $0\le j<q$, its root mean square is at most $\sqrt{135}<12$, even with arbitrary dependence between the branch and $j$. Summing these square-mean bounds gives $(\mathbb E\|T\|_2^2)^{1/2}\le R_T$, which also bounds the RMS of the signed greatest component. The first three coordinates meet the range bound from Bsearch and the stated width of any two box samples, and the evaluation-point coordinate meets its stated range.
+
+### Expected absolute anchor
+
+Before the rounding error of at most $3/2$ in I5, the center removes the mean, leaving the sum of independent symmetric variables
+\[
+ S=X_\diamond+\sum_{i=1}^{N_o+3}(v_i-1/2)X_i ,
+ \ X_i=r_i-(g+3)/2 .
+\]
+Its standard deviation is $σ_S=\sqrt{(g^2-1)(N_o+7)/48}>0$. Let $Y_i$ be its summands divided by $σ_S$, using one more index for the independent diamond term. Set $v_i'=\mathbb E Y_i^2$ and $v_{\max}=\max_i v_i'$. The ordinary summands have $v_i'=1/(N_o+7)$, the diamond summand has $v_i'=4/(N_o+7)$, and $\sum_i v_i'=1$. Each $|Y_i|^2\le3v_i'$ because the square of the largest deviation of an integer uniform sample of width $g$ is $(g-1)^2/4$ before scaling, and the variance is $(g^2-1)/12$. It follows that $\mathbb E Y_i^4\le3(v_i')^2$.
+
+Write $\phi_i(t)=\mathbb E\cos(tY_i)$, $\psi_i(t)=\exp(-v_i't^2/2)$. For $0\le t\le300$ and $N_o\ge359994$, put $w_i=v_i't^2\le1$. Both $\phi_i(t)$ and $\psi_i(t)$ belong to $[1-w_i/2,1-w_i/2+w_i^2/8]$. For cosine the lower bound follows from $1-\cos x\le x^2/2$, and the upper bound follows from Taylor's theorem to degree three with fourth derivative at most one and the fourth-moment estimate above. For the exponential use Taylor's theorem with its second derivative at most one on the nonnegative half-axis for $\exp(-x)$. Both functions are nonnegative on this interval and at most $1-3w_i/8\le \exp(-w_i/3)$. Symmetry and independence make $\phi=\prod_i\phi_i$ the characteristic function of $S/σ_S$. The product $\psi=\prod_i\psi_i$ is the characteristic function of a standard normal. Telescoping the products, using one difference $|\phi_i-\psi_i|\le w_i^2/8$ and bounding each other factor by its exponential, yields
+\[
+ |\phi(t)-\psi(t)|
+ \le \frac{t^4}{8}\sum_i(v_i')^2
+          \exp(-(1-v_{\max})t^2/3)
+ \le \frac{t^4}{720000}\exp(-t^2/4).
+\]
+The last inequality uses $v_{\max}\le1/90000$, $\sum_i(v_i')^2\le v_{\max}$, and $1-v_{\max}\ge3/4$.
+
+For real $x$,
+\[
+ |x|=\frac2π\int_0^\infty\frac{1-\cos(tx)}{t^2} dt .
+\]
+Scale by $|x|$ and integrate by parts. The remaining sine integral is $π/2$: with damping $e^{-at}$ its value is $\arctan(1/a)$ by differentiating in $a$ and integrating from infinity. Integration by parts bounds the tail by $2/T$ uniformly in $a\ge0$, justifying $a\downarrow0$. Apply Tonelli and subtract the normal comparison. The low-frequency error is below $1/(180000\sqrtπ)$ by the moment bound and $\int_0^\infty t^2e^{-t^2/4}dt=2\sqrtπ$.
+
+For the scored range $359994\le N_o\le479993$ and $g\ge10^{12}$, the cosine bound can be continued beyond frequency 300. Each of the $N_o+3$ ordinary summands has spacing $1/(2σ_S)$ after normalization, up to sign, with distribution symmetric about zero. The finite geometric sum yields its characteristic function
+\[
+ \frac{\sin(gu)}{g\sin u},\ u=\frac{t}{4σ_S}.
+\]
+Here $σ_S/g\le100$ by $N_o+7\le480000$. Also $σ_S\ge g$ since $g\ge2$ and $N_o+7\ge360000$. Thus $300\le t\le10^6$ gives $gu\ge3/4$ and $0<u<1/100$. The function $\sin v/v$ decreases from 1 on $[0,π]$: the derivative numerator $v\cos v-\sin v$ is zero at zero and has derivative $-v\sin v\le0$ there. For $v\geπ$, its absolute value is at most $1/π$. Taylor's bound on $\sin(3/4)/(3/4)$ and the lower bound $\sin u\ge u-u^3/6$ therefore give
+\[
+ \left|\frac{\sin(gu)}{g\sin u}\right|
+ \le \frac{1-(3/4)^2/6+(3/4)^4/120}{1-(1/100)^2/6}<\frac{91}{100}.
+\]
+Both Taylor bounds follow from the alternating power series on the given fixed intervals. Since $(91/100)^8<1/2$ and $N_o+3\ge320$, the product of the ordinary factors is bounded in absolute value by $2^{-40}$ on this frequency interval. The diamond factor has absolute value at most one and the normal factor is also at most $2^{-40}$ for $t\ge300$. Thus the middle integral contributes less than $2^{-40}$ after its $2/π$ normalization. The tail above $10^6$ contributes at most $4/(π10^6)$.
+
+For the numerical bounds below we use $π>314159/100000$. It follows from $π/4=4\arctan(1/5)-\arctan(1/239)$ by using the alternating series through $-x^7/7$ for the first arctangent and the upper bound $x$ for the second.
+ 
+### Relative searches and fallback work
+
+For a centered box of width $g$, summing the two arithmetic half-progressions bounds its absolute mean by $g/4$. Rounding gives $M_1=g/4+1/2$ for each first-triple increment. The later triples have two-input differences of RMS at most $M_Δ=g/\sqrt6+1/2$. They occur with probability at most $9/q$ by Targets. For absolute mean bound $M$ use babies $iP$ for $0\le i<b=\lceil\sqrt M\rceil+1$ and test residuals about centers $j(2b-1)P$, alternating signs of $j$ in outward order. The radius-$b-1$ signed cells partition the integers. The two progression states advance with one update each and the stride needs one doubling and one addition after the babies. The count is at most $b+2|x|/(2b-1)+12$, including initialization and validation. Bounded representatives are unique since $2B+1<q$. Thus the two later increments contribute below $(9/q)8\sqrt{M_Δ}<1$ expected extra primary steps since $g+1<q$ and $M_Δ$ is above $15^2$ on the admitted shape.
+
+**Proposition 5.7(c).** The source sums, MSMs and pairings are proved in their count amendments, including shared final exponentiation. The auxiliary ledger below has $67(13\cdot508+400+1024)+144(1024+8)=686484$ products. Direct fallback adds fewer than two in expectation, including its scalar denominator. Thus $(1000012/1000000)(4352+1)+(686484+2)/6=89075539177/750000<118800$ primary units cover the fixed work.
+
+**Proposition 5.7(d).** The searches take $O(\sqrt{\|T\|_\infty}+1)$ and $O(\sqrt g N_o^{1/4})$ expected group work. Direct fallback width $w=2^h$ costs at most $4w$. Their sum is below twice the final $w\le2\sqrt{j+1}$, for at most $16\sqrt q+600$ operations with normalization. Its probability $135/q^2$ makes the added field cost below one product beyond two counted pairings, plus below one for the scalar denominator.
+
+### Concurrent tables for the finite signed logs
+
+For the first triple put $xP=Q$, $A=g/2$, $a=\sqrt A$, and $b=\lfloor a\rfloor$. The single centered tag gives a uniform interval of $g$ integers in $[-A,A]$ with second moment at most $g^2/12+1/4$. Condition only on the independent branch choice.
+
+The baby entries are $iP$, $0\le i\le b+1$. The signed giant centers are $2bi$ and $-(2b+2)j$ for positive $i,j$, with zero used once. The giant entry at center $c$ is $Q-cP$. Visit zero, then alternate the positive and negative centers in outward order. Stop a direction when its next nearest-integer cell misses $[-g,g]$. Prepare the two distinct strides $(2b)P,-(2b+2)P$ using the two setup allowances. Each append uses one update. Alternate one baby and one giant until the baby list is complete and retain both tables during this part. Finish the longer list after the shorter one exhausts; discard the giant table once the baby list is full.
+
+Use the same sign classes and recovery of the signed indices as in the fixed-width traversal. A baby and giant match gives $x=c\pm i$. The retained cells cover $[-g,g]$.
+
+Bound the expected count for the baby and giant matches. For $x\ge0$ select the nearest nonnegative center and for $x<0$ the nearest nonpositive one. Break midpoint ties consistently, so a complete cell has $2m$ integers with residuals $-m,\ldots,m-1$, where $m=b$ or $b+1$. Its giant ordinal $G$, starting at zero, satisfies $G\le |x|/b+2$. Let $I$ be the absolute residual. Put $D_b=b+2$. Before the baby list completes the ordinary hit uses at most $2\max(I,G)+2$ primary entries. If $G\ge D_b$, it uses at most $D_b+G+2$. On a complete cell with $G\le m$, averaging gives
+\[
+ 2\mathbb E\max(I,G)=2G+2\sum_{v=G+1}^m\frac{2(m-v)+1}{2m}=m+G^2/m.
+\]
+For $G\le m\le D_b$ this is at most $D_b+G^2/D_b$ by monotonicity in the denominator variable. For $m<G<D_b$ use $2G\le D_b+G^2/D_b$, and for $G\ge D_b$ use $G\le G^2/D_b$. Thus the conditional bound is $D_b+G^2/D_b+2$. At most four cells are incomplete, at zero and the interval ends. On each the same bound overestimates the required conditional mean up to an added $2D_b$, by the pointwise counts. The expected addition is at most $2D_b\cdot4(2b+2)/g<17$.
+
+For each $x$, use $D_b\ge a$, $D_b\le a+2$, $b\ge a-1$, $|x|\le a^2$ and $a\ge1000$. Then $G^2/D_b\le x^2/a^3+11$, by expanding $(|x|/b+2)^2/D_b$. The extra quadratic part is at most $a((a/(a-1))^2-1)<4$, the linear part is at most $4a/(a-1)<6$, and the constant part is below one. Combining with the incomplete cells, fixed entries and second moment gives at most $(4/3)a+64$ expected ordinary primary candidates. Here $a\ge2^{24}$ by $g\ge2^{49}$.
+
+### Opposite signs in the retained giant table
+
+At each giant append, probe the earlier giants by the same sign-class name used for baby hits. Store the center and sign. Their centers have span at most $2(B+2b+2)<2^{92}<q$, so signed group points cannot repeat at distinct centers. Opposite signs give $2Q=(c+c')P$, hence the integer midpoint of the two even centers. Check the bound $[-B,B]$ as for an ordinary match. At the identity either sign works. Table lookup needs no field products.
+
+For odd $d\ge1$ and $j\ge1$, pair giant indices $(d+j,j)$ with opposite directions, and interchange them for the second target. The implied targets are $db-j$ and $-d(b+1)-j$. The ordinary residual at each target has magnitude at least $b-j$, by its distance $j$ past or before the midpoint of the adjacent centers. The targets are distinct for the pairs below, since odd differences change a midpoint by at least $2b$ and offsets are less than $b/3$. When $S=(2b-4d-6j-6)_+>0$, both targets are in $(-g/2+1,g/2-1)$ and both progressions remain active until the late baby appears. Indeed $d+j<b/2$ and the traversals retain centers out to $g$. The ordinary hit needs at least $2(b-j)-2$ updates, whereas the pair is ready by $4(d+j)+4$. Thus it saves at least $S$ at each target. On the rectangle $[d-1,d+1)\times[j-1,j)$ the function $(2b-16-4u-6v)_+$ is at most $S$. The rectangles have area two and partition the nonnegative quadrant. Integrating first in $v$ then in $u$ gives $(2b-16)^3/144$. Divide by $g=2a^2$ to obtain at least $(a/36)(1-9/a)^3\ge(1/36-10^{-7})a$ since $a\ge2^{24}$. The increment bound is consequently $(47/36+10^{-7})a+128$.
+
+### A local bound for anchor probabilities
+
+Let $K=\sum_i(2v_i-1)r_i$ have mean $\mu_K$ and variance $s_K^2=(N_o+3)(g^2-1)/12$. Its centered summands are independent signed boxes. Thus $180<s_K/g<182$ and $(99/50)\sigma^+<s_K<2\sigma^+$. The anchor is $X=A_0-c_v+r_\diamond+\lceil K/2\rceil$. Given $r_\diamond$, both adjacent $K$ integers producing $X=x$ are within $2|x|+g+3$ of $\mu_K$ by the center formula.
+
+Write $\phi_K$ for the characteristic function of $(K-\mu_K)/s_K$. Integrating each integer frequency over a full period gives
+\[
+ s_K\Pr(K=k)=\frac{1}{2\pi}\int_{-\pi s_K}^{\pi s_K}
+ e^{-it(k-\mu_K)/s_K}\phi_K(t)\,dt .
+\]
+The normalized Gaussian density is the same integral over the real line with $e^{-t^2/2}$ in place of $\phi_K(t)$, by the Gaussian integral. Up to frequency 300 the same moment telescoping as above gives $|\phi_K(t)-e^{-t^2/2}|\le t^4 e^{-t^2/4}/(8(N_o+3))$, now with equal summand variances $1/(N_o+3)$. The integral of $t^4 e^{-t^2/4}$ on the positive axis is $12\sqrt\pi$ by integration by parts. For $300\le t\le1000$, put $u=t/(2s_K)$. Here $gu>4/5$ and $u<3/g$. The sine ratio has magnitude at most $99/100$: $|\sin(gu)/(gu)|<9/10$ by the decreasing sinc on $[4/5,\pi]$ and the bound $1/\pi$ thereafter, and $u/\sin u<11/10$ by Taylor's bound. For $1000\le t\le\pi s_K$, the ratio is at most $600/t$ by $\sin u\ge2u/\pi$ and $\pi s_K/g<600$.
+
+There are $N_o+3$ factors of the sine ratio in $\phi_K$. Thus the absolute inversion error is at most
+\[
+ \frac1\pi(\frac{12\sqrt\pi}{8(N_o+3)}+
+ 700(99/100)^{N_o+3}+\frac{1000(3/5)^{N_o+3}}{N_o+2}+
+ \frac{e^{-45000}}{300})<1/10000 .
+\]
+Consequently each adjacent integer has mass at least $(199/500)(1-z^2/2)/s_K-1/(10000s_K)$ at standard displacement $z$, since $1/\sqrt{2\pi}>199/500$ and $e^{-z^2/2}\ge1-z^2/2$. For $|z|\le3/5$ this gives mass strictly above $8/(25s_K)$, since $(199/500)(41/50)-1/10000>8/25$.
+
+### Two-phase concurrent traversal for the anchor
+
+Keep the two different giant strides, baby indices from zero through $b+1$, and query opposite signs as for increments. Here take $A_*=31/25$, $a=\sqrt{A_*\sigma^+}$ and $b=\lceil a\rceil+1$. Retain cells meeting $[-\lceil B/2\rceil,\lceil B/2\rceil]$, which contains the anchor by the sampler's deterministic bound $(N_o+5)(g-1)/4+3/2$. The center span is below $2B+1<q$ since $2b+2<B$, so the table and answer bounds above apply. Use the cumulative baby schedule
+\[
+ r_1=9/10,\ r_2=6/5,\ t_0=8/25,\ h_0=r_1t_0,\ t_1=137/150,
+ \qquad
+ h(u)=\begin{cases}
+ r_1 u&0\le u\le t_0,\\ h_0+r_2(u-t_0)&t_0\le u\le t_1,\\ 1&u\ge t_1 .
+ \end{cases}
+\]
+Use the inverse of $h$ on $[0,t_1]$. Schedule baby $i$ at time $h^{-1}(\min(i/b,1))$ and giant $j$ at time $j/b$. Include both extra baby indices at $t_1$ and prefer babies on ties. These are rational comparisons of the next indices. As before, retain both tables until the baby list ends.
+
+For the ordinary hit use the nearest center on the sign of $X$, with residual magnitude $I$ and ordinal $J$. Put $x=\min(I/b,1)$, $u=J/b$, $v=\max(u,h^{-1}(x))$, and $H(x,u)=h(v)+v$. The two entries are present by $v$, so the primary count is at most $bH(x,u)+18$, including the extra baby entries. As a function of $x$, $H$ is constant up to $h(u)$ and then equals $x+h^{-1}(x)$, so it is increasing and 19/9-Lipschitz. For $u\ge t_1$ it equals $1+u$.
+
+Conditional on the other box variables, the diamond gives a uniform interval of $g$ integers. In a full cell the residual is uniform on $-m,\ldots,m-1$ with $m=b$ or $b+1$. Its absolute value is dominated by $mU+1$ for $U$ uniform on $[0,1]$: for $0\le y<m$ its distribution is $(2\lfloor y\rfloor+1)/(2m)\ge\max(0,(y-1)/m)$. Coupling the cumulative probabilities gives $x\le\min(1,U+2/b)$. Thus the full-cell bound is $bf(u)+23$, where
+\[
+ f(u)=\int_0^1 H(x,u)dx=h(u)(h(u)+u)+\int_{h(u)}^1(x+h^{-1}(x))dx.
+\]
+On the linear pieces $f'(u)=h(u)(1+h'(u))$. Hence $f$ is continuous, increasing and $13/5$-Lipschitz, below $2$ before $t_1$ and equal to $1+u$ thereafter. There are at most four incomplete cells, at zero and the two interval ends. Their probability is at most $4(2b+2)/g$. Before fill the pointwise count is at most $3b$ and after fill the whole-cell bound holds pointwise. The excess is at most $24b(b+1)/g<3000$, since $a^2/g<121$, $b\le a+2$ and $g>10^{12}$.
+
+The ordinary ordinal satisfies $J\le |X|/b+2$. Thus $bf(J/b)\le bf(|X|/a^2)+26/5$. Also $\mathbb E f(|X|/a^2)\le2+\mathbb E|X|/a^2<3$ from the RMS bound. Changing the exterior $b$ to $a$ costs at most six steps and replacing $X$ by the centered sum $S$ costs less than one since $|S-X|\le3/2$. The complete comparison overhead is below 4096. 
+
+Put $Y=S/\sigma_S$ as above and let $G$ be standard normal. The established characteristic-function bound through frequency $10^6$ and the trivial bound beyond it give
+\[
+ \frac{2}{\pi}\int_0^\infty
+    \frac{|\phi_Y(t)-e^{-t^2/2}|}{t^2} dt
+ <\frac1{300000}+2^{-40}+\frac2{10^6}<\frac1{150000}.
+\]
+In particular, for every $v\ge0$ the expectations of $(|Y|-v)_+$ and $(|G|-v)_+$ differ by less than $1/150000$: use
+$(|y|-v)_+=(|y-v|+|y+v|)/2-v$ and the absolute-value integral above, in which the average of the shifts multiplies the characteristic function by $\cos(tv)$. Monotonicity gives $f(|S|/a^2)\le f(|Y|/A_*)$. To compare this last expectation to the normal one, write $f(u)=f(0)+\int_0^{t_1}(u-v)_+ d\mu(v)$, including any atoms at the endpoints. Here $d\mu$ is the measure of increments of $f'$. This identity follows by integrating the derivative, which starts at zero. Its derivative grows on the two pieces and jumps upward at $t_0$ to reach $1+r_2$ just before $t_1$, where it drops to one. The total variation of $\mu$ is $1+2r_2=17/5$. Therefore
+\[
+ \left|\mathbb E f(|Y|/A_*)-\mathbb E f(|G|/A_*)\right|
+ <\frac{17/5}{150000 A_*}.
+\]
+
+It remains to bound the normal expression at the two rational cutoffs $R_0=A_*t_0=248/625$ and $R_1=A_*t_1=4247/3750$. Let $F(v)=\Pr(|G|\le v)$ and $\varphi$ be the normal density. Direct integration of $f'$ gives
+\[
+ f(x/A_*)=
+ \begin{cases}
+ (36943/37500)+(171/200)(x/A_*)^2,& 0\le x\le R_0,\\
+ (188459/187500)-(132/775)x+(825/961)x^2,&R_0\le x\le R_1,\\
+ 1+x/A_*,&x\ge R_1.
+ \end{cases}
+\]
+In computing $f(0)$, the integral of $h^{-1}$ equals $r_1t_0^2/2+(1-h_0)t_0+(1-h_0)^2/(2r_2)$. For the normal integrals use
+$\mathbb E[|G|\mathbf1_{|G|\le v}]=2(\varphi(0)-\varphi(v))$ and
+$\mathbb E[G^2\mathbf1_{|G|\le v}]=F(v)-2v\varphi(v)$, by $\varphi'=-x\varphi$ and integration by parts. Substituting in the three pieces gives
+\[
+ \mathbb E f(|G|/A_*)=1
+  -\frac{1249251}{3875000}F(R_0)
+  +\frac{155609099}{180187500}F(R_1)
+  -\frac{78}{775}\varphi(R_0)+\frac{7}{775}\varphi(R_1).
+\]
+Use $398940/10^6<1/\sqrt{2\pi}<398943/10^6$ by the earlier lower bound and $\pi<314160/100000$. The upper bound on $\pi$ follows from the same Machin identity, using the alternating sums through the positive ninth-power term for the first arctangent and the negative cubic term as a lower bound for the subtracted arctangent. Squaring the two normalization inequalities with the respective rational bounds on $\pi$ verifies them.
+
+At $v=R_0,R_1$ use $z=v^2/2$. In $F(v)$ the alternating terms are $z^j/(j!(2j+1))$ times $2v\varphi(0)$, and in $\varphi(v)$ they are $z^j/j!$ times $\varphi(0)$. Use degree 7 below and degree 6 above. The integer floors of $10^{12}$ times the unscaled unsigned terms for $F(R_0),F(R_1),\varphi(R_0),\varphi(R_1)$ are
+
+    1000000000000, 26241706666, 619764451, 11616912, 177827, 2290, 25, 0
+    1000000000000, 213771958518, 41128605223, 6280101778, 783130633, 82183763, 7432862
+    1000000000000, 78725120000, 3098822259, 81318384, 1600449, 25199, 330, 3
+    1000000000000, 641315875555, 205643026119, 43960712449, 7048175698, 904021393, 96627211
+
+Write $z=A/B$ in lowest terms. For $R_0$, $(A,B)=(30752,390625)$, and for $R_1$ it is $(18037009,28125000)$. For the displayed floors $a_j$ and $d_j=2j+1$ (CDF) or $d_j=1$ (density), the identity $10^{12}A^j=a_j B^j j! d_j+r_j$ gives the following remainder rows in the same order.
+
+    0, 781250, 1375488281250, 266835148437500000, 3855304541846810546875000, 9955775581697684336199218750000, 14411473322717833221688670933593750000, 26008395573430901878846681776128000000000000
+    0, 43750000, 7584906250000000, 440938765166500000000000, 24293514853320523561000000000000, 1785881479701946422338844049000000000000, 2121232610458060942948718140536409441000000000000
+    0, 0, 154785156250, 266835148437500000, 502543273231087890625000, 133232802550059366716796875000, 1621704079036029876008434117187500000, 5025180408015443264840043249211496093750000
+    0, 15625000, 1256781250000000, 40487105010250000000000, 9276577597461148561000000000000, 1785881479701946422338844049000000000000, 339437809103652678788561890536409441000000000000
+
+All entries satisfy $0\le r_j<B^j j!d_j$ with the indicated $B$ values, so these identities give exactly the preceding floors. For each alternating sum of floors subtract the number of negative terms for its lower value, or add the number of positive terms for its upper value, then divide by $10^{12}$. Use the degree-seven sum in the two lower rows and degree six in the two upper rows. Multiply by the stated lower or upper normalization, and by $2R_i$ in the CDF rows. The margins from these directed values to the proposed outward bounds, taken in the outward direction, are respectively \(1820798867/1953125000000000000\), \(185105618459/625000000000000000000\), \(1138657/6250000000000000\) and \(195430839/200000000000000000\), all positive. The resulting lower, upper, lower and upper endpoints are therefore $308483285, 742591559, 368737832, 210086265$ in units of $10^{-9}$. Substitute these by coefficient sign, multiply by $1113553/10^6>\sqrt{A_*}$, and add $(1113553/10^6)(17/5)/(150000 A_*)$. The rational result is $201538100904441026245877/120125000000000000000000$. The difference from $83887/50000$ is \(416595558973754123/120125000000000000000000>0\). Thus the ordinary anchor needs at most $(83887/50000)\sqrt{\sigma^+}+4096$ expected candidates.
+
+The extra giant matches improve the ordinary count. For positive odd $d$ and $j\ge1$, use the distinct samples $db-j$ and $-d(b+1)-j$ from the two opposite-sign pairs described for the increments. Both are at distance at least $b-j$ from every ordinary giant center. For the positive savings region below $j<b/3$, so this required baby ordinal lies on the second segment with time $(5/6)(b-j)/b+2/25$. Any ordinary hit therefore requires at least $(11/6)(b-j)+(2/25)b-3$ primary operations, counting the earlier giants.
+
+The paired entries are present by giant ordinal $2(d+j)$, so put $u=2(d+j)/b$. In the positive savings region $u<t_1$, before the baby table fills. Its primary count is at most $b(u+h(u))+6$. On these two segments $h(u)=(6/5)u-\min((3/10)u,12/125)$. Define $A'=287/150$, $C'=22/5$, $R'=11/6$, and
+\[
+ f_*(v,w)=(A'-C'v-R'w+\min((3/5)v,12/125))_+ .
+\]
+The saved count at each sample is at least $(b f_*((d+j)/b,j/b)-9)_+$. Indeed the support obeys $v\le (A'+12/125)/C'=137/300$, so $u=2v\le t_1$ with strict inequality when the bound is positive. Also $w\le v$ and $f_*(v,w)>0$ imply $w<(A'+12/125)/(C'+R')=137/425<1/3$. In the retained legal range both giant lists are available at these times. The two samples satisfy $|x|\le db+b$. Each adjacent $K$ integer has $|z|\le (63/50)(d/b)+1/100$, since $b^2/\sigma^+<1241/1000$, $2b+g+3<\sigma^+/60$ and $s_K>(99/50)\sigma^+$. Since $(63/50)(137/300)+1/100<3/5$, both adjacent preimages satisfy the constant probability bound above. Their total mass is at least $8/(25\sigma^+)$ for each sample after averaging over the diamond, using $s_K<2\sigma^+$.
+
+For the rectangle $[d-1,d+1)\times[j-1,j)$ put $v=(x+y)/b$ and $w=y/b$. Its discrete saving is at least $(bf_*(v,w)-22)_+$ by the slopes $C',C'+R'$ and $2C'+R'+9<22$. Each rectangle has area two and represents the two distinct target samples. The nonzero region lies in $0\le w\le v\le137/300$ of area less than one half. Integrating the positive part on the rectangles after this scaling gives expected savings at least
+\[
+ \frac{8b^3}{25\sigma^+}\left(I-\frac{11}{b}\right),
+ \qquad I=\int_{0\le w\le v}f_*(v,w)\,dw\,dv .
+\]
+Here any rectangle with no discrete improvement has zero lower contribution, the same as the guaranteed minimum on that rectangle. Thus this bound uses no assumption of improvement outside the stated region.
+
+For the integral, put $A''=A'+12/125$. On the consecutive $v$ intervals cut by $0,4/25,137/425,137/300$, use $(F_*,L)=(A'-(19/5)v,v)$, then $(A''-C'v,v)$, then $(A''-C'v,(A''-C'v)/R')$. The inner integral is $F_*L-R'L^2/2$. Its three rational integrals sum to
+\[
+ I=\frac{12692}{703125}+\frac{20399137}{767656250}+
+   \frac{28284883}{6632550000}=\frac{224399}{4590000}.
+\]
+Indeed the first two terms integrate $A'v-(19/5+R'/2)v^2$ and $A''v-(C'+R'/2)v^2$ respectively. The last term integrates $(A''-C'v)^2/(2R')$. Since $b\ge a>2^{24}$, the savings per $a$ are at least $(8/25)(31/25)(224399/4590000-11/2^{24})>1938/100000$ by cross-multiplication. Since $a>(111/100)\sqrt{\sigma^+}$ and
+\[
+ 83887/50000-(1938/100000)(111/100)<165623/100000,
+\]
+the anchor needs at most $(165623/100000)\sqrt{\sigma^+}+4096$ expected primary steps.
+
+### Adaptive pointwise traversal
+
+Run an auxiliary search alongside each ordinary search. At width $w=2^j$ tabulate $iP$, $0\le i<w$, and test the $2w+1$ residuals starting at $Q+w^2P$, stepping by $-wP$. The two strides use $2j$ doublings and one initial inverse. A table hit at iteration $h$ gives $x=hw+i-w^2$, covering $[-w^2,w^2+w-1]$. Accept only in $[-B,B]$, which is unique modulo $q$. Use exact twelve-coordinate keys and one single-product, sign or lookup action before the first primary step and after every $10^6$ primary candidates. Each auxiliary stage costs $O(w)$ operations. Widths through $w^2\ge|x|$ sum to less than twice the last width, so the interleaved work is $O(\sqrt{|x|}+1)$. The public center translations precede [full-search]. Its two in-line anchor multiples cost $O(\log(|t_0|+1)+1)$ by binary powering, which fits $O(\sqrt{\max_i|t_i|}+1)$. This is the desired bound on the signed largest emitted integer.
+
+Charge six multiplications per primary candidate. Split auxiliary work into individual products, signs or lookups. One action per block costs at most $67/(6\cdot10^6)<12/10^6$ times primary work. The initial auxiliary steps and fixed updates are in the allowance below. The candidate bound is $(165623/100000)\sqrt{σ^+}+(47/18+1/5000000)\sqrt{g/2}+4352+1$, by the proved anchor and increment bounds and the later-triple probability.
+
+**Auxiliary field ledger.** Before instance setup select a nonzero $u$ with $u^{p^6}=-u$ outside $\mathbb F_{p^4}$. The minus eigenspace has dimension one over $\mathbb F_{p^6}$ because the quadratic trace is onto, so it has $p^6>p^4$ elements. No nonzero element there belongs to $\mathbb F_{p^6}$. Thus $u$ has degree 12. In the native pairing coordinates tabulate the matrix with columns $d(1,u,\ldots,u^{11})$, $d=21!$, and its inverse. They convert the scaled power coordinates $\operatorname{coeff}(v)/d$ in either direction at cost 144. Store twelve 32-byte residues. Compute the minimal polynomial $F$ from $u^{12}$. The fixed linear $p^6$ map is inversion on order $q$: with $a=6(4965661367192848881)^2$, $p=q+a$ and $a^4-a^2+1=21888242871839275213430563804664787404649310511694458087810267520700626816493q$. Multiplying by $a^2+1$ gives $p^6≡-1\pmod q$. The map changes odd coefficient signs. Negate source points before signed Miller accumulation and then apply the shared final exponentiation.
+
+For a length-$t$ product use $2t-2$ consecutive small integer nodes $a_j$ and infinity, with $Q(X)=\prod_j(X-a_j)$. Reconstruct from finite values $V_j$ and leading coefficient $V_\infty$ by $V_\infty Q+\sum_j [V_j/Q'(a_j)]Q/(X-a_j)$. Each term is obtained by multiplying its leaf by the other linear factors $X-a_i$. This uses only shifts and small-integer multiples, implemented as additions. Horner evaluation of the inputs at these integers uses the same kind of operations. For a fixed factor cache its node value divided by $Q'(a_j)$ as well as its leading coefficient. Then each of the $2t-1$ nodes uses one multiplication. If both factors have coordinates scaled by $1/d$, incorporate the integer reconstruction weights $d/Q'(a_j)$ and $d$ to restore the common scaling.
+
+Interpolate at 22 consecutive small integers and infinity. Multiply the 23 node pairs of the two scaled inputs. At finite index $j$ zero-based, use integer weights $d/Q'(a_j)=(-1)^{21-j}\binom{21}j$ by small-integer addition chains. At infinity multiply by $d$ by the factors $1,\ldots,21$. Reconstruction yields the scaled-coefficient product $B$: the common factor $d$ fixes $(1/d)^2$ to $1/d$. Reverse $B=FQ+R$ with $\deg R<12$. The reversed quotient is $(\operatorname{rev}_{22}B)(\operatorname{rev}_{12}F)^{-1}\bmod X^{11}$, where $\operatorname{rev}_j L=X^jL(1/X)$. The interpolation with fixed reciprocal uses 21 products. Subtract $FQ\bmod X^{12}$ using 23 products with the fixed low coefficients of $F$. Total: $23+21+23=67$ multiplications.
+ 
+Count thirteen binary multiples of 508 products: three center translations, two terminal operations, six strides and two anchor multiples. Also charge six translation products, six secondary initializations, at most fourteen extra products per traversal and eighteen signs, which are free, all below $400\cdot67$. At most $48K_2+4(J+4)\le1024$ pairing accumulations need one product and one conversion each. The eight other conversions cover the search pairs and outcome. The protected signed step covers the initial primary inverse and each table lookup thereafter uses equality of coordinate vectors. Signs and lookups require no products.
+
+## Amendment n
+
+Use $n=kd_R+{\rm form\_pad}=4370$, $kd_R=273\cdot16=4368$ and form padding two. The constant slot is $v_0$. Put the ordered outputs $A\hat v$ in positions 1 through 4368 and zero in position 4369. The kernel is precisely $v_0=0$ and $A\hat v=0$. The six public shifts are enforced by the heavy-stack argument in I5. They impose no additional form slot. On honest variants, the independent column zero supplies uniform matrix slots, so the affine domain has constant one and its final slot zero.
+
+## Amendment msis_bound
+
+Set ${\rm msis\_bound}={\rm beta\_sis}=B_E$. An infinity-short multiple of $v\ne0$ is an integer $x\equiv a v\bmod q$, $a\ne0$, with $0<\|x\|_\infty\leβ$. For the amended Euclidean problem, a short multiple instead means such a congruence with $0<\|x\|_2\le B_E$. Preserve the original infinity theorem as a separate assertion.
+
+Every heavy stack has rank at most three by I5. A kernel vector's scalar fiber contains the joint fiber for its stack, and its zeroth coordinate vanishes. The infinity-short conclusion of I6 therefore applies to every such vector. Amendment n and the injective packing give the corresponding infinity-SIS solution. The Euclidean argument below gives existence and deterministic recovery at the costed radius $B_E$ for every kernel direction. The same kernel identity and msis_norm's isometry give a solution to the costed instance.
+
+### Joint fibers
+
+Amendment I6 lifts box-coordinate rows into a regular saturated normal of rank at most four and mass at least $μ$. The sampler itself has heavy-stack rank at most three by I5.
+
+### Mass times Euclidean covolume
+
+For a rank-$d$ lattice $Λ$ with integer basis $B$, write $c(Λ)=\sqrt{\det(B^\top B)}$ for its covolume in its real span. We will prove that each rank-three output of regularization of maximum fiber mass $m\geμ$ satisfies $m c(Λ)\le(351/10)/g^3$. Every regular rank-two output of the regularization procedure of I3 satisfies $m c(Λ)\le C_2/g^2$, provided its input has the required density and its output density is at least $μ$. Use precisely that procedure at each joint-fiber extension.
+
+Choose a largest minor of $B$ on $J$ and order these rows first. Set $h=|\det B_J|$ and $P=BB_J^{-1}$, so each entry of $P$ has absolute value at most one. For a prefix length $j\ge d$, write $G_j=P_{[j]}^\top P_{[j]}\succeq I_d$. The inequality follows because the rows on $J$ are unit axes. Let $Λ_j$ be the saturation of the prefix and $h_j$ its height. Its covolume is $h_j\sqrt{\det G_j}$. Indeed $B_{[j]}=YC$ with $Y$ a basis of $Λ_j$, and $|\det C|=h/h_j$ by the prefix proof of I3. Gram determinants then give the formula. The prefix image $B_{[j]}^\top\mathbb Z^j$ has index $h/h_j$ in $\mathbb Z^d$ by the same proof.
+
+Fix the target of a densest fiber of $B^\top r$. Let $s_i$ be the successive index multipliers after the prefix $j$, so $\prod_i s_i=h/h_j$, including factors one. The prefix before step $i$ has image $G^{\rm int}_{i-1}=B_{[i-1]}^\top\mathbb Z^{i-1}$, and $s_i$ is the order of the next row in the quotient by this image. Call a suffix integer tuple feasible if its projection subtracted from the target leaves a point in the prefix image and in the prefix region described below. If $j=d$, use the exact pivot box of side $g-1$, with $G_j=I_d$ and no trimming. If $j>d$, discard at most $e$ absolute probability using the prefix trimming event of I3. The normalized prefix value lies within $R_{\rm tr} g/\sqrt{12}$ of its mean in the norm $\|G_j^{-1/2}\cdot\|_2$, by changing from the saturated prefix basis to the normalized row matrix $P_{[j]}$. Write $e'=0$ in the first case and $e'=e$ in the second. For each feasible suffix, the conditional probability of the remaining required prefix value is at most $m_j$. All suffix points in the original box have the same probability. Thus if there are $M$ feasible suffix tuples, $m-e'\le m_j M/g^{N_*-j}$.
+
+For each feasible suffix tuple $y$, attach the axis-aligned rectangle centered at $y$ with widths $ℓ_i$ satisfying $1\leℓ_i\le s_i$. The interiors of these rectangles are disjoint. Indeed if two different feasible tuples have last differing index $k$, subtract their two congruences modulo the prefix image and then cancel all terms at indices below $k$ in the larger image $G^{\rm int}_{k-1}$. Their coordinate difference at $k$ is a nonzero multiple of $s_k$. The two intervals at that coordinate have disjoint interiors. Every rectangle has volume $\prod_iℓ_i$. It lies within the product of the enlarged suffix intervals of widths $w_i=g-1+ℓ_i$. The disjointness argument works with width equal to $s_i$; shared boundaries have zero Lebesgue measure.
+
+Write $S_ℓ=\sum_{i:s_i>1}ℓ_i$. Rows of $P$ have entries bounded by one, and their length in the normalized prefix metric is at most $\sqrt d$, because $G_j\succeq I_d$. From a rectangle center to any point in it, the change of the matched prefix value is therefore at most $(S_ℓ+N_*)/2$ in each pivot coordinate if $j=d$, and at most $\sqrt d(S_ℓ+N_*)/2$ in the metric norm otherwise. Here each step of order one uses width one. All attached rectangles thus map under the suffix projection into a fixed translate of $G_j^{1/2}[-w/2,w/2]^d$, where
+\[
+ w=\begin{cases}
+ g+S_ℓ+N_*,&j=d,\\
+ 2R_{\rm tr}g/\sqrt{12}+\sqrt d(S_ℓ+N_*),&j>d.
+ \end{cases}
+\]
+The metric ball and its enlargement fit the displayed cube in the second case. In both cases $w\ge g$.
+
+We use the following density inequality. If $A$ has row rank $d$ and $X$ has independent side-one uniform coordinates, then $AX$ has density at most $2^{d/2}/\sqrt{\det(AA^\top)}$. It suffices to prove it for $AA^\top=I_d$ by applying the invertible whitening map. Write the columns of this normalized $A$ as $\sqrt{c_i}u_i$, with $u_i$ unit, $0<c_i\le1$, and discard zero columns. Then $\sum_i c_i u_i u_i^\top=I_d$.
+
+If some $c_i>1/2$, project orthogonally off $u_i$. The other projected columns still sum to the identity as outer products on the orthogonal space. Condition on all other input coordinates and integrate the uniform $i$-th input along $u_i$. Its density there is at most $1/\sqrt{c_i}<\sqrt2$: for a test set, the conditional probability is bounded by this constant times the length of its section at the projected point. Fubini and the lower-dimensional density bound prove the claim in this case by induction, with counting mass one in dimension zero.
+
+If all $c_i\le1/2$, the characteristic function at frequency $2z$ is $\prod_i {\rm sinc}(\sqrt{c_i}u_i^\top z)$ up to phase, where ${\rm sinc}(x)=\sin(x)/x$ with value one at zero. For any nonnegative integrable continuous functions $f_i$, the tight-frame inequality is
+\[
+ \int_{\mathbb R^d}\prod_i f_i(u_i^\top z)^{c_i} dz
+ \ \le\ \prod_i(\int_{\mathbb R} f_i)^{c_i}.
+\]
+To prove it first take nonzero compactly supported $f_i$, smooth by the one-dimensional heat kernel $f_i(t,s)$, and put $F(t,z)=\prod_i f_i(t,u_i^\top z)^{c_i}$. With $v_i=\partial_s\log f_i(t,u_i^\top z)$, the heat equation and chain rule give
+\[
+ \partial_t F-Δ F
+   =F(\sum_i c_i v_i^2-\left\|\sum_i c_i v_i u_i\right\|_2^2)\ge0,
+\]
+because the matrix with columns $\sqrt{c_i}u_i$ has orthonormal rows. On compact positive time intervals the kernel and its derivatives have Gaussian decay times a polynomial: its first logarithmic derivative is $(-s+\mathbb E U)/(2t)$, the second is $-1/(2t)+{\rm Var}(U)/(4t^2)$, with the source $U$ supported where $f_i$ is supported. The tight-frame identity gives the Gaussian decay in $z$, so the integral of the Laplacian vanishes and the integral of $F$ is nondecreasing. Fatou as $t\downarrow0$ bounds the left side. As $t\to\infty$, rescale $z=\sqrt t z'$; the product and Jacobian give the standard Gaussian heat kernel on $\mathbb R^d$ times the right side. The limit is dominated by a constant times $\exp(-\|z'\|_2^2/8)$, using bounded source support and $(v-w)^2\ge v^2/2-w^2$. Continuous cutoffs increasing to one and monotone convergence give the asserted inequality for the unbounded supports.
+
+We need the univariate bound $I(p)=π^{-1}\int_{\mathbb R}|{\rm sinc}(x)|^pdx\le\sqrt{2/p}$ for $p\ge2$. Let $U$ be the uniform density on $[-1/2,1/2]$. Fourier inversion at zero, with frequency $2x$, gives $I(2)=1$, $I(4)=2/3$, and $π^{-1}\int{\rm sinc}(x)^3dx=3/4$. Indeed, $U*U$ is the tent $(1-|t|)_+$; convolving it with $U$ at zero gives $3/4$, and convolving it with itself at zero gives $2/3$. All these Fourier integrals converge absolutely, and inversion follows by first adding Gaussian smoothing and taking its variance to zero, using continuity of the convolutions.
+
+To bound the absolute cubic integral, write $S_-=(2/π)\int_{\{x>0:\sin x<0\}}|\sin x/x|^3dx$. Then $I(3)=3/4+2S_-$. For the first negative interval $[π,2π]$, split it into four equal parts. The integrals of $|\sin x|^3$ on them are $A,B,B,A$, where $A=2/3-5\sqrt2/12<78/1000$ and $B=5\sqrt2/12<590/1000$, from the antiderivative $-\cos x+\cos^3x/3$ on $[0,π]$. Use the left endpoint to bound $x^{-3}$ on each part. On later negative intervals the integrals of $|\sin x|^3$ are $4/3$, and their left endpoints are $(2j+1)π$ for $j\ge1$. The decreasing reciprocal cubes sum to at most $1/27+\int_1^\infty(2t+1)^{-3}dt=1/27+1/36$. It follows that
+\[
+ S_-\le\frac{2}{π^4}\left\{\frac{78}{1000}(1+(4/7)^3)
+           +\frac{590}{1000}((4/5)^3+(2/3)^3)
+           +\frac43(1/27+1/36)\right\}.
+\]
+Substituting $π>314159/100000$ gives $I(3)<777/1000<\exp(-1/4)$; the latter inequality follows from the alternating cubic lower bound. Hölder interpolation gives $I(p)\le\exp(-(p-2)/4)$ for $2\le p\le3$, and $\log(p/2)\le(p-2)/2$ proves $I(p)\le\sqrt{2/p}$ there. Between three and four the scaled endpoint values $I(p)\sqrt p$ are below $34/25$. The concavity gap of $\log p$ above its endpoint chord is at most $1/72$, by the second derivative bound $1/9$ on this unit interval. Hölder thus gives $I(p)\sqrt p\le(34/25)\exp(1/144)<7/5<\sqrt2$.
+
+For $0<x<π$, the difference $(1-x^2/3)\sin x-x\cos x$ has derivative $(x/3)(\sin x-x\cos x)\ge0$, since the parentheses have derivative $x\sin x\ge0$. Integrating $\cot x-1/x\le -x/3$ yields ${\rm sinc}(x)\le\exp(-x^2/6)$. For $x\geπ$, write $\sin^2x=(1-\cos 2x)/2$ and integrate the cosine term by parts to get $\int_π^\infty\sin^2x/x^2 dx\le1/(2π)+1/(4π^2)$. Thus for $p\ge4$,
+\[
+ I(p)\sqrt p\le\sqrt{6/π}
+       +\frac{2\sqrt p}{π}π^{2-p}(\frac1{2π}+\frac1{4π^2})<\sqrt2 .
+\]
+The tail factor decreases on this interval, and at four the upper bound is below $1407/1000$ by $π>314159/100000$. This completes the bound on all $p\ge2$.
+
+Apply the tight-frame inequality with $f_i(s)=|{\rm sinc}(\sqrt{c_i}s)|^{1/c_i}$. Each integral is at most $π\sqrt2$ by the preceding estimate after rescaling. Fourier inversion with frequency $2z$ bounds the density by $π^{-d}(π\sqrt2)^{\sum_i c_i}=2^{d/2}$. Equivalently, this inversion bound first holds after convolution with a small centered Gaussian by its Fourier integral, and the uniform bound on the smoothed laws passes to the limiting law when integrated against continuous compactly supported tests. The same Gaussian limit justifies the interval convolution inversion at $p=2$, since its transform is integrable and the convolution is continuous. This proves the density inequality, including its determinant factor before normalization.
+
+Take the independent uniform law on the enlarged suffix intervals of widths $w_i$. The union of attached rectangles has volume $M\prod_iℓ_i$, so its probability under this law is $M\prod_iℓ_i/\prod_iw_i$. It is bounded by the probability of the enlarged prefix cube for the projected suffix. As before that probability is the convolution density with the independent uniform on a centered cube of shape $G_j^{1/2}[-w/2,w/2]^d$, multiplied by $w^d\sqrt{\det G_j}$. For a pointwise bound at the translated center, enlarge the cube by an arbitrarily small positive width and move to a nearby center in the full-measure set satisfying the density bound. Then pass to the original width, as the original translated cube is contained in each of these enlarged cubes. The augmented Gram matrix dominates $g^2G_{\rm full}$ since $w_i\ge g$ and $w\ge g$. Thus the cube probability is at most
+\[
+ 2^{d/2}(w/g)^d\sqrt{\det G_j/\det G_{\rm full}} .
+\]
+Multiplying by the conditional prefix bound and the final covolume gives
+\[
+ (m-e')c(Λ)
+ \ \le\
+ 2^{d/2}(w/g)^d m_j c(Λ_j)
+ \prod_i(w_i/g)\prod_i(s_i/ℓ_i).
+\]
+All the products are over suffix coordinates. Choosing full widths $ℓ_i=s_i$ incurs no final ratio and satisfies $\prod_i(w_i/g)\le\prod_{s_i>1}(1+s_i/g)$.
+
+For a rank-three regularization output put $j=d=3$. If all suffix orders are below $g$, use $h<5.1g$ from the height proof. At most one order exceeds $\sqrt{5.1g}$. The other nonunit orders have sum at most $52+2\sqrt{5.1g}$: their count is below 52 by the product bound, and $(s-1)/\log s$ is increasing, so sum using its value at $\sqrt{5.1g}$. Cap the large width at $g/3$ and keep all others. The inverse width ratio is at most three, the interval product at most $(4/3)(5000000/4999999)$, and the pivot side ratio at most $4/3+3/10^7$. Since $m_3c(Λ_3)=g^{-3}$, the cube estimate gives $mc(Λ)g^3<27$.
+
+Otherwise use the large coordinate $y$ from the height proof with $g\le s=h<2g$. Given the other suffix inputs, at most one $y$ and pivot triple are permitted. Their normalized values require the suffix projection to lie in a translate of the sum of the pivot cube and a segment parallel to $p=P_y^\top$. Smooth every other suffix input by a centered interval of width one. The resulting independent continuous uniforms have width $g$, and the projection belongs to the larger zonotope with cube and segment both of width $w=g+2N_*$.
+
+Set $G_0=I+pp^\top$ and $M=(g/w)^2G_0^{-1/2}(\sum_{i\ne y,\ i\notin J}P_i^\top P_i)G_0^{-1/2}$. Normalize the zonotope by $G_0^{-1/2}/w$. It is the image of the centered unit four-cube under $G_0^{-1/2}[I,p]$ with orthonormal rows, so it lies in the unit ball. Its volume is $(1+\sum_i|p_i|)/\sqrt{1+\|p\|_2^2}\le2$ by Cauchy–Schwarz. Before normalization the added volume is the segment length times the area of the cube projection perpendicular to $p$. Indeed along each line the interval extends by that length. The entrance faces cover the projection without overlap except on their boundaries, giving area $\sum |p_i|/\|p\|_2$ if $p\ne0$. The one-dimensional projected length is at most two. For any planar projection the $2$ by $4$ generator matrix $V$ has orthonormal rows, and area equals the sum of absolute two-column determinants by sequential extrusion and additivity of perpendicular widths. The six minors have squared sum one by Cauchy–Binet. Pair the absolute minors from complementary columns as $(a_i,b_i)$, $i=1,2,3$. The signed products satisfy the Plücker relation, obtained by squaring the wedge of the two rows (zero by the repeated rows). Relabel so $a_1b_1+a_2b_2=a_3b_3$, allowing zero products. Put $x_i=(a_i+b_i)/\sqrt2$, $y_i=(a_i-b_i)/\sqrt2$. The relation and squared sum one give $x_1^2+x_2^2+y_3^2=x_3^2+y_1^2+y_2^2=1/2$. Thus the area $\sqrt2\sum x_i\le1+\sqrt2$ by Cauchy–Schwarz, and $4(1+\sqrt2)^2<11657/500$.
+
+Use $c_2=11657/500$ from the universal planar-area estimate. For event probability $P_*$ and decreasing eigenvalues $λ_i$ of $M$, the density estimate in the leading $r$ eigendirections gives $P_*^2\prod_{i\le r}λ_i\le8,c_2,32$ for $r=1,2,3$. A zero product is automatic. The log-majorant list $(8/P_*^2,c_2/8,32/c_2)$ is decreasing for $20\le c_2\le11657/500$. For $P_*>0$ the list bounds log prefix sums, interpreting a zero eigenvalue as log $-\infty$. The sum of positive parts of the logs above any threshold $t$ equals the maximum prefix sum minus its length times $t$. Order these hinges and integrate against the nonnegative second derivative of $\log(1+e^t)$. This gives
+\[
+  P_*^2\det(I+M)\le9 F(c_2),\qquad F(t)=5+t/8+32/t.
+\]
+Improve this projected bound for use in the rank-three mass-covolume estimate. Set $t=P_*^2>0$ and $A=8-4t$. The projections of the normalized four-cube of dimensions one and two lie in the side-two box. Convolve each projected interval sum with the uniform law on that box. The density at the center of the translated box is at least $P_*/2^r$, while its Gram has increased by $4I_r$. The cube density bound gives $t(λ_1+4)\le8$ and $t(λ_1+4)(λ_2+4)\le64$. The second product is at least $(\sqrt{λ_1λ_2}+4)^2$. With $B=\min(c_2,(8-4\sqrt t)^2)$, the new upper prefix products are $A/t,B/t,32/t$. Their ratios form a decreasing majorant, since $A\ge\sqrt t(8-4\sqrt t)$ and $B^2\ge256\ge 32A$. The same log-prefix bound therefore gives
+\[
+ t\det(I+M)\le (8-3t)F_A(B),\qquad F_A(B)=(1+B/A)(1+32/B).
+\]
+The function $F_A$ increases for $B\ge16$ since $F'_A=1/A-32/B^2\ge0$.
+
+For every value of $u=1+\|p\|^2$, use $B\le\min(24,(8-4\sqrt t)^2)$. At $t\le2/3$, replace $B$ by 24. Multiplying the difference $77-(8-3t)F_A(24)$ by $3A$ gives $28(1+t)(2-3t)\ge0$. For $t\ge2/3$, replace $B$ by $(8-4x)^2$, where $x=\sqrt t\in[4/5,1]$, and use $A=8-4x^2$. The polynomial
+\[
+ \frac{A(8-4x)^2}{64}\left(77-(8-3x^2)F_A((8-4x)^2)\right)
+\]
+has ascending coefficients $(-248,728,-630,28,199,-84,9)$ by multiplication. With $x=(4+z)/5$, its ascending coefficients with denominator $15625$ are
+\[
+ (29384,\ 84296,\ -108390,\ 27420,\ -1265,\ -204,\ 9).
+\]
+On $0\le z\le1$, drop nonnegative terms of degree above one and bound each negative monomial below by its coefficient times $z$. The numerator is at least $29384-25563z\ge3821>0$. Hence in both branches $t\det(I+M)\le77$ without any further conditions on $p$.
+
+The determinant formula now gives
+\[
+ P_*\sqrt{\det(P^\top P)}\le(w/g)^3\sqrt{u t\det(I+M)}
+ \le(1+2/10^7)^3\sqrt{308}<351/20 .
+\]
+For the last inequality square and compare $308(5000001/5000000)^6<(351/20)^2$, whose left-hand increment from 308 is below $1/2500$ by binomial expansion, while the right-hand increment is $1/400$. For each originally favorable suffix tuple the large coordinate $y$ and three pivot values are unique. The smoothed projection event is a superset of their tuples of remaining suffix inputs, since the smoothing interval is included by enlarging the containing zonotope. Thus $m\le g^{-4}P_*$. The covolume is $c(\Lambda)=h\sqrt{\det(P^\top P)}$. With $h=s<2g$ this proves $mc(\Lambda)g^3<351/10$. The all-small estimate is smaller as well.
+
+We will also use a stronger estimate for a rank-three regularization output used as a precursor of high density $m_{\rm old}$ such that $g^4m_{\rm old}\ge .20g^{4/5}$. Its height bound from the product expansion of mu_tr gives $h/g\leξ_{\rm tr}/(g^4m_{\rm old}-ξ_{\rm tr})<10^{-6}$, since $g\ge2^{49}$ and $ξ_{\rm tr}<2$. Use all suffix widths in the cube estimate. The sum of nontrivial orders is at most $h$ (the sum of two integers at least two is at most their product, and iterating proves the claim). Hence $m_{\rm old}c_{\rm old}g^3\le(99/35)(1+10^{-6}+10^{-7})^3/(1-10^{-6})<3$.
+
+### Rank-four predecessors of rank one or two
+
+Suppose the last strict prefix in the I3 construction is followed by a rank-$d$ normal, $d=1,2$, and the selected preceding regular lattice has rank four. It is sparse with height at most two and covolume at most 100. The preceding untrimmed maximum is at most $g^{-4}+3e$. At most one suffix order after the transition can exceed one, and that order is two: any factor of order at least three costs at most $1/3+1/g$, and two factors two cost $1/4$, both taking the mass below $μ$. For the transition itself use its actual image count below, irrespective of its order.
+
+Let $C$ be basis columns of the old sparse lattice and the new unit column, in disjoint blocks, and $G=C^\top C$. It is saturated. The new prefix normal lies in its span, so it has a saturated basis $CV$ with $V$ integer of rank $d$. The five whitened features $G^{-1/2}C^\top r$ are an orthogonal projection of the at most 41 active physical coordinates. Their affine span for this fiber has dimension $a=5-d$. As before the difference lattice has covolume $δ=c(Λ_j)/c_{\rm old}$: extend the integral kernel of $V^\top$ by columns mapping to the $d$ axes and compare full volume $1/\sqrt{\det G}$ with normal projection volume $1/\sqrt{\det(V^\top G V)}$. Each feature point has mass at most $g^{-5}$ by the old four pivots and the independent new coordinate. Thus the number $L_0\ge(m_j-e)g^5>.416g$.
+
+Project the entire physical box onto the direction of the affine span. This contains the projected fiber hull and has volume $g^a$ times the sum of absolute $a$-minors of an orthonormal-row matrix on 41 coordinates. Indeed, adding a segment to a zonotope adds its length times the projected volume perpendicular to that segment, by integration over lines. Applying this increment successively and inducting on the projection dimension gives the sum of the absolute determinants. Cauchy--Binet bounds the sum by $\sqrt{\binom{41}{a}}$. For $a=3$ improve it as follows. For each fixed column $i$, write $d_{ijk}$ for its three-column minors with two other columns. Their array as $j,k$ vary is a decomposable two-vector: rotate the three rows so column $i$ is supported in the first row and expand at that column. For any four other columns, the sum of the absolute six minors is at most $1+\sqrt2$ times their Euclidean norm by the paired-minor argument above, which is homogeneous. Sum over the four-sets, using Cauchy--Schwarz on these norms and observing that each pair appears in $\binom{38}2$ sets. This gives
+\[
+ \sum_{j<k,\ j,k\ne i}|d_{ijk}|\le (1+\sqrt2)\sqrt{\binom{40}2/6}\left(\sum_{j<k,\ j,k\ne i}|d_{ijk}|^2\right)^{1/2}.
+\]
+Sum over $i$ and use Cauchy--Schwarz again. Each triple is counted three times and the sum of squared three-minors over triples is one. Thus the volume for $a=3$ is at most $g^3(1+\sqrt2)\sqrt{\binom{41}3/6}$.
+
+The simplex count gives $(m_j-e)c(Λ_j)\le g^{-5}(L_0/(L_0-a))a!c_{\rm old}$ times the corresponding volume. Here $L_0/(L_0-a)<1+10^{-8}$ and $c_{\rm old}\le100$. Full suffix widths have ratio product at most $1+1/g$. The projection of the entire prefix feature range, using orthogonal whitening on at most 41 coordinates, has radius at most $\sqrt{41}g/2$, so in the cube estimate $w/g\le\sqrt{41}+\sqrt d(N_*+2)/g$. The trimming ratios are at most $10000/9999$ by $10000e\leμ$. Multiplying the bounds gives $m c(Λ)<5020000/g^2$ for $d=2$ and $m c(Λ)<7100000/g$ for $d=1$. The rank-two bound above used $c_{\rm old}\le100$. The sharper estimate $c_{\rm old}\le9$ from Amendment mu_tr improves it to $mc(Λ)<(9/100)5020000/g^2=451800/g^2$ because all other factors are independent of this replacement. For example the former product without the smoothing increment and interval ratios is
+\[
+ (10000/9999)^2\,2\cdot41\cdot 600(1+\sqrt2)\sqrt{\binom{41}3/6}<5010000,
+\]
+and the two omitted factors multiply to less than $1+10^{-6}$. For the latter product the same computation uses $\sqrt2\sqrt{41}\cdot2400\sqrt{\binom{41}4}$ in place of $2\cdot41\cdot600(1+\sqrt2)\sqrt{\binom{41}3/6}$. Both estimates fit $C_d$.
+
+For rank two use the chosen prefix sequence of the regularization proof of I3. If regularization promoted to rank three or four, use the corresponding terminal bound. Choose $j=d$ if no preceding prefix has a strictly larger normal, and the first prefix after the last strictly larger normal otherwise. Take full widths $ℓ_i=s_i$ on this rank-two extension and write $A_{\rm box}=\prod_i (g-1+s_i)/g$. The suffix steps have order below $g$. As in I3, an order at least $g$ would put a new unit-vector normal vanishing on $J$ into the next selected fiber's normal, contradicting the choice of the last strict prefix. The product of the suffix orders is at most $h\le H_2<g^{39/16}$ by regularity and the guarded sixteenth power. Call an order large if $s_i\ge g^{13/16}$. There are at most two large orders since three would have product at least $g^{39/16}$. Let $a\in\{0,1,2\}$ be the number of large orders. The product of the other nontrivial orders is below $g^{(13/16)(3-a)}$, since each large order is at least $g^{13/16}$. For a real $u>1$, the ratio $(u-1)/\log u$ is increasing, because its derivative has numerator $\log u-1+1/u\ge0$. For each small nontrivial order $s_i$, apply this bound with upper endpoint $g^{13/16}$ to get
+\[
+ \frac{s_i}{g}
+ \le \frac1g+\frac{g^{13/16}-1}{g}\frac{\log s_i}{(13/16)\log g}.
+\]
+The number of nontrivial orders is below $(39/16)\log_2 g<610$ by (I1). Summing over the small orders thus gives
+\[
+ \sum_{{\rm small}}\frac{s_i}{g}
+ <\frac{610}{g}+(3-a)g^{-3/16}
+ <\frac{3-a}{570},
+\]
+using $g\ge2^{49}$, $580^{16}<2^{147}$, and $610/2^{49}+1/580<1/570$. For zero or one large order, use $S/g<a+(3-a)/570$. The small padding factors have product at most $\exp((3-a)/570)$ and the large factors are at most two each. Using $\exp(x)\le1/(1-x)$ for $0\le x<1$, the total padding factors are below $101/100$ and $201/100$, respectively.
+
+If two large suffix orders occur, they have product at least $g^{26/16}$. Since the regular final lattice has height $h\le H_2<g^{39/16}$, their occurrence forces $h_j<g^{13/16}$. The prefix lattice can then be bounded directly without the preceding rank-three planar count. Apply the rectangle bound to $Λ_j$ itself with its pivot prefix of length two. Its pivot height is one and pivot probability $g^{-2}$. The suffix orders of this nested application have product $h_j$, so their nontrivial sum is at most $h_j$, using that a sum of two or more integers at least two is at most their product. In particular the sum divided by $g$ is below $g^{-3/16}<1/570$. Using their full widths, the product of the enlarged suffix interval ratios is at most $570/569$, and the pivot box ratio is at most $1+1/570+1/1024$. Thus
+\[
+ m_j c(Λ_j)\le (2/g^2)(570/569)(1+1/570+1/1024)^2<3/g^2.
+\]
+This uses the actual saturated prefix lattice, so it does not require any additional regularity of that prefix. Its normalized pivots are obtained from a largest minor as before.
+
+In the final suffix with two large orders, $S/g<2+1/570$, and the product $A_{\rm box}$ is below $4(570/569)<402/100$. Its full-width pivot side ratio is below $4$, and the trimmed side ratio is below $14$, using $18/\sqrt3<52/5$, $\sqrt2<99/70$ and $N_*/g\le1/1024$. Hence the general rectangle bound and $m/(m-e')\le1000/999$ give
+\[
+ m c(Λ)<(1000/999)\cdot2\cdot(402/100)\cdot14^2\cdot3/g^2<5000/g^2<C_2/g^2 .
+\]
+This proves the two-large case, regardless of the position of the selected prefix.
+
+For zero and one large orders, the trimmed side ratios are below $21/2,12$, respectively: substitute $S/g<a+(3-a)/570$ into $18/\sqrt3+\sqrt2(S/g+N_*/g)$ with the preceding rational bounds. The pivot side ratio is below four. A pivot prefix therefore gives $m c(Λ)<2(201/100)4^2/g^2<C_2/g^2$. It remains to treat $j>d$ in the zero- and one-large cases.
+
+For $j>d$ with preceding rank four use the earlier small-support estimate. Otherwise the preceding rank-three regular containing lattice used to trim $F_j$ in I3 has basis $B_{\rm old}$, covolume $c_{\rm old}$ and mass $m_{\rm old}$. It obeys $m_{\rm old}c_{\rm old}\le(351/10)/g^3$. Let $C={\rm diag}(B_{\rm old},1)$ on the previous prefix plus its new coordinate, and $G=C^\top C$. This is an integer basis of a saturated rank-four lattice, as both summands are saturated. All normals to $F_j$ restrict on the previous coordinates to the span of $B_{\rm old}$ by I3. Thus $C$ carries the real annihilator of differences in the image $C^\top F_j$ isomorphically to the real normal space, and its saturation implies that the image coefficient normals have a saturated basis $V$ in $\mathbb Z^4$ with $CV$ a basis of the integer normal lattice $Λ_j$. Its rank here is two. Hence the affine image space has dimension two.
+
+Whitening the image coordinates by $G^{-1/2}$ maps the difference lattice $\ker V^\top\cap\mathbb Z^4$ to the orthogonal complement of $G^{1/2}V$ with planar covolume
+\[
+ δ=\sqrt{\det(V^\top G V)}/\sqrt{\det G}=c(Λ_j)/c_{\rm old}.
+\]
+To see the identity, extend a basis of the kernel lattice with two integer columns $L$ such that $V^\top L=I_2$. They exist by saturation of $V$, which gives $V^\top\mathbb Z^4=\mathbb Z^2$. The full extended basis is unimodular by decomposing an integer vector via $V^\top$. After whitening it has full volume $1/\sqrt{\det G}$. Its last two columns project onto the normal plane as $G^{1/2}V(V^\top G V)^{-1}$, whose area is $1/\sqrt{\det(V^\top G V)}$. Multiplying by the planar covolume gives the full volume and proves the identity.
+
+The whitened trimmed region lies in the ball of radius $g\sqrt{324/12+1/4}$ because the old coordinates are trimmed and the final interval has length $g-1$. Therefore its planar slice has area at most $A=π g^2(324/12+1/4)$. The image point count $M$ satisfies $M\le 2A/δ+2$ by the simplex count in I3. Each image point has mass at most $m_{\rm old}/g$ by independence. Moreover $\Pr[F_j]\ge m_j-e\ge999μ/1000$ by the prefix density premise and the Euclidean guard. The image has affine dimension two, so $M\ge3$. With no large suffix order this suffices for $M/(M-2)\le3$. If there is a large order $s_i$, the prefix probability bound at that step gives $m_{i+1}\le m_i\lceil g/s_i\rceil/g\le 2m_i/s_i$. The prefix masses are nonincreasing, so the earlier $m_j\ge m_i\ge (s_i/2)m_{i+1}\ge(g^{4/5}/2)m$. Each image point has mass at most $m_{\rm old}/g\le g^{-4}$, and the trimmed fiber has mass at least $m_j-e\ge(999/1000)m_j$. Hence
+\[
+ M\ge (999/2000)g^{4/5} m g^4 \ge (999/2000)ρ_0 g^{4/5} > 2^{36},
+\]
+using $m\geμ\geρ_0 g^{-4}$ and $g^{4/5}>(147/128)2^{39}$. Thus $M/(M-2)<1001/1000$. Also $m_{\rm old}\ge m_j-3e\ge(.4999999)g^{4/5}m\ge .20g^{4/5}g^{-4}$, since $3e\le3m/1000$ and $g^{4/5}>2^{39}$. The stronger rank-three estimate uses coefficient three there.
+
+The planar count gives $(M-2)δ\le 2A$, so in both remaining cases
+\[
+ (m_j-e)c(Λ_j)\le M(m_{\rm old}/g)δ c_{\rm old}
+ \le 2π(324/12+1/4) (M/(M-2)) g m_{\rm old}c_{\rm old}.
+\]
+For no large suffix order, one can sharpen the area comparison without assuming that the image contains many points. Set $R_0=g\sqrt{324/12+1/4}$. The section of the trimming ball is a disk of radius at most $R_0$. For $3\le M\le6$ its image polygon has area at most $MR_0^2/2$: orient its vertices around the boundary and use the signed determinant area formula, measuring the vertex vectors from the disk center, so each determinant is at most $R_0^2$. The projected lattice count gives area at least $(M-2)δ/2$. Consequently $Mδ\le M^2 R_0^2/(M-2)\le9R_0^2$. For $M\ge7$ use the disk area bound to get $Mδ\le (14π/5)R_0^2<9R_0^2$. Thus in the no-large case the multiplier in the preceding estimate of $(m_j-e)c(Λ_j)$ can be bounded by $9(324/12+1/4)<246$ in place of $2π(324/12+1/4)M/(M-2)$. For one large order the bound $M/(M-2)<1001/1000$ still gives a multiplier below $172$.
+
+Apply the rectangle estimate to the final suffix. Its factors have already been bounded by $A_{\rm box}<101/100$ and $w/g<21/2$ with no large order, or by $A_{\rm box}<201/100$ and $w/g<12$ with one large order. In both cases $m/(m-e)$ and $m_j/(m_j-e)$ are at most $1000/999$. The general rank-three precursor bound uses $(351/10)/g^3$. The resulting coefficients on its constant are less than
+\[
+ (1000/999)^2\cdot 2(101/100)(21/2)^2\cdot 246
+ \quad\hbox{or}\quad
+ (1000/999)^2\cdot 2(201/100)12^2\cdot172 .
+\]
+The first is below $55000$ and the second below $100000$. The second uses precursor coefficient three, with $300000<1950000$. Because $55000(351/10)=1930500<1950000$ and the rank-four bound is $451800/g^2$, this proves $mc(Λ)\le C_2/g^2$.
+
+If regularization starts in rank one and returns a rank-two lattice from a recursive call, apply this calculation to the rank-two call and its selected sequence. This proves the needed rank-two mass-covolume estimate.
+
+### Rank-one Euclidean covolume
+
+Let $C_1=67000 C_2+1448000000+200$. For a rank-one regular output of I3 of mass $m\geμ$, choose the pivot prefix $j=1$ or the first prefix after the last strict normal, as for rank two. The suffix orders satisfy $s_i<g$ by the unit-vector argument, and their product is at most $h\le H_1<g^4$. Use widths $s_i$. Call $s_i\ge g^{4/5}$ large and write $L$ for their number, so $L\le4$. The earlier logarithmic bound gives small-order sum divided by $g$ below $1016/g+(5-L)g^{-1/5}<1/150$, since $g<q<2^{254}$ and $g\ge2^{49}$. Hence the padding is below $16e^{1/150}<17$, or $2e^{1/150}<203/100$ for $L\le1$. With $R_{\rm tr}\le20$ and $N_*/g\le1/1024$, the ratio $w/g$ is below six for a pivot prefix, below sixteen for a trimmed prefix and below thirteen for a trimmed prefix with $L\le1$.
+
+For $j=1$, $m_j c(Λ_j)=1/g$, so the rectangle estimate gives $m c(Λ)<200/g$. For preceding rank four use the small-support estimate. Otherwise the preceding strict normal is contained in the regular trimming lattice of rank $r=2$ or $3$, with mass $m_{\rm old}$ and covolume $c_{\rm old}$. Use the earlier diagonal basis $C$ and whitening. The current image normal has one primitive integer column $V$. A basis of $\ker V^\top$ extended by an integer column $L_0$ with $V^\top L_0=1$ is unimodular. The last whitened column has normal projection of length $1/\sqrt{V^\top C^\top C V}$, so the difference lattice has covolume $δ=c(Λ_j)/c_{\rm old}$. The section lies in a ball of radius $g\sqrt{R_{\rm tr}^2/12+1/4}<6g$. Its $M\ge r+1$ image points have mass at most $m_{\rm old}/g$ each, and I3 gives $(M-r)δ\le r!$ times the section volume.
+
+For $r=3$ the ball gives $Mδ<22000g^3$ using $M/(M-3)\le4$, so $(m_j-e)c(Λ_j)\le22000\cdot(351/10)/g$. For $r=2$, the disk and $M/(M-2)\le3$ give $Mδ<680g^2$. If $L\ge2$, the suffix inequalities give $m_j\ge(g^{4/5}/2)^2m$. The previous rank-two mass is at most $g^{-2}$ by its pivots. Thus $M\ge(999/1000)m_j g^3>2^{26}$ since $m\geρ_0 g^{-4}$. Now $M/(M-2)<1001/1000$ and squared radius at most $(324/12+1/4)g^2$ imply $Mδ<172g^2$. The two rank-two bounds give $(m_j-e)c(Λ_j)\le680 C_2/g$ or $172 C_2/g$.
+
+In the rectangle estimate each trimming ratio is at most $1000/999$ and the density factor below $99/70$. The coefficients on $C_2/g$ are at most $(1000/999)^2(99/70)(203/100)13\cdot680$ and $(1000/999)^2(99/70)17\cdot16\cdot172$, both below 67000. The coefficient on $(351/10)/g$ is at most $(1000/999)^2(99/70)17\cdot16\cdot22000<20000000$. Hence $m c(Λ)\le C_1/g$ throughout, without imposing any passing test.
+
+### Euclidean multiples in every heavy stack
+
+Let $\mathcal V$ be the row space of a heavy stack with nonzero kernel vector $v$, with $v_0=0$. The stack fiber is that of any row-space basis. If some $w\in\mathcal V$ has $w_0\ne0$, then conditional on the independent box coordinates $w^\top r$ is uniform on $g$ distinct values through $r_\diamond$ since $g<q$ and $v^\top r$ is fixed. The guessing probability of $v^\top r$ is above $gθ$, so applying joint fibers to it on the box gives a normal lattice of density above $gμ$ since $gθ-3e>gμ$. If all of $\mathcal V$ has zeroth coordinate zero, apply joint fibers to its basis on the box. This gives a normal lattice of density above $μ$ containing $\mathcal V$ modulo $q$. Either lattice has rank at most four and contains the line modulo $q$. By I5 the row space of a heavy stack annihilates all six public directions, so $v$ does too.
+
+At terminal rank three, if the normal annihilates all public rows over the integers then $c(Λ)\le C_3/(g^3μ)$ as just proved. Otherwise restrict a nonzero public row $H$ to the lattice. Column Hermite form at a largest pivot minor bounds the basis entries by $3h$, so the nonzero gcd $a$ of $B^\top H$ is at most $3hN_*2^{43}<q$. The primitive restriction after dividing by $a$ has an integer kernel reducing onto its modular kernel via unimodular completion. It therefore contains the needed line, and is saturated. Its covolume is $c(Λ)\|\mathrm{proj}_{\mathrm{span}Λ}H\|_2/a$ by projecting a lattice vector mapped to $a$ and comparing volumes. In particular it is at most $(351/10)\sqrt{N_*}2^{43}/(g^3μ)<C_2/(g^2μ)$ because $g\ge2^{49}$ and $\sqrt{N_*}<2^{10}$.
+
+If the terminal normal has rank four, its support has at most 40 coordinates, covolume at most 100 and height at most two. By the reduced-row weight exclusion in I5, if all its vectors annihilated all six public rows, its four independent normalized equations would be supported only on the three tags. Choose a public row $H$ with nonzero restriction. Use an integer basis $B$ with the maximal pivot rows in column Hermite form. This bounds pivot entries by $h$ (positive diagonal pivots have product $h$ and reduced off-diagonal entries are smaller than a pivot). All basis entries are at most $4h$ in magnitude by the maximum-minor coefficient bound. Thus the nonzero gcd $a$ of $B^\top H$ has $a<q$. The primitive restriction $(B^\top H)/a$ has an integral kernel basis extending to a unimodular basis by a column mapped to one. This proves that the integer kernel reduces onto the modular kernel, so its ambient lattice contains the needed modular line and is saturated. The volume of the original lattice is the kernel covolume times the perpendicular component of a vector mapped to $a$ under $H$. This component has length $a/\|\mathrm{proj}_{\mathrm{span}Λ}H\|_2$. Thus kernel covolume is at most $100\sqrt{40}2^{43}<2^{53}$ since $400000<2^{20}$. By P5 and $g<2^{50}$, $g^3μ<2^{-49}$, so $C_3/(g^3μ)>(351/10)2^{49}>2^{53}$.
+
+In rank one its primitive generator has norm $c(Λ)\le C_1/(gμ)\le B_E$, and saturation gives a nonzero residue on the line. In ranks two and three the covolume bounds are $C_2/(g^2μ)$ and $C_3/(g^3μ)$. The coefficient preimage of the line of $v$ has index $q^{d-1}$ in rank $d$, since a saturated basis has full rank modulo $q$. Its covolume is multiplied by that index. The shortest-vector inequalities below and the squared or cubic I6 guard give a nonzero vector of norm at most $B_E$. Its residue is nonzero since $2B_E<q$. Appending the zero homogeneous coordinate preserves norm. This proves a short multiple for every kernel vector of every heavy stack. Recovery selects a kernel vector by the form equations on the recovered basis, without constructing the normal lattice.
+
+For the Euclidean lift we use a sharper length bound in ranks two and three. If $L$ has rank two, take a shortest nonzero $u$ of length $λ_1(L)$. It is primitive, so integer coordinate operations extend it to a basis $u,v$. Subtract a nearest integral multiple of $u$ from $v$. Then $|u^\top v|\le\|u\|^2/2$ and $\|v\|\ge\|u\|$, so $c(L)\ge(\sqrt3/2)λ_1(L)^2$.
+
+For rank three, scale so that a shortest nonzero vector $u$ has length one. Project along this primitive vector; the image is a rank-two lattice, since a basis beginning with $u$ projects its other two elements to an independent basis. Take a shortest nonzero projected vector $\bar b$, and complete it with $\bar c$ to a projected basis. Change $\bar c$ by a nearest multiple and a sign to write $\bar c=β\bar b+c_\perp$ with $c_\perp\perp\bar b$, $0\leβ\le1/2$. Let $B=\|\bar b\|^2$ and $C=\|c_\perp\|^2$. Lift to $b,c\in L$ with $u$-coordinates reduced into $[-1/2,1/2]$. Then $c(L)^2=BC$, $B\ge3/4$ by $\|b\|\ge1$, and $C\ge(1-β^2)B\ge3B/4$ by the minimality of $\bar b$.
+
+Suppose $BC<1/2$. Then $B<\sqrt{2/3}$ and $a=\sqrt{1-B}$ lies in $(1/3,1/2]$. Also $C<1/(2B)<B$, so $β\geβ_0=\sqrt{1-C/B}$. For $t\in[β_0,1/2]$ define $p(t)=\sqrt{1-C-Bt^2}$. Its argument is positive: $B(1+a)=(1-a)(1+a)^2=1+a(1-a-a^2)\ge1$, so $C<(1+a)/2$ and $1-C-B/4>(1-a)^2/4$. The $u$-coordinates of $b,c$ have absolute values at least $a,p(β)$, respectively, because both vectors have length at least one. In particular both lower bounds are at most $1/2$. The distance of the difference of the two coordinates from an integer is at most $1-a-p(β)$. For coordinates with the same sign this follows from $|b_u-c_u|\le1/2-\min(a,p(β))$. For opposite signs the absolute difference lies in $[a+p(β),1]$, so subtracting a signed unit gives the bound.
+
+The function $p(t)+(1+a)t$ is concave. At $1/2$ its value is above one by $p(1/2)>(1-a)/2$. At $β_0$ we have $p(β_0)=a$. For $1/3\le a\le1/2$, $4a(1-a)^2\ge1/2$, since this polynomial is decreasing on that interval and equals $1/2$ at its right endpoint. Using $B=1-a^2$ gives
+\[
+ C<1/(2B)\ \le\ 4aB/(1+a)^2 .
+\]
+Hence $β_0>(1-a)/(1+a)$, so the other endpoint value is also above one. Concavity proves $p(β)+(1+a)β>1$. Now $c-b$, reduced along $u$, is a nonzero lattice vector with squared length at most $C+B(1-β)^2+(1-a-p(β))^2$. Subtracting one from this expression gives $2(1-a)(1-p(β)-(1+a)β)<0$, a contradiction. Thus $c(L)^2\ge1/2$ at shortest length one. Undoing the scaling gives $λ_1(L)^3\le\sqrt2 c(L)$.
+
+The rational overestimates $2/\sqrt3<231/200$ and $\sqrt2<99/70$ follow by squaring. These are existence bounds; the short-span algorithm below supplies a polynomial-time lift without needing the basis of the lattice used in the existence proof.
+
+### Polynomial-time Euclidean lifting
+
+Discard the zero homogeneous coordinate of $v\ne0$ and order the rest with $v_1\ne0$. Let $L_i=\{x\in\mathbb Z^i:\bar x\in\mathbb F_q v_{[i]}\}$ and let $S_i$ span its vectors of length at most $B_E$. Four independent short vectors would give a nonzero four-row minor divisible by $q^3$: the residues lie on a line, so three rows can be made divisible by $q$ by subtracting multiples of a row with nonzero residue, or all four already are. Its absolute value is at most $B_E^4<q^3$ by Hadamard. Hence $\dim S_i\le3$.
+
+Store a basis of actual short vectors, starting with $1\in L_1$. Every short next-prefix vector projects into $S_i$. Form $U$ from the stored vectors extended by zero and the final unit vector. Choose invertible rows $J$ and write $UU_J^{-1}=A/c$ with integer $A$, $c=|\det U_J|$. These have $O(\log q)$ bits by fixed-size minors. The integer $J$-coordinates $y$ give exactly the allowed vectors $Ay/c$ through the congruences
+\[
+ A_jy=0\pmod c,\quad (v_1A_j-v_jA_1)y=0\pmod{cq}
+\]
+for each row $j$, using integer representatives. The first ensures integrality and allows division by $c$ in the second even if $q\mid c$.
+
+Starting from the identity basis for $y$, impose each congruence of modulus $b$ by column gcd operations reducing its row in the current basis to $(h,0,\ldots,0)$, then scale the first column by $b/\gcd(b,h)$ (skip zero rows). Normalize after each update by column gcd operations row by row on columns without pivots, then subtract multiples of pivot columns in row order to put entries left of each pivot in $[0,\text{pivot})$. Already reduced earlier rows are preserved by later columns. Pivot product equals index, at most the product of the processed moduli, so all normalized entries have $O(i\log q)$ bits. At most four gcd reductions and sixteen residue updates per normalization give polynomial bit time, including intermediate entries. Applying $A/c$ gives a basis of $L_{i+1}\cap(S_i\times\mathbb R)$ of rank at most four.
+
+Use the following basis reduction for rational lattices in rank $r\le4$, clearing denominators before reduction and restoring scale afterwards. With Gram–Schmidt vectors $b_i^*$ and coefficients $η_{ij}$, round off $η_{ij}$ by subtracting integer multiples of $b_j$ in descending $j<i$, leaving larger-index coefficients fixed. Swap neighboring columns if
+\[
+ \|b_{i+1}^*\|^2+η_{i+1,i}^2\|b_i^*\|^2<(3/4)\|b_i^*\|^2,
+\]
+then fully size reduce again. For the integer basis, the squared prefix volumes $H_j=\det(B_{[j]}^\top B_{[j]})$ are positive integers, with $H_0=1$. Size reduction preserves them, while a swap changes just $H_i$, by the ratio of the new to old squared length after projection off the first $i-1$ columns. The product decreases by a factor below $3/4$ on each swap, so Hadamard gives polynomially many swaps. At size-reduced stages, $\|b_i^*\|^2=H_i/H_{i-1}\le\prod_j H_j$ and $\|b_i\|^2\le r\prod_j H_j$. A swap preserves column norms and the ensuing at most six rational rounding updates therefore have polynomial-size intermediate data. The output satisfies $|η_{ij}|\le1/2$ and $\|b_{i+1}^*\|^2\ge\|b_i^*\|^2/2$. Recover original coordinates by exact rational solves.
+
+For exact closest vector, project the target into the span. Nearest-plane rounding descends from $r$ to $1$, subtracting the nearest multiple in the current Gram–Schmidt coordinate and preserving all later ones. Its distance bound is $\sqrt{\sum_i\|b_i^*\|^2}/2\le\sqrt{2^r-1}\|b_r^*\|/2<2\|b_r^*\|$. A closest vector has last coefficient within two of the target's last normalized coordinate. Try those at most five integers, subtract the candidate multiple of $b_r$, and solve in the reduced prefix after projection. Add the squared orthogonal residual to each squared distance and minimize. The depth is at most four, with exact rational comparisons and rank-zero output zero.
+
+In the prefix lattice $L$ find a new short vector outside the span $W$ of the already stored short vectors. In basis coordinates express $W$ as a kernel of at most four integer rows by clearing denominators. Apply successive column gcd operations to each row restricted to the current kernel columns, retaining the first transformed column as complement whenever the row is nonzero. The remaining columns are its exact integral kernel, and the whole basis stays unimodular. This gives $L\cap W$ and complementary columns, whose projections off $W$ form a rational lattice basis. If its rank is zero, report no new vector. Otherwise reduce the projected basis. If its first vector has length at most $B_E/2$, lift it via the complementary columns and round its $W$ part by nearest plane in the stored short basis. The latter has at most three Gram–Schmidt lengths at most $B_E$, so the resulting squared length is at most $3B_E^2/4+B_E^2/4$.
+
+Otherwise every projected Gram–Schmidt length is greater than $2^{-(r+1)/2}B_E$. Enumerate nonzero projected vectors of length at most $B_E$ by descending coordinates: for fixed later coordinates each new coordinate lies within six of its rational center by this length bound. For each exact norm-qualified projection, lift it and solve closest vector in $L\cap W$ to the negative of its $W$ component. Orthogonality makes the adjusted lift shortest for that projection. Return any within $B_E$, or certify none exists outside $W$. Branching and dimension are bounded, and all projection, basis and distance calculations use polynomial-bit rational arithmetic.
+
+At each prefix start $W=0$ and add each returned vector. With dimension at most three, at most four searches yield a spanning short list. The congruence updates and searches over all prefixes cost polynomial bit time $T_{\rm LIFT}$ in $N_*,\log q$. At the last prefix return a stored vector with coordinate order and the homogeneous zero restored, or $\bot$ for an empty list. The returned nonzero vector has nonzero residue because $B_E<q$, and the congruences put it on the prescribed line.
+
+## Amendment msis_norm
+
+Set ${\rm msis\_norm}=2$ in the concatenated integer coefficient basis of C5. For any kernel vector $v$ and any Euclidean-short multiple $x\equiv a v\bmod q$, $a\ne0$, the bound $2B_E<q$ forces $x_0=0$. Packing copies all other coordinates once, inserts zeros and commutes with reduction. Thus $A\hat x=aA\hat v=0\bmod q$ and $0<\|\hat x\|_2=\|x\|_2\le B_E$, which proves the universal Euclidean packing clause. The original infinity clause remains true at its own norm and radius, as shown in msis_bound. There the heavy-stack selection and lifting prove existence and recovery for the amended reduction. Neither the public seed law, ring matrix, ciphertext nor decryption operation counts use the solution norm. Targets proves extraction and the reduction cost.
+
+## Targets
+
+Fix any admitted parameters, system and evaluation points. Use C6–C7 for the fields and masks, n and n1 for the form and QAP arrays, and I2–I6 with mu_tr for admissibility and inversion. Ncmp proves the charged-mark bound. The statements below use the prescribed oracle budgets and recover only the external witness coordinates.
+
+### Correctness with error $2/q$
+
+Fix an external witness $w$, the statement, message and admissible evaluation points. Every prescribed padding and tag extension used in n1 is an internal witness with $(H^{(1)})^\top v=(H^{(2)})^\top v=0$. If the prescribed weight of $v^{(0)}$ is zero decryption returns $\bot$. Otherwise the chosen target has nonzero weight, whenever the ordinary or direct-normalization branch is selected. The identities of n1 recover the exact key in these branches. They give the settled target value after the three exact integer logarithms and the equality $a_t+b_t-c_t=v^{(t)}$ in the ordinary branch, and directly in the branch where the chosen target base is zero. The evaluation-point branch recovers the exact key on every realization where it is called. Therefore failure is exactly the event of zero prescribed weight, which we bound next.
+
+First consider the key weight for either fixed target. Let $L:F\to\mathbb F_q$ be the coefficient functional at one in the U product basis, nonzero because $L(1)=1$, and let $s=n/2-1$. Then the weight of a form value $x$ is $Q(x)=L(xσ^s(x))$, with $x$ uniform on the affine space with constant slot one and prescribed padding zero. The trace map is nonzero: the polynomial $\sum_{j=0}^{n-1}X^{q^j}$ has degree $q^{n-1}<q^n$ and cannot vanish at all $q^n$ field elements. The pairing $(a,b)\mapsto{\rm Tr}(ab)$ is therefore nondegenerate, since multiplication by a nonzero $a$ is invertible. Thus $L(x)={\rm Tr}(λ x)$ for a unique nonzero $λ$, by equality of the dimensions of the field and its scalar dual.
+
+The polar form $Q(x+y)-Q(x)-Q(y)$ is
+\[
+ {\rm Tr}\!((σ^{-s}(λ x)+λσ^s(x)) y).
+\]
+Trace invariance under Frobenius gives this expression. By nondegeneracy, the radical solves $λ x+σ^s(λ)σ^{2s}(x)=0$. If there is one nonzero solution $x_0$, every other solution is $x_0$ times an element fixed by $σ^{2s}$, by dividing the two equations. Since $\gcd(2s,n)=2$, such a ratio is fixed by $σ^2$: use the integer Bezout identity for $2s,n$ and $σ^n=1$. There are at most $q^2$ of these ratios because they are roots of $X^{q^2}-X$. Hence the radical dimension is at most two and the polar rank at least $n-2$. The affine form domain has codimension ${\rm form\_pad}$. Restricting the polar form in either argument to its parallel linear space loses at most ${\rm form\_pad}$ ranks, by the rank of the omitted rows or columns. Therefore its rank is at least $n-2-2{\rm form\_pad}$, at least six in the scored shape and in the growing branch.
+
+For an affine quadratic of rank $d$ over the fixed odd prime field, the proportion of zeros is at most $1/q+q^{-d/2}$. Indeed, use the character sum $q^{-1}\sum_{a\in\mathbb F_q}\exp(2π i a Q/q)$ for its zero indicator. A linear change of variables diagonalizes the quadratic part in odd characteristic, by choosing a vector with a nonzero square coefficient, completing its square to isolate it, and iterating. With $a\ne0$ a one-variable sum for a nonzero square coefficient has magnitude $\sqrt q$, even with a linear term: by completing the square the linear term is a unit-magnitude factor, and the squared magnitude of $\sum_x\exp(2π i c x^2/q)$ is the sum over $x,y$ of $\exp(2π i c(x-y)(x+y)/q)$. The map to $x-y,x+y$ is invertible, and summing first over one new coordinate gives $q$, since only the other coordinate zero has a nonzero inner sum. Every other coordinate has character sum bounded by $q$. After normalization the contribution of all nonzero $a$ to the zero probability is at most $q^{-d/2}$, and the zero character contributes $1/q$. Here $n\ge4000$ and ${\rm form\_pad}=2$ give $d\ge6$, so the key weight vanishes with probability at most $1/q+1/q^3$, and in particular at most $1/q+1/q^2$.
+
+For the search probabilities condition on all scalar coins except $y$ and the seed matrix. Set $S(z)=\sum_cγ_cξ_c(z)$ on the affine form domain, a polynomial of total degree at most two. If it is identically zero, all ordinary bases vanish and the primary target base is zero, so a nonzero primary weight leads to direct normalization. Otherwise it vanishes with probability at most $2/q$ by the polynomial root bound. Independently the first factor $y(v)$ in any prescribed base is uniform and vanishes with probability $1/q$, so the base vanishes with probability at most $3/q$. For two distinct tag variants their two form values are jointly uniform on two copies of the domain: after fixing all other columns, the homogeneous column and a differing tag column give a two-by-two evaluation matrix of determinant $1$ or $-1$ in each free coefficient position. Likewise their two $y$ values are independent uniform, by the same determinant on the corresponding two coordinates and independently of the forms. Hence each pair of base-zero events for distinct tags has probability at most $9/q^2$. The event of one specified primary zero-corner base zero and a zero key weight of $v^{(1)}$ has probability at most $6/q^2$, by joint uniformity of their distinct tags and the key-weight bound.
+
+The fallback requires at least one base zero among $a_0,b_0,c_0$, and either a zero secondary target weight or at least one base zero among $a_1,b_1,c_1$. Otherwise the selector gives an ordinary or direct normalization branch. The three events of the first kind paired with the secondary weight contribute at most $18/q^2$ and the nine pairs of base events contribute at most $81/q^2$. Thus fallback probability is at most $99/q^2\le135/q^2$. An ordinary secondary triple also requires a zero among the three primary ordinary bases, so its probability is at most $9/q$. All bounds hold conditional on the fixed scalar coins and therefore also unconditionally, and all selection events are independent of the integer sampler.
+
+### Extraction and the reduction
+
+Let $\mathcal A$ have the budget $Q<2^λ$ of generic group calls and at most $2^λ$ queries to each oracle. Fix one bit $b$ and messages $m_0,m_1$, and run the extraction experiment with $m_b$. The extractor reads the answered generic transcript without any oracle calls. It uses the protected extractor sketches for the plain sector. The empty alpha sector can be represented by zero records. It samples three independent probe vectors for each cell, uses the linear combinations of source-group records and pairings to form sketches, tests the sketches of the result and the difference when there is an old record, checks Booleanity of pads and tags, tests $S$ on coordinates $1,\ldots,N$, and returns those $N$ external witness bits. In rank at most three, there are at most four assignments with first coordinate 1 to test: row echelon pivot coordinates determine the vector, pivot 0 must be present, and at most two remaining pivot choices are bits. Output is therefore always $\bot$ or a witness. A record creation, result, or difference touches $O(K_1N_*+n)$ field elements, since a source-group record uses at most $K_1$ length-$(N_*+1)$ vectors or $6A_c$ values, and the pairings compute six such combined sketch vectors. For a pairing, forming the inner products in the G2 record or summing per left leg and combining the G1 vectors uses $O(K_1N_*+n)$ operations. A test uses $O(N_*)$ for elimination with at most three rows and $O(N_*+|S|)$ to generate and check the constant number of candidates. Initialization samples $6A_c(N_*+1)$ field values, enters the $L$ labels as records whose vectors are materialized on first use, and uses $O(nN+L)$ time. There are at most four tests per result. Thus the extractor uses $O((Q+1)(nN+|S|)+L)$ time because $K_1\le n$ and $N_*\ge1$.
+
+The reduction on input a uniform $A\in R_q^{k\timesℓ}$ samples the seed and programs the raw seed-oracle answers on columns $1,\ldots,ℓ$ as $E(A_{ij})$. It samples every other answer lazily as an independent uniform tuple, including column zero, and returns the same tuple on repeated queries. Thus each programmed conceptual coefficient entry is exactly $A_{ij}$, and the raw tuple law is the same as in encryption by invertibility of $E$. If the challenge is supplied in the coefficient representation, the reduction performs these forward transforms once during its initialization. This costs $O(k(ℓ+1)d_R^2)$ field operations, within $O(nD)$ for the fixed-degree scored branch because $kd_R\le n$, $ℓ+1\le N+4\le D$, and $d_R$ is guarded by C5. This term belongs to $C_R$. It samples encryption coins as specified, produces the ciphertext for $m_b$, and simulates all generic labels and names and random oracles by the protected lazy tables. It runs $\mathcal A$ once. The extraction steps use the answered generic transcript without its output or the random-oracle query transcript, while the lazy tables implement exactly the direct oracle law. Because the programmed entries are jointly independent uniform ring elements for uniform $A$, all oracle answers including entries at the selected seed have exactly the joint law of the experiment. Private evaluation points are sampled independently of the run.
+
+The reduction attempts recovery for the first target result with private value differing from its reused record, using their difference, and for the target-label record if present. For each attempt compute three gradients at independent recovery points, test their span for a kernel vector, and run the selection and LIFT of msis_bound. By n, a kernel vector has $v_0=0$ and $A\hat v=0$. The lift and norm-preserving packing of ell return a nonzero solution with $\|\hat x\|_2\le B_E$, for the precise uniform instance costed by M1. Otherwise return $\bot$. Let $s_b$ be this reduction's success probability. The proved C7 implementation costs $t+148Q+(d_R+5)Q_H+C_R+2T_{\rm LIFT}$ for the maximal per-oracle query count $Q_H$, with $C_R=O((N_*+n)D+μ)$. I6 gives the premises $2B_E<q$ and $B_E^4<q^3$ of the polynomial-time lift. Thus the cost is $t+O(Q+d_RQ_H+μ)+{\rm poly}(D,\log q)$.
+
+Here is how the first-mark bounds apply to these algorithms. The degree and view for the new field encoding and the needed gradient formula are derived above. The record invariant uses no inverse premise: setting all guesses to zero commutes with additions and pairings, and before the first mark every reused label comes from formally equal expressions. Formally equal target expressions have identical stacks by the fiber equations applied to their difference for every field search vector. Thus their records also have equal sketches. A good mark's stack is usable with the three field ties of Amendment C7 by the revised view. Its rank is at most three by the six public shifts and rank proof in I5. The full classification applies to every actual tied stack of dimension at most three, including zero-corner marks, because the three ties just derived are the original field identities. A kernel vector in its row space has coordinate 0 equal to zero, and its one-dimensional guessing probability is at least the stack's, by the replacement rank lemma in search_spread. The selection in Amendment msis_bound gives a short multiple at Euclidean radius $B_E$. The amended LIFT therefore succeeds on that selected kernel vector.
+
+At a first good difference mark its difference is formally nonzero, so the cleared polynomial is nonzero in the coins at some fixed search vector. This makes it a nonzero joint polynomial in coins and search coordinates. The private test uses independent uniform search coordinates and valid coins; the product-set bound gives failure probability at most $d_f/(q-D)$. Earlier formal equalities are equalities at every private point by the record invariant, so outside this failure the reduction picks exactly this difference. The degree bound and the uniform valid coin ranges give probability at most $ε_f$ for this failure. For a first good key mark the target record already has its expression by the record invariant and persists. Name negatives are target-group results and receive the same private and sketch tests. For a recognized good mark, the coefficient-vanishing and derivative calculation of the algebraic view subsection place each sector gradient in that sector row space. There is no nonzero alpha stack. For any proper subspace of the mark row space choose a linear form zero on the subspace and nonzero on the row space. Its value on one gradient, divided by $π$, is a polynomial of degree at most $n+2+2K_2$, using the seed-mode bound in the C7 degree ledger. This polynomial is nonzero by isolating the constant term in $ε$ and the independent monomials $s_X υ^{k_c}y_i$. The valid values for the independent coin coordinates have sizes at least $q-D$, by the independent coin support argument. The polynomial root bound, with $q-D$ in place of $q$ in its proof, bounds the chance of failing to increase the span while it is proper. Three independent points and rank at most three give failure at most $3(n+2+2K_2)/(q-D)\leε_f$, by $2n\le D$ and $2K_2<n$ and the formula for $ε_f$. Thus on a good first mark with a kernel vector, except for the two exceptional events just bounded, the reduction finds a kernel vector in the appropriate span, and produces the MSIS output. The unconditional probability of such a mark is at most $s_b+2ε_f$.
+
+For a good first mark with no kernel vector, the classification proved in Amendment C7 gives an extended witness in its row space. Its ordinary projection satisfies the external system. In that sector the linear map from a tuple of probes to $\sum_c W_cv_c$ has image the row space, as each matrix is symmetric and the sum of its images is the row space of the stack. Uniform independent probe tuples give three independent uniform vectors in this space, even conditional on the run. In dimension $a\le3$, the chance of failing to span is bounded by $\sum_{j=0}^{a-1}q^{j-3}<2/q$: equivalently the $a$ rows of the random $a$-by-3 coordinate matrix are independent uniform three-dimensional vectors and the next row falls in the span of $j$ independent previous rows with probability $q^{j-3}$. At a difference mark the extractor tests the record difference. If the old entry is a pure guess, a guess-free difference requires the result to contain that same guessed variable with coefficient one. The label has therefore been used in an answered call, possibly the current call, and has a zero record by the test. At a key mark it tests the record of the result that obtained the target label. An initially received record has zero stack and thus is no good mark. These facts from the record invariant show that if the sampled vectors span, the witness is among the assignments tested. So the probability of a good first mark with no kernel vector and with extractor failure is at most $2/q$.
+
+Let $u=2Q+2$. Every target query run has a first mark. The protected initial and guessed-mark estimates and the charged-mark estimate of Amendment Ncmp bound their three probabilities by
+\[
+(\binom{L_1}{2}+\binom{L_2}{2}+\binom{L_T}{2})ε_f,\quad
+N_{\rm cmp}(u)(θ+ε_f)
++(\binom{L+3u}{2}+L+3u)ε_f,\quad
+2^λ/N_{\rm free},
+\]
+respectively. These estimates concern the same sampler, oracle and record laws and use only the already checked view and degree properties, budget, and label counts. Together with the two good-mark cases they cover the event of a target key query and no witness. Their sum is at most $s_b+E(u)$: the good-mark excess is $2ε_f+2/q\le (8u+8)ε_f$, using $ε_f\ge1/q$; the remaining terms of $E$ are nonnegative and its guess term contains $2^λ/N_{\rm free}$. By (P5) and the generic-ledger implication of Amendment Ncmp $E(2Q+2)\le(Q+1)/2^λ$. Hence for each $b$ the target-query and no-witness probability is at most $(Q+1)/2^λ+s_b$, with exactly the stated oracle budgets and one MSIS instance. This proves Theorem 5.9 with its extraction time and soundness as above.
